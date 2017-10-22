@@ -1,7 +1,7 @@
 <?php
 
 return [
-    'adminEmail' => 'admin@example.com',
+    'adminEmail' => 'bisonbar@biologenkantoor.nl',
     'maskMoneyOptions' => [
         'prefix' => '€ ',
         'suffix' => '',
