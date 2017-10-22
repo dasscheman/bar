@@ -22,9 +22,11 @@ class CronController extends Controller {
         // */2 * * * * ~/sites/www/yii2/yii cron
         $time_start = microtime(true);
         $aantal = Factuur::verzendFacturen();
-        echo 'Er zijn '.($aantal).' emails verzonden \n';
+        echo 'Er zijn '.($aantal).' emails verzonden';
+        echo "\n";
         $time_end = microtime(true);
-        echo 'Processing for '.($time_end-$time_start).' seconds \n';
+        echo 'Processing for '.($time_end-$time_start).' seconds';
+        echo "\n\n";
     }
 
     public function actionHour() {
@@ -35,10 +37,13 @@ class CronController extends Controller {
         $time_start = microtime(true);
         $turven_controleren = Turven::controleerStatusTurven();
         echo 'Er zijn '.($turven_controleren).' emails verzonden \n';
+        echo "\n";
         $transacties_controleren = Transacties::controleerStatusTransacties();
-        echo 'Er zijn '.($transacties_controleren).' emails verzonden \n';
+        echo 'Er zijn '.($transacties_controleren).' emails verzonden';
+        echo "\n";
         $time_end = microtime(true);
-        echo 'Processing for '.($time_end-$time_start).' seconds \n';
+        echo 'Processing for '.($time_end-$time_start).' seconds';
+        echo "\n\n";
     }
 
     public function actionMonth() {
