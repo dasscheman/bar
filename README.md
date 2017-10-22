@@ -13,3 +13,6 @@ Vanaf de root
 `php yii migrate/up --migrationPath=@yii/rbac/migrations`
 `php yii migrate/up --migrationPath=@vendor/dektrium/yii2-user/migrations`
 `php yii migrate/up`
+
+Voeg als eerste een gebruiker toe met de username `beheerder`.
+Deze gebruikerkan gerbuikers toevoegen en rechten zetten op andere gebruikers.
