@@ -47,8 +47,7 @@ $toolbar = FALSE;
                                 'value'=>function ($model) {
                                      return Html::a('Turfijst ' . $model->turflijst_id, ['turflijst/view', 'id' => $model->turflijst_id]);
                                  },
-                             ],
-                            'assortiment_id',
+                            ],
                             [
                                 'attribute'=>'assortiment_id',
                                 'format' => 'raw',

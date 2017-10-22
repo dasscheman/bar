@@ -6,7 +6,6 @@
 
 use kartik\grid\GridView;
 use yii\helpers\Html;
-use app\components\CustomAlertBlock;
 
 /**
  * @var \yii\web\View $this
@@ -45,9 +44,19 @@ $toolbar = FALSE;
                         'layout'       => "{items}\n{pager}",
                         'columns' => [
                             'factuur_id',
-                            'ontvanger',
+                            'ontvanger' => [
+                                'attribute' => 'ontvanger',
+                                'value' => function($model){
+                                    return $model->getInkoperUser()->one()->username;
+                                },
+                            ],
                             'naam',
-                            'verzend_datum',
+                            'verzend_datum' => [
+                                'attribute' => 'verzend_datum',
+                                'value' => function($model){
+                                    return empty($model->datum)?'':Yii::$app->setupdatetime->displayFormat($model->datum, 'php:d-M-Y');
+                                },
+                            ],
                             'created_at',
                             'created_by',
                             'created_at',

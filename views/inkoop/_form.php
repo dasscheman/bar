@@ -7,6 +7,7 @@ use kartik\widgets\DatePicker;
 use kartik\select2\Select2;
 use app\models\Assortiment;
 use app\models\User;
+use app\models\Transacties;
 
 /* @var $this yii\web\View */
 /* @var $model app\models\Inkoop */
@@ -17,7 +18,7 @@ use app\models\User;
     <?php
     $form = ActiveForm::begin([
         'enableClientValidation' => true,
-        'enableAjaxValidation'   => true,
+        'enableAjaxValidation'   => false,
     ]);
 
     echo $form->field($model, 'assortiment_id')->widget(Select2::className(), [
@@ -25,6 +26,23 @@ use app\models\User;
         'options'   => [
             'placeholder' => Yii::t('app', 'Selecteer assortiment item'),
             'id' => 'assortiment_id',
+        ],
+    ]);
+
+    echo $form->field($model, 'transacties_id')->widget(Select2::className(), [
+        'data' => ArrayHelper::map(
+            Transacties::find()->all(),
+            'transacties_id',
+            function($model, $defaultValue) {
+                return $model['transacties_id']. ' (' . $model->getTransactiesUser()->one()->username .') -'.$model['omschrijving'];
+            }
+        ),
+        'options'   => [
+            'placeholder' => Yii::t('app', 'Selecteer transactie'),
+            'id' => 'transacties_id',
+        ],
+        'pluginOptions' => [
+            'allowClear' => true
         ],
     ]);
 

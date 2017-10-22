@@ -26,7 +26,6 @@ $toolbar = FALSE;
                 <?= Html::encode('Assortiment overzicht') ?>
             </div>
             <div class="panel-body">
-
                 <?php echo $this->render('/_alert');
                 echo $this->render('/_menu') ?>
                 <table class="table">
@@ -35,11 +34,28 @@ $toolbar = FALSE;
                         'id' => 'kv-grid-inkoop',
                         'dataProvider' => $dataProvider,
                         'filterModel' => $searchModel,
+                        'layout'       => "{items}\n{pager}",
                         'columns' => [
                             'inkoop_id',
-                            'assortiment_id:datetime',
-                            'datum',
-                            'inkoper_user_id',
+                            [
+                                'attribute'=>'assortiment_id',
+                                'format' => 'raw',
+                                'value'=>function ($model) {
+                                     return Html::a($model->getAssortiment()->one()->name, ['assortiment/view', 'id' => $model->assortiment_id]);
+                                 },
+                             ],
+                            'datum' => [
+                                'attribute' => 'datum',
+                                'value' => function($model){
+                                    return empty($model->datum)?'':Yii::$app->setupdatetime->displayFormat($model->datum, 'php:d-M-Y');
+                                },
+                            ],
+                            'inkoper_user_id' => [
+                                'attribute' => 'inkoper_user_id',
+                                'value' => function($model){
+                                    return $model->getInkoperUser()->one()->username;
+                                },
+                            ],
                             'volume',
                             // 'aantal',
                             // 'totaal_prijs',

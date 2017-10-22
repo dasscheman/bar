@@ -42,12 +42,13 @@ $toolbar = FALSE;
                         'layout'       => "{items}\n{pager}",
                         'columns' => [
                             'prijslijst_id',
-                            'assortiment_id' => [
-                                'attribute' => 'assortiment_id',
-                                'value' => function($model){
-                                    return $model->assortiment->name;
-                                },
-                            ],
+                            [
+                                'attribute'=>'assortiment_id',
+                                'format' => 'raw',
+                                'value'=>function ($model) {
+                                     return Html::a($model->getAssortiment()->one()->name, ['assortiment/view', 'id' => $model->assortiment_id]);
+                                 },
+                             ],
                             'prijs',
                             'from' => [
                                 'attribute' => 'from',
