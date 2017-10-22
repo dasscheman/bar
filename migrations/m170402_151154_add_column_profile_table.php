@@ -9,7 +9,9 @@ class m170402_151154_add_column_profile_table extends Migration
         /*****************************************************************************/
         /* Geboorte datum toe gevoegd.
         /*****************************************************************************/
-        $this->addColumn('profile', 'achternaam', $this->string()->notNull());
+        $this->addColumn('profile', 'voornaam', $this->string());
+        $this->addColumn('profile', 'tussenvoegsel', $this->string());
+        $this->addColumn('profile', 'achternaam', $this->string());
         $this->addColumn('profile', 'geboorte_datum', $this->date());
         $this->addColumn('profile', 'functie', $this->integer(11));
         $this->addColumn('profile', 'speltak', $this->integer(11));
