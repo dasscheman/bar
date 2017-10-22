@@ -5,7 +5,7 @@
  */
 
 use yii\helpers\Html;
-use yii\widgets\DetailView;
+use kartik\detail\DetailView
 
 /* @var $this yii\web\View */
 /* @var $model app\models\Assortiment */
@@ -18,8 +18,19 @@ use yii\widgets\DetailView;
                 <?= Html::encode('Assortiment details') ?>
             </div>
             <div class="panel-body">
-                <?php echo $this->render('/_alert') ?>
-                <?php echo $this->render('/_menu') ?>
+                <?php 
+                echo $this->render('/_alert');
+                echo $this->render('/_menu');
+                echo Html::a(
+                    Yii::t('app', 'Bewerken'),
+                    [ 'update', 'id' => $model->assortiment_id ],
+                    [ 'class' => 'btn btn-success' ]
+                );
+                echo Html::a(
+                    Yii::t('app', 'Delete'),
+                    [ 'delete', 'id' => $model->assortiment_id ],
+                    [ 'class' => 'btn btn-danger', 'data-method'=>'post' ]
+                ); ?>
                 <table class="table">
                     <?php
                     echo DetailView::widget([

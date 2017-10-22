@@ -14,11 +14,21 @@ use yii\widgets\DetailView;
                 <?= Html::encode('Inkoop details') ?>
             </div>
             <div class="panel-body">
-                <?php echo $this->render('/_alert') ?>
-                <?php echo $this->render('/_menu') ?>
+                <?php
+                echo $this->render('/_alert');
+                echo $this->render('/_menu');
+                echo Html::a(
+                    Yii::t('app', 'Bewerken'),
+                    [ 'update', 'id' => $model->inkoop_id ],
+                    [ 'class' => 'btn btn-success' ]
+                );
+                echo Html::a(
+                    Yii::t('app', 'Delete'),
+                    [ 'delete', 'id' => $model->inkoop_id ],
+                    [ 'class' => 'btn btn-danger', 'data-method'=>'post' ]
+                ); ?>
                 <table class="table">
                     <?php
-
                     echo DetailView::widget([
                         'model' => $model,
                         'attributes' => [
