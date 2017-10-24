@@ -66,7 +66,7 @@ $toolbar = FALSE;
                                 'attribute'=>'factuur_id',
                                 'format' => 'raw',
                                 'value'=>function ($model) {
-                                    return empty($model->factuur_id)?'':Html::a('Factuur ' . $model->factuur_id, ['fastuur/view', 'id' => $model->factuur_id]);
+                                    return empty($model->factuur_id)?'':Html::a('Factuur ' . $model->factuur_id, ['factuur/view', 'id' => $model->factuur_id]);
                                  },
                              ],
 //                            'created_by',

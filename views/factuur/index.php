@@ -47,7 +47,7 @@ $toolbar = FALSE;
                             'ontvanger' => [
                                 'attribute' => 'ontvanger',
                                 'value' => function($model){
-                                    return $model->getInkoperUser()->one()->username;
+                                    return $model->getOntvanger()->one()->username;
                                 },
                             ],
                             'naam',

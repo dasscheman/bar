@@ -88,12 +88,13 @@ $toolbar = FALSE;
                                     return $model->getStatusText();
                                 },
                             ],
-                            'factuur_id' => [
-                                'attribute' => 'factuur_id',
-                                'value' => function($model){
-                                    return empty($model->factuur_id)?'':'Factuur ' . $model->factuur_id;
-                                },
-                            ],
+                            [
+                            'attribute'=>'factuur_id',
+                                'format' => 'raw',
+                                'value'=>function ($model) {
+                                    return empty($model->factuur_id)?'':Html::a('Factuur ' . $model->factuur_id, ['factuur/view', 'id' => $model->factuur_id]);
+                                 },
+                             ],
 //                            'created_at',
 //                            'created_by',
 //                            'created_at',
