@@ -79,10 +79,11 @@ use yii\helpers\Url;
                 <tr>
                     <td width="9%">ref. id</td>
                     <td width="9%">aantal</td>
+                    <td width="9%">prijs per stuk</td>
                     <td width="12%">turflijst/ datum</td>
-                    <td width="40%">omschrijving</td>
-                    <td width="15%">bedrag</td>
-                    <td width="15%">totalen</td>
+                    <td width="37%">omschrijving</td>
+                    <td width="12%">bedrag</td>
+                    <td width="12%">totalen</td>
                 </tr>
             </thead>
 
@@ -91,13 +92,14 @@ use yii\helpers\Url;
 
             if ($new_turven){ ?>
                 <tr style="border: 1px solid black">
-                    <td colspan="6" align="left"><b><i>Nieuwe turven:</i></b></td>
+                    <td colspan="7" align="left"><b><i>Nieuwe turven:</i></b></td>
                 </tr>
                 <?php foreach($new_turven as $new_turf) {
                     ?>
                     <tr>
                         <td align="center"><?php echo $new_turf->turven_id ?></td>
                         <td align="center"><?php echo $new_turf->aantal ?></td>
+                        <td class="blanktotal cost">-<?php echo number_format($new_turf->getPrijslijst()->one()->prijs, 2, ',', ' ') ?> &euro;</td>
                         <td align="center"><?php echo empty($new_turf->datum)? $new_turf->turflijst_id: Yii::$app->setupdatetime->displayFormat($new_turf->datum, 'php:d-M-Y') ?></td>
                         <td align="left"><?php echo $new_turf->getAssortiment()->one()->name ?></td>
                         <td align="right" class="cost">-<?php echo number_format($new_turf->totaal_prijs, 2, ',', ' ') ?> &euro;</td>
@@ -106,6 +108,7 @@ use yii\helpers\Url;
                     <?php
                 } ?>
                 <tr>
+                    <td align="center"></td>
                     <td align="center"></td>
                     <td align="center"></td>
                     <td align="center"></td>
@@ -119,12 +122,13 @@ use yii\helpers\Url;
             if ($new_af_transacties){ ?>
 
                 <tr style="border: 1px solid black">
-                    <td colspan="6" align="left"><b><i>Nieuwe transacties af:</i></b></td>
+                    <td colspan="7" align="left"><b><i>Nieuwe transacties af:</i></b></td>
                 </tr>
                 <?php foreach($new_af_transacties as $new_af_transactie) {
                     ?>
                     <tr>
                         <td align="center"><?php echo $new_af_transactie->transacties_id ?></td>
+                        <td align="center"></td>
                         <td align="center"></td>
                         <td align="center"><?php echo Yii::$app->setupdatetime->displayFormat($new_af_transactie->datum, 'php:d-M-Y') ?></td>
                         <td align="left"><?php echo $new_af_transactie->getTypeText() . ': ' . $new_af_transactie->omschrijving ?></td>
@@ -137,6 +141,7 @@ use yii\helpers\Url;
                     <td align="center"></td>
                     <td align="center"></td>
                     <td align="center"></td>
+                    <td align="center"></td>
                     <td align="right">Subtotaal transacties af:</td>
                     <td class="blanktotal cost"></td>
                     <td class="blanktotal cost">-<?php echo number_format($sum_new_af_transacties, 2, ',', ' ') ?> &euro;</td>
@@ -145,14 +150,15 @@ use yii\helpers\Url;
 
             if (!empty($new_bij_transacties)) { ?>
                 <tr style="border: 1px solid black">
-                    <td colspan="6" align="left"><b><i>Nieuwe transacties bij:</i></b></td>
+                    <td colspan="7" align="left"><b><i>Nieuwe transacties bij:</i></b></td>
                 </tr>
                 <?php foreach($new_bij_transacties as $new_bij_transactie) {
                     ?>
                     <tr>
                         <td align="center"><?php echo $new_bij_transactie->transacties_id ?></td>
                         <td align="center"></td>
-                        <td align="center"><?php echo Yii::$app->setupdatetime->displayFormat($new_af_transactie->datum, 'php:d-M-Y') ?></td>
+                        <td align="center"></td>
+                        <td align="center"><?php echo Yii::$app->setupdatetime->displayFormat($new_bij_transactie->datum, 'php:d-M-Y') ?></td>
                         <td align="left"><?php echo $new_bij_transactie->getTypeText() . ': ' . $new_bij_transactie->omschrijving ?></td>
                         <td class="cost"><?php echo number_format($new_bij_transactie->bedrag, 2, ',', ' ') ?> &euro;</td>
                         <td class="cost"></td>
@@ -160,6 +166,7 @@ use yii\helpers\Url;
                     <?php
                 } ?>
                 <tr>
+                    <td align="center"></td>
                     <td align="center"></td>
                     <td align="center"></td>
                     <td align="center"></td>
@@ -171,7 +178,7 @@ use yii\helpers\Url;
 
             <!-- END ITEMS HERE -->
             <tr>
-                <td class="blanktotal" colspan="3" rowspan="2"></td>
+                <td class="blanktotal" colspan="4" rowspan="2"></td>
                 <td class="totals">Saldo vorige nota:</td>
                 <td class="totals"></td>
                 <td class="totals cost"><?php echo number_format($vorig_openstaand, 2, ',', ' ') ?> &euro;</td>
