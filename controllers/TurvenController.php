@@ -86,40 +86,66 @@ class TurvenController extends Controller
      */
     public function actionCreate()
     {
-        $model = new Turven();
+        $models = [new Turven()];
+        for($i = 1; $i < 5; $i++) {
+            $models[] = new Turven();
+        }
 
-        if ($model->load(Yii::$app->request->post())) {
-            if(empty($model->datum)) {
-                $prijslijst = Prijslijst::determinePrijslijstTurflijstIdBased($model->assortiment_id, $model->turflijst_id);
-            } else if(empty($model->turflijst_id)) {
-                $prijslijst = Prijslijst::determinePrijslijstDateBased($model->assortiment_id, $model->datum);
-            }
-            if(empty($prijslijst->prijs)) {
-                if(empty($model->turflijst_id)) {
-                    Yii::$app->session->setFlash('warning', Yii::t('app', 'Er is geen geldige turflijst voor dit item.'));
-                } else {
-//                    Yii::$app->session->setFlash('warning', Yii::t('app', 'Er is geen geldige prijs voor dit item.'));
-                }
-                return $this->render('create', [
-                    'model' => $model,
-                ]);
-            }
-            $model->totaal_prijs = number_format($model->aantal * $prijslijst->prijs, 2);
-            $model->prijslijst_id = $prijslijst->prijslijst_id;
-            $model->type = Turven::TYPE_turflijst;
-            $model->status = Turven::STATUS_gecontroleerd;
+        if (Turven::loadMultiple($models, Yii::$app->request->post())) {
+            $count = 0;
+            $dbTransaction = Yii::$app->db->beginTransaction();
+            try {
+                foreach ($models as $model) {
+                    if(empty($model->assortiment_id)) {
+                        continue;
+                    }
 
-            if($model->save()) {
-                return $this->redirect(['view', 'id' => $model->turven_id]);
-            } else {
-                foreach ($model->errors as $key => $error) {
-                    Yii::$app->session->setFlash('warning', Yii::t('app', 'Kan turven niet opslaan:' . $error[0]));
+                    if($count > 0) {
+                        $model->datum = $models[0]->datum;
+                        $model->turflijst_id = $models[0]->turflijst_id;
+                        $model->consumer_user_id = $models[0]->consumer_user_id;
+                        $model->turflijst_id = $models[0]->turflijst_id;
+                        $model->status = $models[0]->status;
+                    }
+
+                    if(empty($model->datum)) {
+                        $prijslijst = Prijslijst::determinePrijslijstTurflijstIdBased($model->assortiment_id, $model->turflijst_id);
+                    } else if(empty($model->turflijst_id)) {
+                        $prijslijst = Prijslijst::determinePrijslijstDateBased($model->assortiment_id, $model->datum);
+                    }
+
+                    if(!$prijslijst) {
+                        if(empty($model->turflijst_id)) {
+                            Yii::$app->session->setFlash('warning', Yii::t('app', 'Er is geen geldige turflijst voor ' . $model->getAssortiment()->one()->name));
+                        } else {
+                            Yii::$app->session->setFlash('warning', Yii::t('app', 'Er is geen geldige prijs voor ' . $model->getAssortiment()->one()->name));
+                        }
+                        return $this->render('create', [
+                            'models' => $models,
+                        ]);
+                    }
+
+                    $model->totaal_prijs = number_format($model->aantal * $prijslijst->prijs, 2);
+                    $model->prijslijst_id = $prijslijst->prijslijst_id;
+                    $model->type = Turven::TYPE_turflijst;
+                    $model->status = Turven::STATUS_gecontroleerd;
+
+                    if(!$model->save()) {
+                        $dbTransaction->rollBack();
+                        foreach ($model->errors as $key => $error) {
+                            Yii::$app->session->setFlash('warning', Yii::t('app', 'Kan turven niet opslaan:' . $error[0]));
+                        }
+                        return $this->render('create', ['models' => $models]);
+                    }
+                    $count++;
                 }
+                $dbTransaction->commit();
+            } catch (\Exception $e) {
+                Yii::$app->session->setFlash('warning', Yii::t('app', 'Je kunt deze turven niet verwijderen.'));
             }
-        } 
-        return $this->render('create', [
-            'model' => $model,
-        ]);
+            return $this->redirect(['index']);
+        }
+        return $this->render('create', ['models' => $models]);
     }
 
     /**

@@ -5,7 +5,6 @@
  */
 
 use yii\helpers\Html;
-use app\components\CustomAlertBlock;
 
 /**
 /* @var $this yii\web\View
@@ -23,7 +22,7 @@ use app\components\CustomAlertBlock;
                 <?php echo $this->render('/_alert') ?>
                 <?php echo $this->render('/_menu') ?>
                 <table class="table">
-                    <?php echo  $this->render('_form', ['model' => $model]); ?>
+                    <?php echo  $this->render('_form', ['models' => $models]); ?>
                 </table>
             </div>
         </div>
