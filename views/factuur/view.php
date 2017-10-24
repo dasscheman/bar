@@ -30,7 +30,20 @@ use yii\widgets\DetailView;
                     Yii::t('app', 'Delete'),
                     [ 'delete', 'id' => $model->factuur_id ],
                     [ 'class' => 'btn btn-danger', 'data-method'=>'post' ]
-                ); ?>
+                );
+                echo Html::a(
+                    Yii::t('app', 'Download factuur'),
+                    ['factuur/download', 'id' => $model->factuur_id],
+                    [
+                        'title' => Yii::t('app', 'Get pdf'),
+                        'class'=>'btn btn-primary',
+                        'target'=>'_blank',
+                    ]
+                );
+
+
+
+                ?>
                 <table class="table">
                     <?= DetailView::widget([
                         'model' => $model,
