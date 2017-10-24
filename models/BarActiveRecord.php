@@ -2,6 +2,7 @@
  
 namespace app\models;
 
+use Yii;
 use yii\db\ActiveRecord;
 use yii\behaviors\BlameableBehavior;
 
@@ -30,7 +31,7 @@ abstract class BarActiveRecord extends ActiveRecord
                     ActiveRecord::EVENT_BEFORE_INSERT => ['created_at', 'updated_at'],
                     ActiveRecord::EVENT_BEFORE_UPDATE => ['updated_at'],
                 ],
-                'value' => function() { return \Yii::$app->setupdatetime->storeFormat(time(), 'datetime'); },
+                'value' => function() { return Yii::$app->setupdatetime->storeFormat(time(), 'datetime'); },
             ],
         ];
     }

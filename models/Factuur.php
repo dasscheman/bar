@@ -139,7 +139,7 @@ class Factuur extends BarActiveRecord
         $this->naam = $username;
     }
 
-    public function updateAfterCreateFactuur($user, $new_transacties, $new_turven)
+    public function updateAfterCreateFactuur($user, $new_bij_transacties, $new_af_transacties, $new_turven)
     {
         $this->ontvanger = $user->id;
         $this->pdf = $this->naam . '.pdf';
@@ -148,24 +148,38 @@ class Factuur extends BarActiveRecord
         try {
             if(!$this->save()) {
                 $dbTransaction->rollBack();
-                var_dump(1);
                 return FALSE;
             }
-            foreach ($new_transacties as $transactie) {
-                $transactie->status = Transacties::STATUS_factuur_gegenereerd;
-                $transactie->factuur_id = $this->factuur_id;
-                if(!$transactie->save()) {
+            foreach ($new_bij_transacties as $new_bij_transactie) {
+                if (empty($new_bij_transactie)) {
+                    break;
+                }
+                $new_bij_transactie->status = Transacties::STATUS_factuur_gegenereerd;
+                $new_bij_transactie->factuur_id = $this->factuur_id;
+                if(!$new_bij_transactie->save()) {
                     $dbTransaction->rollBack();
-                    var_dump(2);
+                    return FALSE;
+                }
+            }
+            foreach ($new_af_transacties as $new_af_transactie) {
+                if (empty($new_af_transactie)) {
+                    break;
+                }
+                $new_af_transactie->status = Transacties::STATUS_factuur_gegenereerd;
+                $new_af_transactie->factuur_id = $this->factuur_id;
+                if(!$new_af_transactie->save()) {
+                    $dbTransaction->rollBack();
                     return FALSE;
                 }
             }
             foreach ($new_turven as $turf) {
+                if (empty($turf)) {
+                    break;
+                }
                 $turf->status = Turven::STATUS_factuur_gegenereerd;
                 $turf->factuur_id = $this->factuur_id;
                 if(!$turf->save()) {
                     $dbTransaction->rollBack();
-                    var_dump(4);
                     return FALSE;
                 }
             }
@@ -186,23 +200,69 @@ class Factuur extends BarActiveRecord
         $facturen = Factuur::find()->where('ISNULL(verzend_datum)')->all();
 
         foreach ($facturen as $factuur) {
-            if($aantal > 5) {
+            if($aantal > 50) {
                 return $aantal;
             }
             $user = User::findOne($factuur->ontvanger);
 
-            Yii::$app->mailer->htmlLayout('layouts/html');
+//            Yii::$app->mailer->htmlLayout('layouts/html');
             $message = Yii::$app->mailer->compose('mail', [
                     'usersName' => $user->username,
                 ])
                 ->setFrom('noreply@biologenkantoor.nl')
                 ->setTo($user->email)
                 ->setSubject('Nota Bison bar')
-                ->attach(Yii::getAlias('@webroot') . '/uploads/facture/' . $factuur->pdf);
-            if($message->send()) {
-                $aantal++;
+                ->attach('web/uploads/facture/' . $factuur->pdf);
+
+            if(!$message->send()) {
+                continue;
             }
+
+            $aantal++;
+            $factuur->updateAfterSendFactuur();
         }
         return $aantal;
+    }
+
+    public function updateAfterSendFactuur()
+    {
+        $this->verzend_datum = date("Y-m-d");
+
+        $transacties = $this->getTransacties()->all();
+        $turven = $this->getTurvens()->all();
+
+        $dbTransaction = Yii::$app->db->beginTransaction();
+        try {
+            foreach ($transacties as $transactie) {
+                if (empty($transactie)) {
+                    break;
+                }
+                $transactie->status = Transacties::STATUS_factuur_verzonden;
+                if(!$transactie->save()) {
+                    $dbTransaction->rollBack();
+                    return FALSE;
+                }
+            }
+
+            foreach ($turven as $turf) {
+                if (empty($turf)) {
+                    break;
+                }
+                $turf->status = Turven::STATUS_factuur_verzonden;
+                if(!$turf->save()) {
+                    $dbTransaction->rollBack();
+                    return FALSE;
+                }
+            }
+
+            if(!$this->save()) {
+                $dbTransaction->rollBack();
+                return FALSE;
+            }
+            $dbTransaction->commit();
+            return TRUE;
+        } catch (Exception $e) {
+            Yii::error($e->getMessage());
+        }
     }
 }
