@@ -10,7 +10,7 @@ use yii\helpers\Url;
 <!--<html>
 	<head></head>
 	<body>-->
-		Hallo <?php echo $mailUsersName; ?>,<br>
+		Hallo <?php echo $usersName; ?>,<br>
 
 		hierbij ontvangt de factuur voor de Bison bar. In de bijlage zie je een gedetaileerd overzicht.
 
