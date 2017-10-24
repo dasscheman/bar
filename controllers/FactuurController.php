@@ -98,75 +98,76 @@ class FactuurController extends Controller
             return $this->redirect(['index']);
         }
         foreach ($users as $user) {
-            if ($user->getNewAfTransactiesUser()->exists() || $user->getNewBijTransactiesUser()->exists() || $user->getNewTurvenUsers()->exists()) {
-                $factuur = new Factuur;
-                $factuur->setNewFactuurId();
-                $factuur->setNewFactuurName($user->username . '_' . $factuur->factuur_id);
+            if (!$user->getNewAfTransactiesUser()->exists() && !$user->getNewBijTransactiesUser()->exists() && !$user->getNewTurvenUsers()->exists()) {
+                continue;
+            }
+            $factuur = new Factuur;
+            $factuur->setNewFactuurId();
+            $factuur->setNewFactuurName($user->username . '_' . $factuur->factuur_id);
 
-                $new_bij_transacties = $user->getNewBijTransactiesUser()->all();
-                $new_af_transacties = $user->getNewAfTransactiesUser()->all();
-                $new_turven = $user->getNewTurvenUsers()->all();
-                $sum_new_bij_transacties = $user->getSumNewBijTransactiesUser();
-                $sum_new_af_transacties = $user->getSumNewAfTransactiesUser();
-                $sum_new_turven = $user->getSumNewTurvenUsers();
+            $new_bij_transacties = $user->getNewBijTransactiesUser()->all();
+            $new_af_transacties = $user->getNewAfTransactiesUser()->all();
+            $new_turven = $user->getNewTurvenUsers()->all();
+            $sum_new_bij_transacties = $user->getSumNewBijTransactiesUser();
+            $sum_new_af_transacties = $user->getSumNewAfTransactiesUser();
+            $sum_new_turven = $user->getSumNewTurvenUsers();
 
-                $vorig_openstaand =  $user->getSumOldBijTransactiesUser() -$user->getSumOldTurvenUsers() - $user->getSumOldAfTransactiesUser();
-                $nieuw_openstaand = $vorig_openstaand - $sum_new_turven + $sum_new_bij_transacties - $sum_new_af_transacties;
+            $vorig_openstaand =  $user->getSumOldBijTransactiesUser() - $user->getSumOldTurvenUsers() - $user->getSumOldAfTransactiesUser();
+            $nieuw_openstaand = $vorig_openstaand - $sum_new_turven + $sum_new_bij_transacties - $sum_new_af_transacties;
 
-                $content = $this->renderPartial('factuur_template',
-                    [
-                        'user' => $user,
-                        'new_bij_transacties' => $new_bij_transacties,
-                        'new_af_transacties' => $new_af_transacties,
-                        'new_turven' => $new_turven,
-                        'sum_new_bij_transacties' => $sum_new_bij_transacties,
-                        'sum_new_af_transacties' => $sum_new_af_transacties,
-                        'sum_new_turven' => $sum_new_turven,
-                        'vorig_openstaand' => $vorig_openstaand,
-                        'nieuw_openstaand' => $nieuw_openstaand
-                    ]);
+            $content = $this->renderPartial('factuur_template',
+                [
+                    'user' => $user,
+                    'new_bij_transacties' => $new_bij_transacties,
+                    'new_af_transacties' => $new_af_transacties,
+                    'new_turven' => $new_turven,
+                    'sum_new_bij_transacties' => $sum_new_bij_transacties,
+                    'sum_new_af_transacties' => $sum_new_af_transacties,
+                    'sum_new_turven' => $sum_new_turven,
+                    'vorig_openstaand' => $vorig_openstaand,
+                    'nieuw_openstaand' => $nieuw_openstaand
+                ]);
 
-                // setup kartik\mpdf\Pdf component
-                $pdf = new Pdf([
-                    // set to use core fonts only
-                    'mode' => Pdf::MODE_CORE,
-                    'format' => Pdf::FORMAT_A4,
-                    'marginLeft' => 20,
-                    'marginRight' => 15,
-                    'marginTop' => 48,
-                    'marginBottom' => 25,
-                    'marginHeader' => 10,
-                    'marginFooter' => 10,
-                    'defaultFont' => 'arial',
-                    'filename' => 'uploads/facture/'. $factuur->naam . '.pdf',
-                    // portrait orientation
-                    'orientation' => Pdf::FORMAT_A4,
-                    // stream to browser inline
-                    'destination' => Pdf::DEST_BROWSER,
-//                    'destination' => Pdf::DEST_FILE,
-                    // your html content input
-                    'content' => $content,
-                    // format content from your own css file if needed or use the
-                    // enhanced bootstrap css built by Krajee for mPDF formatting
-                    'cssFile' => 'css/factuur.css',
-                     // set mPDF properties on the fly
-                    'options' => [
-                        'title' => $factuur->naam . '.pdf',
-                        'subject' => $factuur->naam . '.pdf',
-                        //    'keywords' => 'krajee, grid, export, yii2-grid, pdf'
-                    ],
-               ]);
-                // return the pdf output as per the destination setting
-                if ($pdf->render() != '') {
-                    Yii::$app->session->setFlash('warning', Yii::t('app', 'Kan pdf niet genereren.'));
-                    return $this->redirect(['index']);
-                }
+            // setup kartik\mpdf\Pdf component
+            $pdf = new Pdf([
+                // set to use core fonts only
+                'mode' => Pdf::MODE_CORE,
+                'format' => Pdf::FORMAT_A4,
+                'marginLeft' => 20,
+                'marginRight' => 15,
+                'marginTop' => 48,
+                'marginBottom' => 25,
+                'marginHeader' => 10,
+                'marginFooter' => 10,
+                'defaultFont' => 'arial',
+                'filename' => 'uploads/facture/'. $factuur->naam . '.pdf',
+                // portrait orientation
+                'orientation' => Pdf::FORMAT_A4,
+                // stream to browser inline
+//                    'destination' => Pdf::DEST_BROWSER,
+                'destination' => Pdf::DEST_FILE,
+                // your html content input
+                'content' => $content,
+                // format content from your own css file if needed or use the
+                // enhanced bootstrap css built by Krajee for mPDF formatting
+                'cssFile' => 'css/factuur.css',
+                 // set mPDF properties on the fly
+                'options' => [
+                    'title' => $factuur->naam . '.pdf',
+                    'subject' => $factuur->naam . '.pdf',
+                    //    'keywords' => 'krajee, grid, export, yii2-grid, pdf'
+                ],
+            ]);
+            // return the pdf output as per the destination setting
+            if ($pdf->render() != '') {
+                Yii::$app->session->setFlash('warning', Yii::t('app', 'Kan pdf niet genereren.'));
+                return $this->redirect(['index']);
+            }
 
-                if(!$factuur->updateAfterCreateFactuur($facture_name, $user, $new_transacties, $new_turven))
-                {
-                    Yii::$app->session->setFlash('warning', Yii::t('app', 'Pdf is gegenereerd, maar record kunnen niet geopdate worden.'));
-                    return $this->redirect(['index']);
-                }
+            if(!$factuur->updateAfterCreateFactuur($user, $new_bij_transacties, $new_af_transacties, $new_turven))
+            {
+                Yii::$app->session->setFlash('warning', Yii::t('app', 'Pdf is gegenereerd, maar record kunnen niet geopdate worden.'));
+                return $this->redirect(['index']);
             }
         }
         return $this->redirect(['index']);
