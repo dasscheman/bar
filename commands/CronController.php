@@ -18,15 +18,6 @@ class CronController extends Controller {
     }
 
     public function actionFrequent() {
-        // called every two minutes
-        // */2 * * * * ~/sites/www/yii2/yii cron/frequent
-        $time_start = microtime(true);
-        $aantal = Factuur::verzendFacturen();
-        echo 'Er zijn '.($aantal).' emails verzonden';
-        echo "\n";
-        $time_end = microtime(true);
-        echo 'Processing for '.($time_end-$time_start).' seconds';
-        echo "\n\n";
     }
 
     public function actionHour() {
@@ -34,12 +25,23 @@ class CronController extends Controller {
     }
 
     public function actionDay() {
+        // called every two minutes
+        // */2 * * * * ~/sites/www/yii2/yii cron/day
+
+        $time_start = microtime(true);
+        $aantal = Factuur::verzendFacturen();
+        echo 'Er zijn '.($aantal).' emails verzonden';
+        echo "\n";
+        $time_end = microtime(true);
+        echo 'Processing for '.($time_end-$time_start).' seconds';
+        echo "\n\n";
+        
         $time_start = microtime(true);
         $turven_controleren = Turven::controleerStatusTurven();
-        echo 'Er zijn '.($turven_controleren).' emails verzonden';
+        echo 'Er zijn '.($turven_controleren).' turven die gecontroleerd moeten wordne';
         echo "\n";
         $transacties_controleren = Transacties::controleerStatusTransacties();
-        echo 'Er zijn '.($transacties_controleren).' emails verzonden';
+        echo 'Er zijn '.($transacties_controleren).' transacties die gecontroleerd moeten worden';
         echo "\n";
         $time_end = microtime(true);
         echo 'Processing for '.($time_end-$time_start).' seconds';

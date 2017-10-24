@@ -147,16 +147,20 @@ class Transacties extends BarActiveRecord
         $transacties = Transacties::find()
             ->where(['transacties.status' => Transacties::STATUS_ingevoerd])
             ->orWhere(['transacties.status' => Transacties::STATUS_tercontrole])
-            ->orWhere(['transacties.status' => Transacties::STATUS_factuur_gegenereerd])
-            ->all();
+            ->orWhere(['transacties.status' => Transacties::STATUS_factuur_gegenereerd]);
 
 //        Yii::$app->mailer->htmlLayout('layouts/html');
+        if(!$transacties->exists()){
+            return 0;
+        }
+
         $message = Yii::$app->mailer->compose('mail_status_transacties', [
-                'transacties' => $transacties,
+                'transacties' => $transacties->all(),
             ])
             ->setFrom('noreply@biologenkantoor.nl')
             ->setTo('daan@biologenkantoor.nl')
             ->setSubject('Status Transacties');
         $message->send();
+        return $transacties->count();
     }
 }

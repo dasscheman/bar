@@ -193,16 +193,19 @@ class Turven extends BarActiveRecord
         $turven = Turven::find()
             ->where(['turven.status' => Turven::STATUS_ingevoerd])
             ->orWhere(['turven.status' => Turven::STATUS_tercontrole])
-            ->orWhere(['turven.status' => Turven::STATUS_factuur_gegenereerd])
-            ->all();
+            ->orWhere(['turven.status' => Turven::STATUS_factuur_gegenereerd]);
 
+        if (!$turven->exists() ) {
+            return 0;
+        }
 //        Yii::$app->mailer->htmlLayout('layouts/html');
         $message = Yii::$app->mailer->compose('mail_status_turven', [
-                'turven' => $turven,
+                'turven' => $turven->all(),
             ])
             ->setFrom('noreply@biologenkantoor.nl')
             ->setTo('daan@biologenkantoor.nl')
             ->setSubject('Status Turven');
         $message->send();
+        return $turven->count();
     }
 }
