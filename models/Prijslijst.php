@@ -105,9 +105,13 @@ class Prijslijst extends BarActiveRecord
             ->where('assortiment_id =:assoritment_id')
             ->andWhere(['<=','from', $datum])
             ->andWhere(['>=','to', $datum])
-            ->params([':assoritment_id' => $assortiment_id])
-            ->one();
-        return $prijstlijst;
+            ->params([':assoritment_id' => $assortiment_id]);
+
+        if(!$prijstlijst->exists()) {
+            return FALSE;
+        }
+            
+        return $prijstlijst->one();
     }
 
     public function determinePrijslijstTurflijstIdBased($assortiment_id, $turflijst_id) {
@@ -115,6 +119,9 @@ class Prijslijst extends BarActiveRecord
         $prijslijst_start = self::determinePrijslijstDateBased($assortiment_id, $turflijst->start_datum);
         $prijslijst_end = self::determinePrijslijstDateBased($assortiment_id, $turflijst->end_datum);
 
+        if (empty($prijslijst_start->prijslijst_id) || empty($prijslijst_end->prijslijst_id)) {
+            return FALSE;
+        }
         if ($prijslijst_start->prijslijst_id != $prijslijst_end->prijslijst_id) {
             return FALSE;
         }
