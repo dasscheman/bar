@@ -307,7 +307,7 @@ class User extends BaseUser
     public function getSumOldTurvenUsers()
     {
         return $this->hasMany(Turven::className(), ['consumer_user_id' => 'id'])
-            ->where(['turven.status' => Turven::STATUS_factuur_gegenereerd])
+            ->where(['turven.status' => Turven::STATUS_factuur_verzonden])
             ->sum('totaal_prijs');
     }
 
