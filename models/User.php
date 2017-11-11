@@ -1,6 +1,7 @@
 <?php
 
 namespace app\models;
+use yii\helpers\ArrayHelper;
 
 use dektrium\user\models\User as BaseUser;
 
@@ -160,15 +161,14 @@ class User extends BaseUser
      */
     public function getNewBijTransactiesUser()
     {
+        $test  = BetalingType::find()->where(['bijaf'=>BetalingType::BIJAF_bij])->asArray()->all();
+        $ids = ArrayHelper::getColumn($test, 'type_id');
+
         return $this->hasMany(Transacties::className(), ['transacties_user_id' => 'id'])
             ->where('transacties.status =:status')
-            ->andWhere('transacties.type =:bank_bij OR transacties.type =:contant_bij OR transacties.type =:pin OR transacties.type =:inkoop')
+            ->andWhere(['in', 'transacties.type_id', $ids])
             ->params([
-                ':status' =>Transacties::STATUS_gecontroleerd,
-                ':bank_bij' =>Transacties::TYPE_bankoverschrijving_bij,
-                ':contant_bij' =>Transacties::TYPE_contant_bij,
-                ':pin' =>Transacties::TYPE_pin,
-                ':inkoop' =>Transacties::TYPE_inkoop
+                ':status' =>Transacties::STATUS_gecontroleerd
             ]);
     }
 
@@ -177,14 +177,14 @@ class User extends BaseUser
      */
     public function getNewAfTransactiesUser()
     {
+        $test  = BetalingType::find()->where(['bijaf'=>BetalingType::BIJAF_af])->asArray()->all();
+        $ids = ArrayHelper::getColumn($test, 'type_id');
+
         return $this->hasMany(Transacties::className(), ['transacties_user_id' => 'id'])
             ->where('transacties.status =:status')
-            ->andWhere('transacties.type =:bank_af OR transacties.type =:contant_af OR transacties.type =:statiegeld')
+            ->andWhere(['in', 'transacties.type_id', $ids])
             ->params([
-                ':status' =>Transacties::STATUS_gecontroleerd,
-                ':bank_af' =>Transacties::TYPE_bankoverschrijving_af,
-                ':contant_af' =>Transacties::TYPE_contant_af,
-                ':statiegeld' =>Transacties::TYPE_statiegeld
+                ':status' =>Transacties::STATUS_gecontroleerd
             ]);
     }
 
@@ -193,15 +193,14 @@ class User extends BaseUser
      */
     public function getSumNewBijTransactiesUser()
     {
+        $test  = BetalingType::find()->where(['bijaf'=>BetalingType::BIJAF_bij])->asArray()->all();
+        $ids = ArrayHelper::getColumn($test, 'type_id');
+
         return $this->hasMany(Transacties::className(), ['transacties_user_id' => 'id'])
             ->where('transacties.status =:status')
-            ->andWhere('transacties.type =:bank_bij OR transacties.type =:contant_bij OR transacties.type =:pin OR transacties.type =:inkoop')
+            ->andWhere(['in', 'transacties.type_id', $ids])
             ->params([
-                ':status' =>Transacties::STATUS_gecontroleerd,
-                ':bank_bij' =>Transacties::TYPE_bankoverschrijving_bij,
-                ':contant_bij' =>Transacties::TYPE_contant_bij,
-                ':pin' =>Transacties::TYPE_pin,
-                ':inkoop' =>Transacties::TYPE_inkoop
+                ':status' =>Transacties::STATUS_gecontroleerd
             ])
             ->sum('bedrag');
     }
@@ -211,14 +210,14 @@ class User extends BaseUser
      */
     public function getSumNewAfTransactiesUser()
     {
+        $test  = BetalingType::find()->where(['bijaf'=>BetalingType::BIJAF_af])->asArray()->all();
+        $ids = ArrayHelper::getColumn($test, 'type_id');
+
         return $this->hasMany(Transacties::className(), ['transacties_user_id' => 'id'])
             ->where('transacties.status =:status')
-            ->andWhere('transacties.type =:bank_af OR transacties.type =:contant_af OR transacties.type =:statiegeld')
+            ->andWhere(['in', 'transacties.type_id', $ids])
             ->params([
-                ':status' =>Transacties::STATUS_gecontroleerd,
-                ':bank_af' =>Transacties::TYPE_bankoverschrijving_af,
-                ':contant_af' =>Transacties::TYPE_contant_af,
-                ':statiegeld' =>Transacties::TYPE_statiegeld
+                ':status' =>Transacties::STATUS_gecontroleerd
             ])
             ->sum('bedrag');
     }
@@ -228,15 +227,14 @@ class User extends BaseUser
      */
     public function getSumOldBijTransactiesUser()
     {
+        $test  = BetalingType::find()->where(['bijaf'=>BetalingType::BIJAF_bij])->asArray()->all();
+        $ids = ArrayHelper::getColumn($test, 'type_id');
+
         return $this->hasMany(Transacties::className(), ['transacties_user_id' => 'id'])
             ->where('transacties.status =:status')
-            ->andWhere('transacties.type =:bank_bij OR transacties.type =:contant_bij OR transacties.type =:pin OR transacties.type =:inkoop')
+            ->andWhere(['in', 'transacties.type_id', $ids])
             ->params([
-                ':status' =>Transacties::STATUS_factuur_verzonden,
-                ':bank_bij' =>Transacties::TYPE_bankoverschrijving_bij,
-                ':contant_bij' =>Transacties::TYPE_contant_bij,
-                ':pin' =>Transacties::TYPE_pin,
-                ':inkoop' =>Transacties::TYPE_inkoop
+                ':status' =>Transacties::STATUS_factuur_verzonden
             ])
             ->sum('bedrag');
     }
@@ -246,14 +244,14 @@ class User extends BaseUser
      */
     public function getSumOldAfTransactiesUser()
     {
+        $test  = BetalingType::find()->where(['bijaf'=>BetalingType::BIJAF_af])->asArray()->all();
+        $ids = ArrayHelper::getColumn($test, 'type_id');
+
         return $this->hasMany(Transacties::className(), ['transacties_user_id' => 'id'])
             ->where('transacties.status =:status')
-            ->andWhere('transacties.type =:bank_af OR transacties.type =:contant_af OR transacties.type =:statiegeld')
+            ->andWhere(['in', 'transacties.type_id', $ids])
             ->params([
-                ':status' =>Transacties::STATUS_factuur_verzonden,
-                ':bank_af' =>Transacties::TYPE_bankoverschrijving_af,
-                ':contant_af' =>Transacties::TYPE_contant_af,
-                ':statiegeld' =>Transacties::TYPE_statiegeld
+                ':status' =>Transacties::STATUS_factuur_verzonden
             ])
             ->sum('bedrag');
     }

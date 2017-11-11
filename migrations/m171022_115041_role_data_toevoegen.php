@@ -26,8 +26,8 @@ class m171022_115041_role_data_toevoegen extends Migration
 
     public function safeDown()
     {
-        $this->truncateTable('auth_item');
         $this->truncateTable('auth_item_child');
+        $this->truncateTable('auth_item');
     }
 
     /*
