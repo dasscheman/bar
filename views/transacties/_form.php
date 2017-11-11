@@ -16,6 +16,7 @@ use yii\helpers\Html;
 use app\models\User;
 use yii\helpers\ArrayHelper;
 use kartik\widgets\DatePicker;
+use app\models\BetalingType;
 ?>
 
 <div class="transacties-form">
@@ -33,11 +34,11 @@ use kartik\widgets\DatePicker;
     ]);
     echo $form->field($model, 'omschrijving')->textInput();
     echo $form->field($model, 'bedrag')->widget(MaskMoney::classname());
-    echo $form->field($model, 'type')->widget(Select2::className(), [
-        'data' => $model->getTypeOptions(),
-        'options' => [
-            'placeholder' => Yii::t('app', 'Selecteer type betaling'),
-            'id' => 'type'
+    echo $form->field($model, 'type_id')->widget(Select2::className(), [
+        'data' => ArrayHelper::map(BetalingType::find()->all(), 'type_id', 'omschrijving'),
+        'options'   => [
+            'placeholder' => Yii::t('app', 'Selecteer betaling type'),
+            'id' => 'type_id',
         ],
     ]);
     echo $form->field($model, 'status')->widget(Select2::className(), [

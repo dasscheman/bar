@@ -130,7 +130,7 @@ use yii\helpers\Url;
                         <td align="center"></td>
                         <td align="center"></td>
                         <td align="center"><?php echo Yii::$app->setupdatetime->displayFormat($new_af_transactie->datum, 'php:d-M-Y') ?></td>
-                        <td align="left"><?php echo $new_af_transactie->getTypeText() . ': ' . $new_af_transactie->omschrijving ?></td>
+                        <td align="left"><?php echo $new_af_transactie->getType()->one()->omschrijving . ': ' . $new_af_transactie->omschrijving ?></td>
                         <td class="cost">-<?php echo number_format($new_af_transactie->bedrag, 2, ',', ' ') ?> &euro;</td>
                         <td class="cost"></td>
                     </tr>
@@ -158,7 +158,7 @@ use yii\helpers\Url;
                         <td align="center"></td>
                         <td align="center"></td>
                         <td align="center"><?php echo Yii::$app->setupdatetime->displayFormat($new_bij_transactie->datum, 'php:d-M-Y') ?></td>
-                        <td align="left"><?php echo $new_bij_transactie->getTypeText() . ': ' . $new_bij_transactie->omschrijving ?></td>
+                        <td align="left"><?php echo $new_bij_transactie->getType()->one()->omschrijving . ': ' . $new_bij_transactie->omschrijving ?></td>
                         <td class="cost"><?php echo number_format($new_bij_transactie->bedrag, 2, ',', ' ') ?> &euro;</td>
                         <td class="cost"></td>
                     </tr>

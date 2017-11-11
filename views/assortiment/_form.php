@@ -4,14 +4,14 @@
  * Bar App de Bison by daan@biolgenkantoor.nl
  */
 
+use kartik\select2\Select2;
+use yii\widgets\ActiveForm;
+use yii\helpers\Html;
+
 /**
  * @var $this  yii\web\View
  * @var $model app\models\Assortiment
  */
-
-use kartik\select2\Select2;
-use yii\widgets\ActiveForm;
-use yii\helpers\Html;
 
 ?>
 

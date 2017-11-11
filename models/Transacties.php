@@ -13,7 +13,7 @@ use app\models\BarActiveRecord;
  * @property integer $factuur_id
  * @property string $omschrijving
  * @property string $bedrag
- * @property integer $type
+ * @property integer $type_id
  * @property integer $status
  * @property string $datum
  * @property string $created_at
@@ -21,20 +21,15 @@ use app\models\BarActiveRecord;
  * @property string $updated_at
  * @property integer $updated_by
  *
+ * @property Inkoop[] $inkoops
  * @property Factuur $factuur
+ * @property BetalingType $type
  * @property User $createdBy
  * @property User $updatedBy
  * @property User $transactiesUser
  */
 class Transacties extends BarActiveRecord
 {
-    const TYPE_bankoverschrijving_bij = 1;
-    const TYPE_bankoverschrijving_af = 2;
-    const TYPE_statiegeld = 3;
-    const TYPE_contant_bij = 4;
-    const TYPE_contant_af = 5;
-    const TYPE_pin = 6;
-    const TYPE_inkoop = 7;
 
     /**
      * @inheritdoc
@@ -50,12 +45,13 @@ class Transacties extends BarActiveRecord
     public function rules()
     {
         return [
-            [['transacties_user_id', 'bedrag', 'type', 'status', 'datum'], 'required'],
-            [['transacties_user_id', 'factuur_id', 'type', 'status', 'created_by', 'updated_by'], 'integer'],
+            [['transacties_user_id', 'bedrag', 'type_id', 'status', 'datum'], 'required'],
+            [['transacties_user_id', 'factuur_id', 'type_id', 'status', 'created_by', 'updated_by'], 'integer'],
             [['bedrag'], 'number'],
             [['datum', 'created_at', 'updated_at'], 'safe'],
             [['omschrijving'], 'string', 'max' => 255],
             [['factuur_id'], 'exist', 'skipOnError' => true, 'targetClass' => Factuur::className(), 'targetAttribute' => ['factuur_id' => 'factuur_id']],
+            [['type_id'], 'exist', 'skipOnError' => true, 'targetClass' => BetalingType::className(), 'targetAttribute' => ['type_id' => 'type_id']],
             [['created_by'], 'exist', 'skipOnError' => true, 'targetClass' => User::className(), 'targetAttribute' => ['created_by' => 'id']],
             [['updated_by'], 'exist', 'skipOnError' => true, 'targetClass' => User::className(), 'targetAttribute' => ['updated_by' => 'id']],
             [['transacties_user_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::className(), 'targetAttribute' => ['transacties_user_id' => 'id']],
@@ -73,8 +69,9 @@ class Transacties extends BarActiveRecord
             'factuur_id' => Yii::t('app', 'Factuur ID'),
             'omschrijving' => 'Omschrijving',
             'bedrag' => 'Bedrag',
-            'type' => 'Type',
-            'status' => 'Status Betaling',
+            'type_id' => 'Type ID',
+            'status' => 'Status',
+            'datum' => 'Datum',
             'created_at' => 'Created At',
             'created_by' => 'Created By',
             'updated_at' => 'Updated At',
@@ -82,12 +79,28 @@ class Transacties extends BarActiveRecord
         ];
     }
  
-    /** 
-     * @return \yii\db\ActiveQuery 
-     */ 
-    public function getFactuur() 
-    { 
-        return $this->hasOne(Factuur::className(), ['factuur_id' => 'factuur_id']); 
+    /**
+      * @return \yii\db\ActiveQuery
+      */
+    public function getInkoops()
+    {
+        return $this->hasMany(Inkoop::className(), ['transacties_id' => 'transacties_id']);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getFactuur()
+    {
+        return $this->hasOne(Factuur::className(), ['factuur_id' => 'factuur_id']);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getType()
+    {
+        return $this->hasOne(BetalingType::className(), ['type_id' => 'type_id']);
     }
 
     /**
@@ -113,34 +126,6 @@ class Transacties extends BarActiveRecord
     {
         return $this->hasOne(User::className(), ['id' => 'transacties_user_id']);
     }
-
-    /**
-     * Retrieves a list of statussen
-     * @return array an array of available statussen.
-     */
-    public function getTypeOptions() {
-        return [
-            self::TYPE_bankoverschrijving_bij => Yii::t('app', 'Bankoverschrijving bij'),
-            self::TYPE_bankoverschrijving_af => Yii::t('app', 'Bankoverschrijving af'),
-            self::TYPE_statiegeld => Yii::t('app', 'In ontvangst genomen statiegeld'),
-            self::TYPE_contant_bij => Yii::t('app', 'Contant bij'),
-            self::TYPE_contant_af => Yii::t('app', 'Contant af'),
-            self::TYPE_pin => Yii::t('app', 'Pin'),
-            self::TYPE_inkoop => Yii::t('app', 'Inkooop gedaan'),
-        ];
-    }
-
-    /**
-     * @return string the status text display
-     */
-    public function getTypeText() {
-        $typeOptions = $this->typeOptions;
-        if (isset($typeOptions[$this->type])) {
-            return $typeOptions[$this->type];
-        }
-        return "Onbekende type ({$this->type})";
-    }
-
 
     public function controleerStatusTransacties()
     {

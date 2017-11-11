@@ -50,10 +50,10 @@ $toolbar = FALSE;
                             ],
                             'omschrijving',
                             'bedrag',
-                            'type' => [
-                                'attribute' => 'type',
+                            'type_id' => [
+                                'attribute' => 'type_id',
                                 'value' => function($model){
-                                    return $model->getTypeText();
+                                    return $model->getType()->one()->omschrijving;
                                 },
                             ],
                             'status' => [

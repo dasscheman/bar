@@ -5,12 +5,12 @@ namespace app\models;
 use Yii;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
-use app\models\Transacties;
+use app\models\BetalingType;
 
 /**
- * TransactiesSearch represents the model behind the search form about `app\models\Transacties`.
+ * BetalingTypeSearch represents the model behind the search form about `app\models\BetalingType`.
  */
-class TransactiesSearch extends Transacties
+class BetalingTypeSearch extends BetalingType
 {
     /**
      * @inheritdoc
@@ -18,9 +18,8 @@ class TransactiesSearch extends Transacties
     public function rules()
     {
         return [
-            [['transacties_id', 'transacties_user_id', 'type_id', 'status', 'created_by', 'updated_by'], 'integer'],
+            [['type_id', 'bijaf', 'created_by', 'updated_by'], 'integer'],
             [['omschrijving', 'created_at', 'updated_at'], 'safe'],
-            [['bedrag'], 'number'],
         ];
     }
 
@@ -42,7 +41,7 @@ class TransactiesSearch extends Transacties
      */
     public function search($params)
     {
-        $query = Transacties::find();
+        $query = BetalingType::find();
 
         // add conditions that should always apply here
 
@@ -60,11 +59,8 @@ class TransactiesSearch extends Transacties
 
         // grid filtering conditions
         $query->andFilterWhere([
-            'transacties_id' => $this->transacties_id,
-            'transacties_user_id' => $this->transacties_user_id,
-            'bedrag' => $this->bedrag,
             'type_id' => $this->type_id,
-            'status' => $this->status,
+            'bijaf' => $this->bijaf,
             'created_at' => $this->created_at,
             'created_by' => $this->created_by,
             'updated_at' => $this->updated_at,

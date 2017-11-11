@@ -18,8 +18,8 @@ class m170402_152145_init_transacties_table extends Migration
             'factuur_id'            => $this->integer(),
             'omschrijving'          => $this->string(),
             'bedrag'                => $this->money()->notNull(),
-            'type'                  => $this->integer(11)->notNull(),
-            'status'       => $this->integer(11)->notNull(),
+            'type_id'               => $this->integer(11)->notNull(),
+            'status'                => $this->integer(11)->notNull(),
             'datum'                 => $this->dateTime()->notNull(),
             'created_at'            => $this->dateTime(),
             'created_by'            => $this->integer(11),
@@ -31,6 +31,15 @@ class m170402_152145_init_transacties_table extends Migration
         /**********************************************************************/
         /* add foreignkays
         /**********************************************************************/
+
+        $this->addForeignKey(
+            "fk_betaling_type_user",
+            "transacties",
+            "type_id",
+            "betaling_type",
+            "type_id",
+            "RESTRICT",
+            "CASCADE");
 
         $this->addForeignKey(
             "fk_transacties_user",

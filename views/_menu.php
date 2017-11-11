@@ -68,6 +68,14 @@ echo Nav::widget([
 //                ['label' => 'Something else here', 'url' => '#'],
             ],
         ],
+        [
+            'label' => 'Betaling typs',
+            'items' => [
+                ['label' => 'Overzicht', 'url' => ['/betaling-type/index']],
+                ['label' => 'Betaling type maken', 'url' => ['/betaling-type/create']],
+//                ['label' => 'Something else here', 'url' => '#'],
+            ],
+        ],
 //        [
 //            'label' => Yii::t('app', 'Facturen'),
 //            'url' => ['/factuur/index'],

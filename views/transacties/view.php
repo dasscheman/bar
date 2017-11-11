@@ -40,7 +40,7 @@ use yii\widgets\DetailView;
                             'transacties_user_id',
                             'omschrijving',
                             'bedrag',
-                            'type',
+                            'type_id',
                             'status',
                             'created_at',
                             'created_by',
