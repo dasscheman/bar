@@ -5,6 +5,7 @@
 
 use kartik\grid\GridView;
 use yii\helpers\Html;
+use yii\widgets\Pjax;
 
 /**
  * @var \yii\web\View $this
@@ -31,69 +32,69 @@ $toolbar = FALSE;
                 <?= Html::encode('Transacties overzicht') ?>
             </div>
             <div class="panel-body">
-                <?php echo $this->render('/_alert') ?>
-                <?php echo $this->render('/_menu') ?>
-                <table class="table">
-                    <?php
-                    echo GridView::widget([
-                        'id' => 'kv-grid-transacties',
-                        'dataProvider' => $dataProvider,
-                        'filterModel'  => $searchModel,
-                        'layout'       => "{items}\n{pager}",
-                        'columns' => [
-                            'transacties_id',
-                            'transacties_user_id' => [
-                                'attribute' => 'transacties_user_id',
-                                'value' => function($model){
-                                    return $model->getTransactiesUser()->one()->username;
-                                },
-                            ],
-                            'omschrijving',
-                            'bedrag',
-                            'type_id' => [
-                                'attribute' => 'type_id',
-                                'value' => function($model){
-                                    return $model->getType()->one()->omschrijving;
-                                },
-                            ],
-                            'status' => [
-                                'attribute' => 'status',
-                                'value' => function($model){
-                                    return $model->getStatusText();
-                                },
-                            ],
-                            [
-                                'attribute'=>'factuur_id',
-                                'format' => 'raw',
-                                'value'=>function ($model) {
-                                    return empty($model->factuur_id)?'':Html::a('Factuur ' . $model->factuur_id, ['factuur/view', 'id' => $model->factuur_id]);
-                                 },
-                             ],
+                <?php 
+                echo $this->render('/_alert');
+                echo $this->render('/_menu');
+                Pjax::begin();
+                echo GridView::widget([
+                    'id' => 'kv-grid-transacties',
+                    'dataProvider' => $dataProvider,
+                    'filterModel'  => $searchModel,
+                    'layout'       => "{items}\n{pager}",
+                    'columns' => [
+                        'transacties_id',
+                        'transacties_user_id' => [
+                            'attribute' => 'transacties_user_id',
+                            'value' => function($model){
+                                return $model->getTransactiesUser()->one()->username;
+                            },
+                        ],
+                        'omschrijving',
+                        'bedrag',
+                        'type_id' => [
+                            'attribute' => 'type_id',
+                            'value' => function($model){
+                                return $model->getType()->one()->omschrijving;
+                            },
+                        ],
+                        'status' => [
+                            'attribute' => 'status',
+                            'value' => function($model){
+                                return $model->getStatusText();
+                            },
+                        ],
+                        [
+                            'attribute'=>'factuur_id',
+                            'format' => 'raw',
+                            'value'=>function ($model) {
+                                return empty($model->factuur_id)?'':Html::a('Factuur ' . $model->factuur_id, ['factuur/view', 'id' => $model->factuur_id]);
+                             },
+                         ],
 //                            'created_by',
 //                            'created_at',
 //                            'updated_by',
 //                            'updated_at',
-                            [
-                                'class' => 'yii\grid\ActionColumn',
-                                'template' => '{update} {view} {delete}',
-                            ],
+                        [
+                            'class' => 'yii\grid\ActionColumn',
+                            'template' => '{update} {view} {delete}',
                         ],
+                    ],
 
-                        'toolbar'=> $toolbar,
-                        'containerOptions'=>['style'=>'overflow: auto'], // only set when $responsive = false
-                        'responsiveWrap' => $responsiveWrap,
-                        'headerRowOptions'=>['class'=>'kartik-sheet-style'],
-                        'filterRowOptions'=>['class'=>'kartik-sheet-style'],
-                        'pjax'=>true, // pjax is set to always true for this demo
-                        'bordered'=>$bordered,
-                        'striped'=>$striped,
-                        'condensed'=>$condensed,
-                        'responsive'=>$responsive,
-                        'hover'=>$hover,
-                        'showPageSummary'=>$pageSummary,
-                        'persistResize'=>false,
-                    ]); ?>
-                </table>
+                    'toolbar'=> $toolbar,
+                    'containerOptions'=>['style'=>'overflow: auto'], // only set when $responsive = false
+                    'responsiveWrap' => $responsiveWrap,
+                    'headerRowOptions'=>['class'=>'kartik-sheet-style'],
+                    'filterRowOptions'=>['class'=>'kartik-sheet-style'],
+                    'pjax'=>true, // pjax is set to always true for this demo
+                    'bordered'=>$bordered,
+                    'striped'=>$striped,
+                    'condensed'=>$condensed,
+                    'responsive'=>$responsive,
+                    'hover'=>$hover,
+                    'showPageSummary'=>$pageSummary,
+                    'persistResize'=>false,
+                ]);
+                Pjax::end();?>
             </div>
         </div>
     </div>

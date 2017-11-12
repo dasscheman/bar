@@ -6,6 +6,7 @@
 
 use kartik\grid\GridView;
 use yii\helpers\Html;
+use yii\widgets\Pjax;
 
 /* @var $this yii\web\View */
 /* @var $searchModel app\models\BetalingTypeSearch */
@@ -32,28 +33,28 @@ $toolbar = FALSE;
             </div>
             <div class="panel-body">
 
-                <?php echo $this->render('/_alert');
-                echo $this->render('/_menu') ?>
-                <table class="table">
-                    <?php
-                    echo GridView::widget([
-                        'dataProvider' => $dataProvider,
-                        'filterModel' => $searchModel,
-                        'columns' => [
-                            ['class' => 'yii\grid\SerialColumn'],
+                <?php
+                echo $this->render('/_alert');
+                echo $this->render('/_menu');
+                Pjax::begin();
+                echo GridView::widget([
+                    'dataProvider' => $dataProvider,
+                    'filterModel' => $searchModel,
+                    'columns' => [
+                        ['class' => 'yii\grid\SerialColumn'],
 
-                            'type_id',
-                            'omschrijving',
-                            'bijaf',
-                            'created_at',
-                            'created_by',
-                            // 'updated_at',
-                            // 'updated_by',
+                        'type_id',
+                        'omschrijving',
+                        'bijaf',
+                        'created_at',
+                        'created_by',
+                        // 'updated_at',
+                        // 'updated_by',
 
-                            ['class' => 'yii\grid\ActionColumn'],
-                        ],
-                    ]); ?>
-                </table>
+                        ['class' => 'yii\grid\ActionColumn'],
+                    ],
+                ]);
+                Pjax::end();?>
             </div>
         </div>
     </div>
