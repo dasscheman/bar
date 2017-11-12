@@ -12,7 +12,8 @@ use app\models\BarActiveRecord;
  * @property integer $inkoop_id
  * @property integer $assortiment_id
  *
-* @property integer $transacties_id
+ * @property integer $transacties_id
+ * @property integer $bon_id
  * @property string $datum
  * @property integer $inkoper_user_id
  * @property double $volume
@@ -26,6 +27,7 @@ use app\models\BarActiveRecord;
  * @property integer $updated_by
  *
  * @property Assortiment $assortiment
+ * @property Bonnen $bon
  * @property User $createdBy
  *
 * @property Transacties $transacties
@@ -56,11 +58,12 @@ class Inkoop extends BarActiveRecord
     {
         return [
             [['assortiment_id', 'transacties_id', 'datum', 'totaal_prijs', 'type', 'status'], 'required'],
-            [['assortiment_id', 'transacties_id', 'inkoper_user_id', 'aantal', 'type', 'status', 'created_by', 'updated_by'], 'integer'],
+            [['assortiment_id', 'transacties_id', 'bon_id', 'inkoper_user_id', 'aantal', 'type', 'status', 'created_by', 'updated_by'], 'integer'],
             [['datum', 'created_at', 'updated_at'], 'safe'],
             [['volume', 'totaal_prijs'], 'number'],
             [['transacties_id'], 'exist', 'skipOnError' => true, 'targetClass' => Transacties::className(), 'targetAttribute' => ['transacties_id' => 'transacties_id']],
             [['assortiment_id'], 'exist', 'skipOnError' => true, 'targetClass' => Assortiment::className(), 'targetAttribute' => ['assortiment_id' => 'assortiment_id']],
+            [['bon_id'], 'exist', 'skipOnError' => true, 'targetClass' => Bonnen::className(), 'targetAttribute' => ['bon_id' => 'bon_id']],
             [['created_by'], 'exist', 'skipOnError' => true, 'targetClass' => User::className(), 'targetAttribute' => ['created_by' => 'id']],
             [['updated_by'], 'exist', 'skipOnError' => true, 'targetClass' => User::className(), 'targetAttribute' => ['updated_by' => 'id']],
             [['inkoper_user_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::className(), 'targetAttribute' => ['inkoper_user_id' => 'id']],
@@ -76,6 +79,7 @@ class Inkoop extends BarActiveRecord
             'inkoop_id' => 'Inkoop ID',
             'assortiment_id' => 'Assortiment ID',
             'transacties_id' => 'Transacties ID',
+            'bon_id' => 'Bon ID',
             'datum' => 'Datum',
             'inkoper_user_id' => 'Inkoper User ID',
             'volume' => 'Volume',
@@ -96,6 +100,14 @@ class Inkoop extends BarActiveRecord
     public function getTransacties()
     {
         return $this->hasOne(Transacties::className(), ['transacties_id' => 'transacties_id']);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getBon()
+    {
+        return $this->hasOne(Bonnen::className(), ['bon_id' => 'bon_id']);
     }
 
     /**

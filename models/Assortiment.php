@@ -22,6 +22,7 @@ use app\models\BarActiveRecord;
  *
  * @property User $createdBy
  * @property User $updatedBy
+ * @property Inkoop[] $inkoops
  * @property Prijstlijst[] $prijstlijsts
  * @property Turven[] $turvens
  */
@@ -112,6 +113,22 @@ class Assortiment extends BarActiveRecord
     {
         return $this->hasMany(Turven::className(), ['assortiment_id' => 'assortiment_id']);
     }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getInkoops()
+    {
+        return $this->hasMany(Inkoop::className(), ['assortiment_id' => 'assortiment_id']);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getPrijslijsts()
+    {
+        return $this->hasMany(Prijslijst::className(), ['assortiment_id' => 'assortiment_id']);
+    } 
 
     /**
      * @inheritdoc

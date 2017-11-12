@@ -15,6 +15,7 @@ class m170402_152145_init_transacties_table extends Migration
         $this->createTable('transacties', [
             'transacties_id'        => $this->primaryKey(),
             'transacties_user_id'   => $this->integer(11)->notNull(),
+            'bon_id'                => $this->integer(),
             'factuur_id'            => $this->integer(),
             'omschrijving'          => $this->string(),
             'bedrag'                => $this->money()->notNull(),
@@ -51,11 +52,20 @@ class m170402_152145_init_transacties_table extends Migration
             "CASCADE");
 
         $this->addForeignKey(
-            'fk-transacties-factuur_id',
+            'fk_transacties_factuur_id',
             'transacties',
             'factuur_id',
             'factuur',
             'factuur_id',
+            'CASCADE'
+        );
+
+        $this->addForeignKey(
+            'fk_transacties_bonnen_id',
+            'transacties',
+            'bon_id',
+            'bonnen',
+            'bon_id',
             'CASCADE'
         );
 

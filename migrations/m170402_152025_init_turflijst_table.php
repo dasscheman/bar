@@ -2,7 +2,7 @@
 
 use yii\db\Migration;
 
-class m170402_152015_init_turflijst_table extends Migration
+class m170402_152025_init_turflijst_table extends Migration
 {
     public function up()
     {

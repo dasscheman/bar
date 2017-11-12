@@ -14,7 +14,8 @@ class m171020_082504_init_inkoop_table extends Migration
         $this->createTable('inkoop', [
             'inkoop_id'         => $this->primaryKey(),
             'assortiment_id'    => $this->integer(11)->notNull(),
-            'transacties_id'    => $this->integer(11)->notNull(),
+            'transacties_id'    => $this->integer(11),
+            'bon_id'            => $this->integer(11),
             'datum'             => $this->dateTime()->notNull(),
             'inkoper_user_id'	=> $this->integer(11),
             'volume'            => $this->float(2),
@@ -41,6 +42,15 @@ class m171020_082504_init_inkoop_table extends Migration
             "assortiment_id",
             "RESTRICT",
             "CASCADE");
+
+        $this->addForeignKey(
+            'fk_inkoop_bonnen_id',
+            'inkoop',
+            'bon_id',
+            'bonnen',
+            'bon_id',
+            'CASCADE'
+        );
 
         $this->addForeignKey(
             "fk_inkoop_transacties",

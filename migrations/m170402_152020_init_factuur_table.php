@@ -2,7 +2,7 @@
 
 use yii\db\Migration;
 
-class m170402_152015_init_factuur_table extends Migration
+class m170402_152020_init_factuur_table extends Migration
 {
     public function up()
     {

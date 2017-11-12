@@ -10,6 +10,7 @@ use app\models\BarActiveRecord;
  *
  * @property integer $transacties_id
  * @property integer $transacties_user_id
+ * @property integer $bon_id
  * @property integer $factuur_id
  * @property string $omschrijving
  * @property string $bedrag
@@ -24,6 +25,7 @@ use app\models\BarActiveRecord;
  * @property Inkoop[] $inkoops
  * @property Factuur $factuur
  * @property BetalingType $type
+ * @property Bonnen $bon
  * @property User $createdBy
  * @property User $updatedBy
  * @property User $transactiesUser
@@ -46,12 +48,13 @@ class Transacties extends BarActiveRecord
     {
         return [
             [['transacties_user_id', 'bedrag', 'type_id', 'status', 'datum'], 'required'],
-            [['transacties_user_id', 'factuur_id', 'type_id', 'status', 'created_by', 'updated_by'], 'integer'],
+            [['transacties_user_id', 'bon_id', 'factuur_id', 'type_id', 'status', 'created_by', 'updated_by'], 'integer'],
             [['bedrag'], 'number'],
             [['datum', 'created_at', 'updated_at'], 'safe'],
             [['omschrijving'], 'string', 'max' => 255],
             [['factuur_id'], 'exist', 'skipOnError' => true, 'targetClass' => Factuur::className(), 'targetAttribute' => ['factuur_id' => 'factuur_id']],
             [['type_id'], 'exist', 'skipOnError' => true, 'targetClass' => BetalingType::className(), 'targetAttribute' => ['type_id' => 'type_id']],
+            [['bon_id'], 'exist', 'skipOnError' => true, 'targetClass' => Bonnen::className(), 'targetAttribute' => ['bon_id' => 'bon_id']],
             [['created_by'], 'exist', 'skipOnError' => true, 'targetClass' => User::className(), 'targetAttribute' => ['created_by' => 'id']],
             [['updated_by'], 'exist', 'skipOnError' => true, 'targetClass' => User::className(), 'targetAttribute' => ['updated_by' => 'id']],
             [['transacties_user_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::className(), 'targetAttribute' => ['transacties_user_id' => 'id']],
@@ -70,6 +73,7 @@ class Transacties extends BarActiveRecord
             'omschrijving' => 'Omschrijving',
             'bedrag' => 'Bedrag',
             'type_id' => 'Type ID',
+            'bon_id' => 'Bon ID',
             'status' => 'Status',
             'datum' => 'Datum',
             'created_at' => 'Created At',
@@ -86,6 +90,14 @@ class Transacties extends BarActiveRecord
     {
         return $this->hasMany(Inkoop::className(), ['transacties_id' => 'transacties_id']);
     }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getBon()
+    {
+        return $this->hasOne(Bonnen::className(), ['bon_id' => 'bon_id']);
+    } 
 
     /**
      * @return \yii\db\ActiveQuery
