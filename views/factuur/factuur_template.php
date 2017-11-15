@@ -111,8 +111,9 @@ use yii\helpers\Url;
                     <td align="center"></td>
                     <td align="center"></td>
                     <td align="center"></td>
-                    <td align="right">Subtotaal turven:</td>
                     <td align="center"></td>
+                    <td class="blanktotal cost" align="right">Subtotaal turven:</td>
+                    <td class="blanktotal cost"></td>
                     <td class="blanktotal cost">-<?php echo number_format($sum_new_turven, 2, ',', ' ') ?> &euro;</td>
                 </tr>
             <?php
@@ -141,7 +142,7 @@ use yii\helpers\Url;
                     <td align="center"></td>
                     <td align="center"></td>
                     <td align="center"></td>
-                    <td align="right">Subtotaal transacties af:</td>
+                    <td class="blanktotal cost" align="right">Subtotaal transacties af:</td>
                     <td class="blanktotal cost"></td>
                     <td class="blanktotal cost">-<?php echo number_format($sum_new_af_transacties, 2, ',', ' ') ?> &euro;</td>
                 </tr> <?php
@@ -169,7 +170,7 @@ use yii\helpers\Url;
                     <td align="center"></td>
                     <td align="center"></td>
                     <td align="center"></td>
-                    <td align="right">Subtotaal transacties bij:</td>
+                    <td class="blanktotal cost" align="right">Subtotaal transacties bij:</td>
                     <td class="blanktotal cost"></td>
                     <td class="blanktotal cost"><?php echo number_format($sum_new_bij_transacties, 2, ',', ' ') ?> &euro;</td>
                 </tr>
