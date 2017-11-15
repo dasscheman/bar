@@ -38,7 +38,7 @@ AppAsset::register($this);
     echo Nav::widget([
         'options' => ['class' => 'navbar-nav navbar-right'],
         'items' => [
-            ['label' => 'Turflijst', 'url' => ['/turven/barinvoer']],
+//            ['label' => 'Turflijst', 'url' => ['/turven/barinvoer']],
             ['label' => 'Beheerder',
                 'items' => [
                     [
@@ -55,8 +55,8 @@ AppAsset::register($this);
 //                    ],
                 ]
             ],
-            ['label' => 'About', 'url' => ['/site/about']],
-            ['label' => 'Contact', 'url' => ['/site/contact']],
+//            ['label' => 'About', 'url' => ['/site/about']],
+//            ['label' => 'Contact', 'url' => ['/site/contact']],
             Yii::$app->user->isGuest ? (
                 ['label' => 'Login', 'url' => ['/user/security/login']]
             ) : (
