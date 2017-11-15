@@ -286,7 +286,8 @@ class User extends BaseUser
     public function getNewTurvenUsers()
     {
         return $this->hasMany(Turven::className(), ['consumer_user_id' => 'id'])
-            ->where(['turven.status' => Turven::STATUS_gecontroleerd]);
+            ->where(['turven.status' => Turven::STATUS_gecontroleerd])
+            ->orderBy(['datum'=>SORT_DESC]);
     }
 
     /**
@@ -406,6 +407,23 @@ class User extends BaseUser
         return $this->password === $this->hashPassword($password);
     }
 
+    /**
+     * Get the assortiment name based on id
+     *
+     * @param int $id Assortiment id.
+     * @return string Name of assortiment.
+     */
+    public function getUserDisplayName($id) {
+        if (($model = self::findOne($id)) !== null) {
+            $name = $model->profile->voornaam;
+            if (isset($model->profile->tussenvoegsel)) {
+                $name .= ' ' . $model->profile->tussenvoegsel;
+            }
+            $name .= ' ' . $model->profile->achternaam;
+            return $name;
+        }
 
+        return FALSE;
+    }
 
 }

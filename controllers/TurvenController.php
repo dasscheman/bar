@@ -4,7 +4,9 @@ namespace app\controllers;
 
 use Yii;
 use dektrium\user\filters\AccessRule;
+use app\models\User;
 use app\models\Assortiment;
+use app\models\AssortimentSearch;
 use app\models\Turven;
 use app\models\TurvenSearch;
 use yii\web\Controller;
@@ -12,6 +14,7 @@ use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
 use yii\filters\AccessControl;
 use app\models\Prijslijst;
+use app\models\UserSearch;
 
 /**
  * TurvenController implements the CRUD actions for Turven model.
@@ -36,11 +39,11 @@ class TurvenController extends Controller
                     'class' => AccessRule::className(),
                 ],
                 // We will override the default rule config with the new AccessRule class
-                'only' => ['index', 'view', 'create', 'update', 'delete'],
+                'only' => ['index', 'view', 'create', 'update', 'delete', 'barinvoer'],
                 'rules' => [
                     [
                         'allow' => TRUE,
-                        'actions' => ['index', 'delete', 'create', 'update', 'view'],
+                        'actions' => ['index', 'delete', 'create', 'update', 'view', 'barinvoer'],
                         'roles' =>  ['admin', 'beheerder'],
                     ],
                     [
@@ -64,6 +67,68 @@ class TurvenController extends Controller
         return $this->render('index', [
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
+        ]);
+    }
+
+    /**
+     * Lists all Turven models.
+     * @return mixed
+     */
+    public function actionBarinvoer()
+    {
+        $count = [];
+        if(Yii::$app->request->get('user_id') !== NULL) {
+            $user_id = Yii::$app->request->get('user_id');
+            if(Yii::$app->request->get('count') !== NULL) {
+                $count = Yii::$app->request->get('count');
+            }
+
+            if(Yii::$app->request->get('assortiment_id') !== NULL) {
+                $assortiment_id = Yii::$app->request->get('assortiment_id');
+                if (isset($count[$assortiment_id])) {
+                    $count[$assortiment_id]++;
+                } else {
+                    $count[$assortiment_id] = 1;
+                }
+            }
+
+            if(Yii::$app->request->get('actie') === 'opslaan' &&
+                $count !== NULL &&
+                Turven::saveBarInvoer($user_id, $count)){
+                $message = 'Volgende turven zijn toegevoegd bij ' . User::getUserDisplayName($user_id) . ': ';
+                $i = 0;
+                foreach ($count as $assort_id => $aantal) {
+                    if ($i === 0) {
+                        $message .= $aantal . ' ' . Assortiment::getAssortimentName($assort_id);
+                    } else {
+                        $message .= ', ' . $aantal . ' ' . Assortiment::getAssortimentName($assort_id);
+                    }
+                    $i++;
+                }
+                Yii::$app->session->setFlash('warning', $message);
+                $count = [];
+
+                $assortSearchModel = new AssortimentSearch();
+                $assortDataProvider = $assortSearchModel->search(Yii::$app->request->queryParams);
+                return $this->redirect(['barinvoer']);
+            }
+            $assortSearchModel = new AssortimentSearch();
+            $assortDataProvider = $assortSearchModel->search(Yii::$app->request->queryParams);
+
+            return $this->render('bar-invoer', [
+                'assortSearchModel' => $assortSearchModel,
+                'assortDataProvider' => $assortDataProvider,
+                'count' => $count,
+                'user_id' => $user_id,
+                'model' => User::findOne($user_id)
+            ]);
+        }
+        $userSearchModel = new UserSearch();
+        $userDataProvider = $userSearchModel->search(Yii::$app->request->queryParams);
+
+        return $this->render('/user/gebruiker-selecteren', [
+            'userSearchModel' => $userSearchModel,
+            'userDataProvider' => $userDataProvider,
         ]);
     }
 
@@ -104,7 +169,6 @@ class TurvenController extends Controller
                         $model->datum = $models[0]->datum;
                         $model->turflijst_id = $models[0]->turflijst_id;
                         $model->consumer_user_id = $models[0]->consumer_user_id;
-                        $model->turflijst_id = $models[0]->turflijst_id;
                         $model->status = $models[0]->status;
                     }
 
@@ -141,7 +205,7 @@ class TurvenController extends Controller
                 }
                 $dbTransaction->commit();
             } catch (\Exception $e) {
-                Yii::$app->session->setFlash('warning', Yii::t('app', 'Je kunt deze turven niet verwijderen.'));
+                Yii::$app->session->setFlash('warning', Yii::t('app', 'Je kunt deze turven niet toevoegen.') . $e);
             }
             return $this->redirect(['index']);
         }

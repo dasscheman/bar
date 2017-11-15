@@ -4,6 +4,7 @@ namespace app\models;
 
 use Yii;
 use app\models\BarActiveRecord;
+use app\models\Assortiment;
 
 /**
  * This is the model class for table "turven".
@@ -36,12 +37,6 @@ class Turven extends BarActiveRecord
 {
     const TYPE_turflijst = 1;
     const TYPE_losse_verkoop = 2;
-
-//    const STATUS_ingevoerd = 1;
-//    const STATUS_gecontroleerd = 2;
-//    const STATUS_tercontrole = 3;
-//    const STATUS_factuur_gegenereerd = 4;
-//    const STATUS_factuur_verzonden = 5;
 
     /**
      * @inheritdoc
@@ -207,5 +202,43 @@ class Turven extends BarActiveRecord
             ->setSubject('Status Turven');
         $message->send();
         return $turven->count();
+    }
+
+    public function saveBarInvoer($user_id, $invoer_items)
+    {
+        $date = Yii::$app->setupdatetime->storeFormat(time(), 'datetime');
+        $dbTransaction = Yii::$app->db->beginTransaction();
+        try {
+            foreach($invoer_items as $assort_id => $count) {
+                $model = new Turven();
+                $model->assortiment_id = $assort_id;
+                $model->aantal = $count;
+                $model->datum = $date;
+                $model->consumer_user_id = $user_id;
+                $model->status = TURVEN::STATUS_gecontroleerd;
+                $model->type = TURVEN::TYPE_losse_verkoop;
+
+                $prijslijst = Prijslijst::determinePrijslijstDateBased($assort_id, $date);
+                if(!$prijslijst) {
+                    Yii::$app->session->setFlash('warning', Yii::t('app', 'Er is geen geldige prijs voor ' . Assortiment::getAssortimentName($assort_id)));
+                    return FALSE;
+                }
+                $model->prijslijst_id = $prijslijst->prijslijst_id;
+                $model->totaal_prijs = number_format($count * $prijslijst->prijs, 2);
+
+                if(!$model->save()) {
+                    $dbTransaction->rollBack();
+                    foreach ($model->errors as $key => $error) {
+                        Yii::$app->session->setFlash('warning', Yii::t('app', 'Kan turven niet opslaan:' . $error[0]));
+                    }
+                    return FALSE;
+                }
+            }
+            $dbTransaction->commit();
+        } catch (\Exception $e) {
+            Yii::$app->session->setFlash('warning', Yii::t('app', 'Je kunt deze turven niet toevoegen.') . $e);
+            return FALSE;
+        }
+        return TRUE ;
     }
 }

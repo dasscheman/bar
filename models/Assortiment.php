@@ -184,4 +184,18 @@ class Assortiment extends BarActiveRecord
         }
         return "unknown status ({$this->status})";
     }
+
+    /**
+     * Get the assortiment name based on id
+     *
+     * @param int $id Assortiment id.
+     * @return string Name of assortiment.
+     */
+    public function getAssortimentName($id) {
+        if (($model = self::findOne($id)) !== null) {
+            return $model->name;
+        }
+        
+        return FALSE;
+    }
 }

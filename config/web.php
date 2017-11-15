@@ -93,9 +93,9 @@ $config = [
             'modelMap' => [
                 'User' => 'app\models\User',
             ],
-//            'controllerMap' => [
-//                'admin' => 'app\controllers\user\AdminController'
-//            ],
+            'controllerMap' => [
+                'admin' => 'app\controllers\user\AdminController'
+            ],
             'admins' => ['beheerder', 'daan']
         ],
         'rbac' => 'dektrium\rbac\RbacWebModule',

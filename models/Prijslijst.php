@@ -116,6 +116,9 @@ class Prijslijst extends BarActiveRecord
 
     public function determinePrijslijstTurflijstIdBased($assortiment_id, $turflijst_id) {
         $turflijst = Turflijst::findOne($turflijst_id);
+        if(empty($turflijst)) {
+            return FALSE;
+        }
         $prijslijst_start = self::determinePrijslijstDateBased($assortiment_id, $turflijst->start_datum);
         $prijslijst_end = self::determinePrijslijstDateBased($assortiment_id, $turflijst->end_datum);
 
