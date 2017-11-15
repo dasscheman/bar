@@ -214,6 +214,9 @@ class Factuur extends BarActiveRecord
                 ->setSubject('Nota Bison bar')
                 ->attach('web/uploads/facture/' . $factuur->pdf);
 
+            if(!empty($user->profile->public_email)) {
+                $message->setCc($user->profile->public_email);
+            }
             if(!$message->send()) {
                 continue;
             }
