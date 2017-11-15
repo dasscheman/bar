@@ -69,6 +69,14 @@ echo Nav::widget([
             ],
         ],
         [
+            'label' => 'Bonnen',
+            'items' => [
+                ['label' => 'Overzicht', 'url' => ['/bonnen/index']],
+                ['label' => 'Bon invoeren', 'url' => ['/bonnen/create']],
+//                ['label' => 'Something else here', 'url' => '#'],
+            ],
+        ],
+        [
             'label' => 'Betaling typs',
             'items' => [
                 ['label' => 'Overzicht', 'url' => ['/betaling-type/index']],
