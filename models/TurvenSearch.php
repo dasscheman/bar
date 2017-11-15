@@ -12,6 +12,7 @@ use app\models\Turven;
  */
 class TurvenSearch extends Turven
 {
+    public $displayname;
     /**
      * @inheritdoc
      */
@@ -20,7 +21,7 @@ class TurvenSearch extends Turven
         return [
             [['turven_id', 'turflijst_id', 'assortiment_id', 'prijslijst_id', 'consumer_user_id', 'aantal', 'type', 'status', 'datum', 'created_by', 'updated_by'], 'integer'],
             [['totaal_prijs'], 'number'],
-            [['created_at', 'updated_at'], 'safe'],
+            [['created_at', 'updated_at', 'displayname'], 'safe'],
         ];
     }
 
@@ -45,11 +46,17 @@ class TurvenSearch extends Turven
         $query = Turven::find();
 
         // add conditions that should always apply here
-
+        $query->joinWith(['consumerUser.profile']);
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
+            'sort'=> ['defaultOrder' => ['updated_at'=>SORT_DESC]],
         ]);
 
+        $dataProvider->sort->attributes['displayname'] =
+        [
+            'asc' => ['profile.name' => SORT_ASC],
+            'desc' => ['profile.name' => SORT_DESC],
+        ];
         $this->load($params);
 
         if (!$this->validate()) {
@@ -65,7 +72,6 @@ class TurvenSearch extends Turven
             'assortiment_id' => $this->assortiment_id,
             'prijslijst_id' => $this->prijslijst_id,
             'datum' => $this->datum,
-            'consumer_user_id' => $this->consumer_user_id,
             'aantal' => $this->aantal,
             'totaal_prijs' => $this->totaal_prijs,
             'type' => $this->type,
@@ -75,6 +81,7 @@ class TurvenSearch extends Turven
             'updated_at' => $this->updated_at,
             'updated_by' => $this->updated_by,
         ]);
+        $query->andFilterWhere(['like', 'profile.name', $this->displayname]);
 
         return $dataProvider;
     }

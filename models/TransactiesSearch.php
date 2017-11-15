@@ -12,6 +12,7 @@ use app\models\Transacties;
  */
 class TransactiesSearch extends Transacties
 {
+    public $displayname;
     /**
      * @inheritdoc
      */
@@ -19,7 +20,7 @@ class TransactiesSearch extends Transacties
     {
         return [
             [['transacties_id', 'transacties_user_id', 'type_id', 'status', 'created_by', 'updated_by'], 'integer'],
-            [['omschrijving', 'created_at', 'updated_at'], 'safe'],
+            [['omschrijving', 'created_at', 'updated_at', 'datum', 'displayname'], 'safe'],
             [['bedrag'], 'number'],
         ];
     }
@@ -45,11 +46,17 @@ class TransactiesSearch extends Transacties
         $query = Transacties::find();
 
         // add conditions that should always apply here
-
+        $query->joinWith(['transactiesUser.profile']);
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
+            'sort'=> ['defaultOrder' => ['updated_at'=>SORT_DESC]],
         ]);
 
+        $dataProvider->sort->attributes['displayname'] =
+        [
+            'asc' => ['profile.name' => SORT_ASC],
+            'desc' => ['profile.name' => SORT_DESC],
+        ];
         $this->load($params);
 
         if (!$this->validate()) {
@@ -61,7 +68,6 @@ class TransactiesSearch extends Transacties
         // grid filtering conditions
         $query->andFilterWhere([
             'transacties_id' => $this->transacties_id,
-            'transacties_user_id' => $this->transacties_user_id,
             'bedrag' => $this->bedrag,
             'type_id' => $this->type_id,
             'status' => $this->status,
@@ -71,7 +77,9 @@ class TransactiesSearch extends Transacties
             'updated_by' => $this->updated_by,
         ]);
 
-        $query->andFilterWhere(['like', 'omschrijving', $this->omschrijving]);
+        $query->andFilterWhere(['like', 'omschrijving', $this->omschrijving])
+              ->andFilterWhere(['like', 'datum', $this->datum])
+              ->andFilterWhere(['like', 'profile.name', $this->displayname]);
 
         return $dataProvider;
     }
