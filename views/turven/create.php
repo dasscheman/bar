@@ -22,7 +22,7 @@ use yii\helpers\Html;
                 <?php echo $this->render('/_alert') ?>
                 <?php echo $this->render('/_menu') ?>
                 <table class="table">
-                    <?php echo  $this->render('_form', ['models' => $models]); ?>
+                    <?php echo  $this->render('_formmultiple', ['models' => $models]); ?>
                 </table>
             </div>
         </div>

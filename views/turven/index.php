@@ -42,12 +42,18 @@ $toolbar = FALSE;
                     'filterModel'  => $searchModel,
                     'layout'       => "{items}\n{pager}",
                     'columns' => [
-                        'turven_id',
+                        'displayname' => [
+                            'attribute' => 'displayname',
+                            'value' => function($model){
+                                return $model->getConsumerUser()->one()->username;
+                            },
+                        ],
+//                        'turven_id',
                         [
                             'attribute'=>'turflijst_id',
                             'format' => 'raw',
                             'value'=>function ($model) {
-                                 return Html::a('Turfijst ' . $model->turflijst_id, ['turflijst/view', 'id' => $model->turflijst_id]);
+                                 return Html::a('Turfijst ' . $model->turflijst->volgnummer, ['turflijst/view', 'id' => $model->turflijst_id]);
                              },
                         ],
                         [
@@ -70,12 +76,6 @@ $toolbar = FALSE;
                                  return Html::a('Prijslijst ' . $model->prijslijst_id, ['prijslijst/view', 'id' => $model->prijslijst_id]);
                              },
                          ],
-                        'consumer_user_id' => [
-                            'attribute' => 'consumer_user_id',
-                            'value' => function($model){
-                                return $model->getConsumerUser()->one()->username;
-                            },
-                        ],
                         'aantal',
                         'totaal_prijs',
                         'type' => [

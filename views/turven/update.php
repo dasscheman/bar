@@ -36,10 +36,9 @@ use yii\widgets\DetailView;
                 <?php echo $this->render('/_alert') ?>
                 <?php echo $this->render('/_menu') ?>
                 <table class="table">
-
-<?= $this->render('_form', [
-    'model' => $model,
-]) ?>
+                    <?= $this->render('_form', [
+                        'model' => $model,
+                    ]) ?>
                 </table>
             </div>
         </div>
