@@ -218,7 +218,7 @@ class FactuurController extends Controller
         try {
 
             foreach($factuur->getTransacties()->all() as $transactie) {
-                $transactie->status = Transacties::STATUS_tercontrole;
+                $transactie->status = Transacties::STATUS_gecontroleerd;
                 $transactie->factuur_id = NULL;
                 if(!$transactie->save()) {
                     $dbTransaction->rollBack();
@@ -226,7 +226,7 @@ class FactuurController extends Controller
                 }
             }
             foreach($factuur->getTurvens()->all() as $turf) {
-                $turf->status = Turven::STATUS_tercontrole;
+                $turf->status = Turven::STATUS_gecontroleerd;
                 $turf->factuur_id = NULL;
                 if(!$turf->save()) {
                     $dbTransaction->rollBack();
