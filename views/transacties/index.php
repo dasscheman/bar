@@ -42,13 +42,14 @@ $toolbar = FALSE;
                     'filterModel'  => $searchModel,
                     'layout'       => "{items}\n{pager}",
                     'columns' => [
-                        'transacties_id',
-                        'transacties_user_id' => [
-                            'attribute' => 'transacties_user_id',
+                        'displayname' => [
+                            'attribute' => 'displayname',
                             'value' => function($model){
                                 return $model->getTransactiesUser()->one()->username;
                             },
                         ],
+//                                    'displayname',
+                        'datum',
                         'omschrijving',
                         'bedrag',
                         'type_id' => [
