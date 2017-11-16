@@ -206,12 +206,13 @@ class Factuur extends BarActiveRecord
             $user = User::findOne($factuur->ontvanger);
 
 //            Yii::$app->mailer->htmlLayout('layouts/html');
-            $message = Yii::$app->mailer->compose('mail', [
-                    'usersName' => $user->username,
+            $message = Yii::$app->mailer->compose('mail_controle_nota', [
+                    'usersProfiel' => $user->profile,
                 ])
-                ->setFrom('noreply@biologenkantoor.nl')
+                ->setFrom('bar@debison.nl')
+                ->setBcc('daan@biolgenkantoor.nl')
                 ->setTo($user->email)
-                ->setSubject('Nota Bison bar')
+                ->setSubject('Controle nota Bison bar')
                 ->attach('web/uploads/facture/' . $factuur->pdf);
 
             if(!empty($user->profile->public_email)) {
