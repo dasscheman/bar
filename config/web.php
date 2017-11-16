@@ -96,7 +96,7 @@ $config = [
             'controllerMap' => [
                 'admin' => 'app\controllers\user\AdminController'
             ],
-            'admins' => ['beheerder', 'daan']
+            'admins' => ['daan']
         ],
         'rbac' => 'dektrium\rbac\RbacWebModule',
         'gridview' =>  [

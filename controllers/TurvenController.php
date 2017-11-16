@@ -43,8 +43,13 @@ class TurvenController extends Controller
                 'rules' => [
                     [
                         'allow' => TRUE,
-                        'actions' => ['index', 'delete', 'create', 'update', 'view', 'barinvoer'],
+                        'actions' => ['index', 'delete', 'create', 'update', 'view'],
                         'roles' =>  ['admin', 'beheerder'],
+                    ],
+                    [
+                        'allow' => TRUE,
+                        'actions' => ['barinvoer'],
+                        'roles' =>  ['gebruiker'],
                     ],
                     [
                         'allow' => FALSE,  // deny all users
