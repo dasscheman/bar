@@ -53,7 +53,10 @@ $toolbar = FALSE;
                             'attribute'=>'turflijst_id',
                             'format' => 'raw',
                             'value'=>function ($model) {
-                                 return Html::a('Turfijst ' . $model->turflijst->volgnummer, ['turflijst/view', 'id' => $model->turflijst_id]);
+                                if(!empty($model->turflijst->volgnummer)) {
+                                    return Html::a('Turfijst ' . $model->turflijst->volgnummer, ['turflijst/view', 'id' => $model->turflijst_id]);
+                                }
+                                return '';
                              },
                         ],
                         [
