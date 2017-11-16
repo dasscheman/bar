@@ -102,7 +102,7 @@ use yii\helpers\Url;
                         <td class="cost">-<?php echo number_format($new_turf->getPrijslijst()->one()->prijs, 2, ',', ' ') ?> &euro;</td>
                         <td align="center"><?php echo empty($new_turf->datum)? $new_turf->turflijst->volgnummer: Yii::$app->setupdatetime->displayFormat($new_turf->datum, 'php:d-M-Y') ?></td>
                         <td align="left"><?php echo $new_turf->getAssortiment()->one()->name ?></td>
-                        <td align="right" class="cost">-<?php echo number_format($new_turf->totaal_prijs, 2, ',', ' ') ?> &euro;</td>
+                        <td class="cost">-<?php echo number_format($new_turf->totaal_prijs, 2, ',', ' ') ?> &euro;</td>
                         <td class="cost"></td>
                     </tr>
                     <?php
