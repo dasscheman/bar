@@ -231,11 +231,8 @@ class User extends BaseUser
         $ids = ArrayHelper::getColumn($test, 'type_id');
 
         return $this->hasMany(Transacties::className(), ['transacties_user_id' => 'id'])
-            ->where('transacties.status =:status')
+            ->where(['>=', 'transacties.status',  Transacties::STATUS_factuur_gegenereerd])
             ->andWhere(['in', 'transacties.type_id', $ids])
-            ->params([
-                ':status' =>Transacties::STATUS_factuur_verzonden
-            ])
             ->sum('bedrag');
     }
 
@@ -248,11 +245,8 @@ class User extends BaseUser
         $ids = ArrayHelper::getColumn($test, 'type_id');
 
         return $this->hasMany(Transacties::className(), ['transacties_user_id' => 'id'])
-            ->where('transacties.status =:status')
+            ->where(['>=', 'transacties.status', Transacties::STATUS_factuur_gegenereerd])
             ->andWhere(['in', 'transacties.type_id', $ids])
-            ->params([
-                ':status' =>Transacties::STATUS_factuur_verzonden
-            ])
             ->sum('bedrag');
     }
 
@@ -306,7 +300,7 @@ class User extends BaseUser
     public function getSumOldTurvenUsers()
     {
         return $this->hasMany(Turven::className(), ['consumer_user_id' => 'id'])
-            ->where(['turven.status' => Turven::STATUS_factuur_verzonden])
+            ->where(['>=', 'turven.status',  Transacties::STATUS_factuur_gegenereerd])
             ->sum('totaal_prijs');
     }
 
