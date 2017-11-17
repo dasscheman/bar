@@ -217,12 +217,9 @@ class Factuur extends BarActiveRecord
             if(!empty($user->profile->public_email)) {
                 $message->setCc($user->profile->public_email);
             }
-            if(!$message->send()) {
-             
+            if(!$message->send()) {             
                 continue;
             }
-                var_dump($message);
-                return;
             $aantal++;
             $factuur->updateAfterSendFactuur();
         }
