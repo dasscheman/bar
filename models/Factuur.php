@@ -218,6 +218,8 @@ class Factuur extends BarActiveRecord
                 $message->setCc($user->profile->public_email);
             }
             if(!$message->send()) {
+                var_dump($mailer->getLogger());
+                return;
                 continue;
             }
 
