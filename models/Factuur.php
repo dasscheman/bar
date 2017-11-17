@@ -210,7 +210,7 @@ class Factuur extends BarActiveRecord
                     'usersProfiel' => $user->profile,
                 ])
                 ->setFrom('bar@debison.nl')
-                ->setBcc('daan@biolgenkantoor.nl')
+                ->setBcc('daan@biologenkantoor.nl')
                 ->setTo($user->email)
                 ->setSubject('Controle nota Bison bar')
                 ->attach(Yii::$app->basePath . '/web/uploads/facture/' . $factuur->pdf);
