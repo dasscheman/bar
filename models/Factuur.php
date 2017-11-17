@@ -213,7 +213,7 @@ class Factuur extends BarActiveRecord
                 ->setBcc('daan@biolgenkantoor.nl')
                 ->setTo($user->email)
                 ->setSubject('Controle nota Bison bar')
-                ->attach(Yii::getAlias('@web//uploads/facture/' . $factuur->pdf));
+                ->attach(Yii::getAlias('@web/uploads/facture/' . $factuur->pdf));
             if(!empty($user->profile->public_email)) {
                 $message->setCc($user->profile->public_email);
             }
