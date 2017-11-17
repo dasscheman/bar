@@ -148,6 +148,13 @@ class Transacties extends BarActiveRecord
 
 //        Yii::$app->mailer->htmlLayout('layouts/html');
         if(!$transacties->exists()){
+            $message = Yii::$app->mailer->compose('mail_okey', [
+                    'type' => 'Transacties',
+                ])
+                ->setFrom('noreply@biologenkantoor.nl')
+                ->setTo('daan@biologenkantoor.nl')
+                ->setSubject('Status Transacties');
+            $message->send();
             return 0;
         }
 

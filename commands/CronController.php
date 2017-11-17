@@ -33,15 +33,15 @@ class CronController extends Controller {
         echo 'Er zijn '.($aantal).' emails verzonden';
         echo "\n";
         $time_end = microtime(true);
-        echo 'Processing for '.($time_end-$time_start).' seconds';
+        echo date("l jS \of F Y h:i:s A") . ': Processing for '.($time_end-$time_start).' seconds';
         echo "\n\n";
         
         $time_start = microtime(true);
         $turven_controleren = Turven::controleerStatusTurven();
-        echo 'Er zijn '.($turven_controleren).' turven die gecontroleerd moeten wordne';
+        echo date("l jS \of F Y h:i:s A") . ': Er zijn '.($turven_controleren).' turven die gecontroleerd moeten wordne';
         echo "\n";
         $transacties_controleren = Transacties::controleerStatusTransacties();
-        echo 'Er zijn '.($transacties_controleren).' transacties die gecontroleerd moeten worden';
+        echo date("l jS \of F Y h:i:s A") . ': Er zijn '.($transacties_controleren).' transacties die gecontroleerd moeten worden';
         echo "\n";
         $time_end = microtime(true);
         echo 'Processing for '.($time_end-$time_start).' seconds';

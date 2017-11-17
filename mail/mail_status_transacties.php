@@ -21,8 +21,8 @@ use yii\helpers\Url;
             <tr>
                 <td><?php echo $transactie->transacties_id ?></td>
                 <td><?php echo $transactie->transacties_user_id ?></td>
-                <td><?php echo $transactie->type ?></td>
-                <td><?php echo $transactie->status_betaling ?></td>
+                <td><?php echo $transactie->type->omschrijving ?></td>
+                <td><?php echo $transactie->status ?></td>
                 <td><?php echo $transactie->updated_at ?></td>
                 <td><?php echo $transactie->updated_by ?></td>
             </tr>
