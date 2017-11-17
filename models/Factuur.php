@@ -221,7 +221,7 @@ class Factuur extends BarActiveRecord
              
                 continue;
             }
-                var_dump($message->dump());
+                var_dump($message);
                 return;
             $aantal++;
             $factuur->updateAfterSendFactuur();
