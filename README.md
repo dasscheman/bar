@@ -5,11 +5,43 @@ Deze aplicatie is gemaakt voor het beheren van de bar voor kleine verenigingen.
 
 Installatie:
 
-clone met git
-maak de db.php en de email.php files aan in de config folder
+Onder buntu kun je alle benodigde pakketten met apt installeren:
+`sudo apt install composer php-cli php-gd php-mysql php-xml mariadb-server`
+
+Database aanmaken:
+`mysql -u root -p -e 'CREATE DATABASE barkassa'`
+
+clone met git en maak de config/db.php:
+```
+<?php
+
+return [
+    'class' => 'yii\db\Connection',
+    'dsn' => 'mysql:host=localhost;dbname=barkassa',
+    'username' => 'root',
+    'password' => '',
+    'charset' => 'utf8',
+];
+```
+
+ En de config/email.php:
+
+```
+<?php
+
+return [
+    'class' => 'Swift_SmtpTransport',
+    'host' => 'localhost', // e.g. smtp.mandrillapp.com or smtp.gmail.com
+    'username' => 'username',
+    'password' => 'password',
+    'port' => '587', // Port 25 is a very common port too
+    'encryption' => 'tls', // It is often used, check your provider or mail
+];
+```
 
 Vanaf de root
-- `composer update`
+- `composer global require "fxp/composer-asset-plugin:~1.0.3"`
+- `composer install`
 - `php yii migrate/up --migrationPath=@yii/rbac/migrations`
 - `php yii migrate/up --migrationPath=@vendor/dektrium/yii2-user/migrations`
 - `php yii migrate/up`
