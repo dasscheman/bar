@@ -49,5 +49,5 @@ Vanaf de root
 
 Ga met je browser naar http://localhost:8080
 
-Voeg als eerste een gebruiker toe met de username `beheerder`.
+Log in met de username `beheerder` en wachtwoord `beheerder` en wijzig het wachtwoord.
 Deze gebruiker kan gebruikers toevoegen en rechten zetten op andere gebruikers.
