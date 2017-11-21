@@ -45,6 +45,9 @@ Vanaf de root
 - `php yii migrate/up --migrationPath=@yii/rbac/migrations`
 - `php yii migrate/up --migrationPath=@vendor/dektrium/yii2-user/migrations`
 - `php yii migrate/up`
+- `php yii serve`
+
+Ga met je browser naar http://localhost:8080
 
 Voeg als eerste een gebruiker toe met de username `beheerder`.
-Deze gebruikerkan gerbuikers toevoegen en rechten zetten op andere gebruikers.
+Deze gebruiker kan gebruikers toevoegen en rechten zetten op andere gebruikers.
