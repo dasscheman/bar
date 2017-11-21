@@ -6,7 +6,7 @@ Deze aplicatie is gemaakt voor het beheren van de bar voor kleine verenigingen.
 Installatie:
 
 Onder buntu kun je alle benodigde pakketten met apt installeren:
-`sudo apt install composer php-cli php-gd php-mysql php-xml mariadb-server`
+`sudo apt install composer php-cli php-gd php-intl php-mysql php-xml mariadb-server`
 
 Database aanmaken:
 `mysql -u root -p -e 'CREATE DATABASE barkassa'`
