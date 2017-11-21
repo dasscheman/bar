@@ -40,7 +40,7 @@ return [
 ```
 
 Vanaf de root
-- `composer global require "fxp/composer-asset-plugin:~1.0.3"`
+- `composer global require "fxp/composer-asset-plugin"`
 - `composer install`
 - `php yii migrate/up --migrationPath=@yii/rbac/migrations`
 - `php yii migrate/up --migrationPath=@vendor/dektrium/yii2-user/migrations`
