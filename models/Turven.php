@@ -248,4 +248,42 @@ class Turven extends BarActiveRecord
         }
         return TRUE ;
     }
+
+    public function saveRondje($users, $invoer_item)
+    {
+        $date = Yii::$app->setupdatetime->storeFormat(time(), 'datetime');
+        $dbTransaction = Yii::$app->db->beginTransaction();
+        try {
+            foreach($users as $user) {
+                $model = new Turven();
+                $model->assortiment_id = $invoer_item;
+                $model->aantal = 1;
+                $model->datum = $date;
+                $model->consumer_user_id = $user;
+                $model->status = TURVEN::STATUS_gecontroleerd;
+                $model->type = TURVEN::TYPE_losse_verkoop;
+
+                $prijslijst = Prijslijst::determinePrijslijstDateBased($invoer_item, $date);
+                if(!$prijslijst) {
+                    Yii::$app->session->setFlash('warning', Yii::t('app', 'Er is geen geldige prijs voor ' . Assortiment::getAssortimentName($invoer_item)));
+                    return FALSE;
+                }
+                $model->prijslijst_id = $prijslijst->prijslijst_id;
+                $model->totaal_prijs = number_format($prijslijst->prijs, 2);
+
+                if(!$model->save()) {
+                    $dbTransaction->rollBack();
+                    foreach ($model->errors as $key => $error) {
+                        Yii::$app->session->setFlash('warning', Yii::t('app', 'Kan turven niet opslaan:' . $error[0]));
+                    }
+                    return FALSE;
+                }
+            }
+            $dbTransaction->commit();
+        } catch (\Exception $e) {
+            Yii::$app->session->setFlash('warning', Yii::t('app', 'Je kunt deze turven niet toevoegen.') . $e);
+            return FALSE;
+        }
+        return TRUE ;
+    }
 }
