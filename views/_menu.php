@@ -84,6 +84,14 @@ echo Nav::widget([
 //                ['label' => 'Something else here', 'url' => '#'],
             ],
         ],
+        [
+            'label' => 'Favorieten',
+            'items' => [
+                ['label' => 'Overzicht', 'url' => ['/favorieten-lijsten/index']],
+                ['label' => 'Favorieten lijst maken', 'url' => ['/favorieten-lijsten/create']],
+//                ['label' => 'Something else here', 'url' => '#'],
+            ],
+        ],
 //        [
 //            'label' => Yii::t('app', 'Facturen'),
 //            'url' => ['/factuur/index'],

@@ -39,7 +39,7 @@ class TurvenController extends Controller
                     'class' => AccessRule::className(),
                 ],
                 // We will override the default rule config with the new AccessRule class
-                'only' => ['index', 'view', 'create', 'update', 'delete', 'barinvoer'],
+                'only' => ['index', 'view', 'create', 'update', 'delete', 'barinvoer', 'rondje'],
                 'rules' => [
                     [
                         'allow' => TRUE,
@@ -48,7 +48,7 @@ class TurvenController extends Controller
                     ],
                     [
                         'allow' => TRUE,
-                        'actions' => ['barinvoer'],
+                        'actions' => ['barinvoer', 'rondje'],
                         'roles' =>  ['gebruiker'],
                     ],
                     [
@@ -82,6 +82,9 @@ class TurvenController extends Controller
     public function actionBarinvoer()
     {
         $count = [];
+
+        $assortSearchModel = new AssortimentSearch();
+        $assortDataProvider = $assortSearchModel->search(Yii::$app->request->queryParams);
         if(Yii::$app->request->get('user_id') !== NULL) {
             $user_id = Yii::$app->request->get('user_id');
             if(Yii::$app->request->get('count') !== NULL) {
@@ -112,20 +115,20 @@ class TurvenController extends Controller
                 }
                 Yii::$app->session->setFlash('warning', $message);
                 $count = [];
-
-                $assortSearchModel = new AssortimentSearch();
-                $assortDataProvider = $assortSearchModel->search(Yii::$app->request->queryParams);
-                return $this->redirect(['barinvoer']);
+                $tab = '';
+                if(!empty(Yii::$app->request->get('tab'))) {
+                    $tab = 'w2-tab2';
+                }
+                return $this->redirect(['barinvoer', '#' => $tab]);
             }
-            $assortSearchModel = new AssortimentSearch();
-            $assortDataProvider = $assortSearchModel->search(Yii::$app->request->queryParams);
 
             return $this->render('bar-invoer', [
                 'assortSearchModel' => $assortSearchModel,
                 'assortDataProvider' => $assortDataProvider,
                 'count' => $count,
                 'user_id' => $user_id,
-                'model' => User::findOne($user_id)
+                'model' => User::findOne($user_id),
+                'tab' => Yii::$app->request->get('tab'),
             ]);
         }
         $userSearchModel = new UserSearch();
@@ -134,9 +137,60 @@ class TurvenController extends Controller
         return $this->render('/user/gebruiker-selecteren', [
             'userSearchModel' => $userSearchModel,
             'userDataProvider' => $userDataProvider,
+            'assortSearchModel' => $assortSearchModel,
+            'assortDataProvider' => $assortDataProvider,
         ]);
     }
+    
+    public function actionRondje()
+    {
+        $userSearchModel = new UserSearch();
+        $userDataProvider = $userSearchModel->search(Yii::$app->request->queryParams);
+        $assortiment_id = Yii::$app->request->get('assortiment_id');
 
+        if(Yii::$app->request->get('users') === NULL) {
+            $users = [];
+        } else {
+            $users = Yii::$app->request->get('users');
+        }
+
+        if(Yii::$app->request->get('actie') === 'opslaan' &&
+            Turven::saveRondje($users, $assortiment_id)) {
+            $message = 'Eén ' . Assortiment::getAssortimentName($assortiment_id) . ' voor: ';
+            $i = 0;
+            foreach ($users as $user_id) {
+                if ($i === 0) {
+                    $message .= User::getUserDisplayName($user_id);
+                } else {
+                    $message .= ', ' . User::getUserDisplayName($user_id);
+                }
+                $i++;
+            }
+            Yii::$app->session->setFlash('warning', $message);
+
+            return $this->redirect([
+                '/turven/barinvoer',
+                '#' => 'w2-tab1'
+            ]);
+        }
+
+
+        if(Yii::$app->request->get('user_id') !== NULL) {
+            $users[] = Yii::$app->request->get('user_id');
+        }
+
+        if(Yii::$app->request->get('remove') !== NULL) {
+            if (($key = array_search(Yii::$app->request->get('remove'), $users)) !== false) {
+                unset($users[$key]);
+            }
+        }
+
+        return $this->render('rondje', [
+            'models' => $userDataProvider->getModels(),
+            'assortiment_id' => $assortiment_id,
+            'users' => $users
+        ]);
+    }
     /**
      * Displays a single Turven model.
      * @param integer $id

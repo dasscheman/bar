@@ -34,7 +34,8 @@ use app\models\User;
                             'assortiment_id' => $assortItem->assortiment_id,
                             'count' => $count,
                             'user_id' => $user_id,
-                            'actie' => 'toevoegen'
+                            'actie' => 'toevoegen',
+                            'tab' => $tab
                         ],
                         [ 'class' => 'btn-lg btn-info namen' ]
                     );
@@ -50,6 +51,7 @@ use app\models\User;
                 'count' => $count,
                 'user_id' => $user_id,
                 'actie' => 'opslaan',
+                'tab' => $tab
             ],
             [
                 'class' => 'btn btn-success',
@@ -57,11 +59,17 @@ use app\models\User;
             ]
         );
         echo Html::a(
-            'Terug',
+            'Annuleren',
             [
                 'barinvoer',
+                '#' => $tab
             ],
-            [ 'class' => 'btn btn-danger' ]
+            [ 
+                'class' => 'btn btn-danger',
+                'data' => [
+                    'confirm' => 'Je turven zijn niet opgeslagen',
+                ],
+            ]
         );?>
 
         <table class="table">
