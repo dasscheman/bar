@@ -24,6 +24,8 @@ use app\models\BetalingType;
     $form = ActiveForm::begin([
         'enableClientValidation' => true,
         'enableAjaxValidation'   => false,
+        'id'   => 'bonnen-form',
+        'options'=> ['enctype'=>'multipart/form-data'],
     ]);
     echo $form->field($modelTransacties, 'transacties_user_id')->widget(Select2::className(), [
         'data' => ArrayHelper::map(User::find()->all(), 'id', 'username'),
@@ -33,7 +35,20 @@ use app\models\BetalingType;
         ],
     ]);
     echo $form->field($modelTransacties, 'omschrijving')->textInput();
+
+    echo $form->field($modelBonnen, 'image_temp')->fileInput();
+    echo Html::encode('Huidige bon: ' . $modelBonnen->image);
+
+    echo $form->field($modelBonnen, 'soort')->widget(Select2::className(), [
+        'data' => $modelBonnen->getSoortOptions(),
+        'options' => [
+            'placeholder' => Yii::t('app', 'Selecteer soort betaling'),
+            'id' => 'soort'
+        ],
+    ]);
+    
     echo $form->field($modelTransacties, 'bedrag')->widget(MaskMoney::classname());
+    
     echo $form->field($modelTransacties, 'type_id')->widget(Select2::className(), [
         'data' => ArrayHelper::map(BetalingType::find()->all(), 'type_id', 'omschrijving'),
         'options'   => [

@@ -4,6 +4,7 @@ namespace app\models;
 
 use Yii;
 use app\models\BarActiveRecord;
+use app\components\PrijsValidator;
 
 /**
  * This is the model class for table "prijslijst".
@@ -39,9 +40,11 @@ class Prijslijst extends BarActiveRecord
     public function rules()
     {
         return [
-            [['assortiment_id'], 'required'],
+            [['assortiment_id','from', 'to'], 'required'],
             [['assortiment_id', 'created_by', 'updated_by'], 'integer'],
             [['prijs'], 'number'],
+            ['from', PrijsValidator::className()],
+            ['to', PrijsValidator::className()],
             [['from', 'to', 'created_at', 'updated_at'], 'safe'],
             [['assortiment_id'], 'exist', 'skipOnError' => true, 'targetClass' => Assortiment::className(), 'targetAttribute' => ['assortiment_id' => 'assortiment_id']],
             [['created_by'], 'exist', 'skipOnError' => true, 'targetClass' => User::className(), 'targetAttribute' => ['created_by' => 'id']],
@@ -58,8 +61,8 @@ class Prijslijst extends BarActiveRecord
             'prijslijst_id' => 'Prijslijst ID',
             'assortiment_id' => 'Assortiment ID',
             'prijs' => 'Prijs',
-            'from' => 'From',
-            'to' => 'To',
+            'from' => 'Van',
+            'to' => 'Tot',
             'created_at' => 'Created At',
             'created_by' => 'Created By',
             'updated_at' => 'Updated At',

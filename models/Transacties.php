@@ -68,7 +68,7 @@ class Transacties extends BarActiveRecord
     {
         return [
             'transacties_id' => 'Transacties ID',
-            'transacties_user_id' => 'Transacties User ID',
+            'transacties_user_id' => 'Transactie voor',
             'factuur_id' => Yii::t('app', 'Factuur ID'),
             'omschrijving' => 'Omschrijving',
             'bedrag' => 'Bedrag',
@@ -83,13 +83,6 @@ class Transacties extends BarActiveRecord
         ];
     }
  
-    /**
-      * @return \yii\db\ActiveQuery
-      */
-    public function getInkoops()
-    {
-        return $this->hasMany(Inkoop::className(), ['transacties_id' => 'transacties_id']);
-    }
 
     /**
      * @return \yii\db\ActiveQuery

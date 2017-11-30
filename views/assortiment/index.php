@@ -43,7 +43,7 @@ $toolbar = FALSE;
                     'filterModel'  => $searchModel,
                     'layout'       => "{items}\n{pager}",
                     'columns' => [
-                        'assortiment_id',
+//                        'assortiment_id',
                         'name',
                         'merk',
                         'soort' => [
@@ -58,11 +58,48 @@ $toolbar = FALSE;
                                 return $model->getStatusText();
                             },
                         ],
-                        'alcohol',
+                        'alcohol' => [
+                            'attribute' => 'alcohol',
+                            'headerOptions' => ['style' => 'width:2%'],
+                        ],
                         'volume',
+                        'prijs' => [
+                            'attribute' => 'prijs',
+                            'value' => function($model){
+                                if(isset($model->getPrijs()->one()->prijs)) {
+                                    return number_format($model->getPrijs()->one()->prijs, 2, ',', ' ') . ' €';
+                                }
+                                return 'geen prijs';
+                            }
+                        ],
+                        'totaal' => [
+                            'attribute' => 'totaal',
+                            'value' => function($model){
+                                return $model->getTotaalTurven();
+                            }
+                        ],
+                        'opbrengst' => [
+                            'attribute' => 'opbrengst',
+                            'value' => function($model){
+                                if(null !== $model->getOpbrengstTurven()) {
+                                    return number_format($model->getOpbrengstTurven(), 2, ',', ' ') . ' €';
+                                }
+                                return 'geen prijs';
+                            }
+                        ],
+                        'inkoop' => [
+                            'attribute' => 'inkoop',
+                            'value' => function($model){
+                                if(null !== $model->getTotaalInkoop()) {
+                                    return number_format($model->getTotaalInkoop(), 2, ',', ' ') . ' €';
+                                }
+                                return 'geen prijs';
+                            }
+                        ],
                         [
                             'class' => 'yii\grid\ActionColumn',
                             'template' => '{update} {view} {delete}',
+                            'headerOptions' => ['style' => 'width:20%'],
                         ],
                     ],
 

@@ -39,11 +39,8 @@ use yii\widgets\DetailView;
                         'class'=>'btn btn-primary',
                         'target'=>'_blank',
                     ]
-                );
-
-
-
-                ?>
+                ); ?>
+              
                 <table class="table">
                     <?= DetailView::widget([
                         'model' => $model,

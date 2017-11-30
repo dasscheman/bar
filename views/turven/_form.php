@@ -10,8 +10,6 @@
  */
 
 use kartik\select2\Select2;
-use kartik\widgets\DatePicker;
-//use yii\widgets\ActiveForm;
 use kartik\widgets\ActiveForm;
 use kartik\helpers\Html;
 use yii\helpers\ArrayHelper;

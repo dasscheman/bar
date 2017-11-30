@@ -50,17 +50,26 @@ $toolbar = FALSE;
                                 return empty($model->datum)?'':Yii::$app->setupdatetime->displayFormat($model->datum, 'php:d-M-Y');
                             },
                         ],
-                        'inkoper_user_id' => [
-                            'attribute' => 'inkoper_user_id',
+                        'volume',
+                        'aantal',
+                        'totaal_prijs' => [
+                            'attribute' => 'totaal_prijs',
                             'value' => function($model){
-                                return $model->getInkoperUser()->one()->username;
+                                return number_format($model->totaal_prijs, 2, ',', ' ') . ' €';
+                            }
+                        ],
+                        'type' => [
+                            'attribute' => 'type',
+                            'value' => function($model){
+                                return $model->getTypeText();
                             },
                         ],
-                        'volume',
-                        // 'aantal',
-                        // 'totaal_prijs',
-                        // 'type',
-                        // 'status',
+                        'status' => [
+                            'attribute' => 'status',
+                            'value' => function($model){
+                                return $model->getStatusText();
+                            },
+                        ],
                         // 'created_at',
                         // 'created_by',
                         // 'updated_at',

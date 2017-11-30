@@ -37,6 +37,7 @@ class Turven extends BarActiveRecord
 {
     const TYPE_turflijst = 1;
     const TYPE_losse_verkoop = 2;
+    const TYPE_rondje = 3;
 
     /**
      * @inheritdoc
@@ -169,6 +170,7 @@ class Turven extends BarActiveRecord
         return [
             self::TYPE_turflijst => Yii::t('app', 'Turflijst'),
             self::TYPE_losse_verkoop => Yii::t('app', 'Losse verkoop'),
+            self::TYPE_rondje => Yii::t('app', 'Rondje'),
         ];
     }
 
@@ -225,7 +227,8 @@ class Turven extends BarActiveRecord
                 $model->status = TURVEN::STATUS_gecontroleerd;
                 $model->type = TURVEN::TYPE_losse_verkoop;
 
-                $prijslijst = Prijslijst::determinePrijslijstDateBased($assort_id, $date);
+                $assortiment = Assortiment::findOne($assort_id);
+                $prijslijst = $assortiment->getPrijs()->one();
                 if(!$prijslijst) {
                     Yii::$app->session->setFlash('warning', Yii::t('app', 'Er is geen geldige prijs voor ' . Assortiment::getAssortimentName($assort_id)));
                     return FALSE;
@@ -261,9 +264,10 @@ class Turven extends BarActiveRecord
                 $model->datum = $date;
                 $model->consumer_user_id = $user;
                 $model->status = TURVEN::STATUS_gecontroleerd;
-                $model->type = TURVEN::TYPE_losse_verkoop;
+                $model->type = TURVEN::TYPE_rondje;
 
-                $prijslijst = Prijslijst::determinePrijslijstDateBased($invoer_item, $date);
+                $assortiment = Assortiment::findOne($invoer_item);
+                $prijslijst = $assortiment->getPrijs()->one();
                 if(!$prijslijst) {
                     Yii::$app->session->setFlash('warning', Yii::t('app', 'Er is geen geldige prijs voor ' . Assortiment::getAssortimentName($invoer_item)));
                     return FALSE;

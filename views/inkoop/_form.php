@@ -6,8 +6,9 @@ use yii\widgets\ActiveForm;
 use kartik\widgets\DatePicker;
 use kartik\select2\Select2;
 use app\models\Assortiment;
-use app\models\User;
-use app\models\Transacties;
+
+use kartik\money\MaskMoney;
+use app\models\Bonnen;
 
 /* @var $this yii\web\View */
 /* @var $model app\models\Inkoop */
@@ -29,12 +30,14 @@ use app\models\Transacties;
         ],
     ]);
 
-    echo $form->field($model, 'transacties_id')->widget(Select2::className(), [
+    echo $form->field($model, 'bon_id')->widget(Select2::className(), [
         'data' => ArrayHelper::map(
-            Transacties::find()->all(),
-            'transacties_id',
+            Bonnen::find()->orderBy(['bon_id' => SORT_DESC])->all(),
+            'bon_id',
             function($model, $defaultValue) {
-                return $model['transacties_id']. ' (' . $model->getTransactiesUser()->one()->username .') -'.$model['omschrijving'];
+
+                return $model['omschrijving']. ' (' . $model->bon_id .')'; //  . $model->getBon()->one()->omschrijving;
+//                return $model['transacties_id']. ' (' . $model->getTransactiesUser()->one()->username .') -'.$model['omschrijving'];
             }
         ),
         'options'   => [
@@ -46,34 +49,26 @@ use app\models\Transacties;
         ],
     ]);
 
-    echo $form->field($model, 'datum')->widget(DatePicker::className(), [
-        'model' => $model,
-        'attribute' => 'datum',
-        'type' => DatePicker::TYPE_COMPONENT_PREPEND,
-    //    'value' => '23-Feb-1982',
-        'options'   => [
-            'placeholder' => Yii::t('app', 'Datum'),
-        ],
-        'pluginOptions' => [
-            'autoclose'=>true,
-            'format' => 'yyyy-mm-dd'
-        ]
-    ]);
+//    echo $form->field($model, 'datum')->widget(DatePicker::className(), [
+//        'model' => $model,
+//        'attribute' => 'datum',
+//        'type' => DatePicker::TYPE_COMPONENT_PREPEND,
+//    //    'value' => '23-Feb-1982',
+//        'options'   => [
+//            'placeholder' => Yii::t('app', 'Datum'),
+//        ],
+//        'pluginOptions' => [
+//            'autoclose'=>true,
+//            'format' => 'yyyy-mm-dd'
+//        ]
+//    ]);
 
-    echo $form->field($model, 'inkoper_user_id')->widget(Select2::className(), [
-        'data' => ArrayHelper::map(User::find()->all(), 'id', 'username'),
-        'options'   => [
-            'placeholder' => Yii::t('app', 'Selecteer gebruiker'),
-            'id' => 'inkoper_user_id',
-        ],
-    ]);
-    ?>
+    echo $form->field($model, 'volume')->textInput();
 
-    <?= $form->field($model, 'volume')->textInput() ?>
+    echo $form->field($model, 'aantal')->textInput();
 
-    <?= $form->field($model, 'aantal')->textInput() ?>
-
-    <?= $form->field($model, 'totaal_prijs')->textInput(['maxlength' => true]);
+    echo $form->field($model, 'totaal_prijs')->widget(MaskMoney::classname());
+//    echo $form->field($model, 'totaal_prijs')->textInput(['maxlength' => true]);
 
     echo $form->field($model, 'type')->widget(Select2::className(), [
         'data' => $model->getTypeOptions(),

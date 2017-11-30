@@ -18,7 +18,7 @@ class InkoopSearch extends Inkoop
     public function rules()
     {
         return [
-            [['inkoop_id', 'assortiment_id', 'transacties_id', 'inkoper_user_id', 'aantal', 'type', 'status', 'created_by', 'updated_by'], 'integer'],
+            [['inkoop_id', 'assortiment_id', 'aantal', 'type', 'status', 'created_by', 'updated_by'], 'integer'],
             [['datum', 'created_at', 'updated_at'], 'safe'],
             [['volume', 'totaal_prijs'], 'number'],
         ];
@@ -63,7 +63,6 @@ class InkoopSearch extends Inkoop
             'inkoop_id' => $this->inkoop_id,
             'assortiment_id' => $this->assortiment_id,
             'datum' => $this->datum,
-            'inkoper_user_id' => $this->inkoper_user_id,
             'volume' => $this->volume,
             'aantal' => $this->aantal,
             'totaal_prijs' => $this->totaal_prijs,
