@@ -109,4 +109,14 @@ class BetalingType extends BarActiveRecord
         }
         return "Onbekende type ({$this->bijaf})";
     }
+
+    public function getIdealId() {
+        $betaling = BetalingType::findOne(['omschrijving' => 'Ideal']);
+        
+        if (isset($betaling->type_id)) {
+            return $betaling->type_id;
+        }
+        return;
+    }
+
 }

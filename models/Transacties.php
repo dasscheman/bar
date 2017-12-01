@@ -32,7 +32,14 @@ use app\models\BarActiveRecord;
  */
 class Transacties extends BarActiveRecord
 {
+    const MOLLIE_STATUS_open = 1;
+    const MOLLIE_STATUS_cancelled = 2;
+    const MOLLIE_STATUS_expired = 3;
+    const MOLLIE_STATUS_failed = 4;
+    const MOLLIE_STATUS_paid = 5;    
+    const MOLLIE_STATUS_refunded = 6;
 
+    public $issuer;
     /**
      * @inheritdoc
      */
@@ -47,8 +54,8 @@ class Transacties extends BarActiveRecord
     public function rules()
     {
         return [
-            [['transacties_user_id', 'bedrag', 'type_id', 'status', 'datum'], 'required'],
-            [['transacties_user_id', 'bon_id', 'factuur_id', 'type_id', 'status', 'created_by', 'updated_by'], 'integer'],
+            [['transacties_user_id', 'omschrijving', 'bedrag', 'type_id', 'status', 'datum'], 'required'],
+            [['transacties_user_id', 'bon_id', 'factuur_id', 'type_id', 'status', 'mollie_status', 'created_by', 'updated_by'], 'integer'],
             [['bedrag'], 'number'],
             [['datum', 'created_at', 'updated_at'], 'safe'],
             [['omschrijving'], 'string', 'max' => 255],
@@ -75,6 +82,7 @@ class Transacties extends BarActiveRecord
             'type_id' => 'Type ID',
             'bon_id' => 'Bon ID',
             'status' => 'Status',
+            'mollie_status' => 'Status',
             'datum' => 'Datum',
             'created_at' => 'Created At',
             'created_by' => 'Created By',
@@ -132,6 +140,42 @@ class Transacties extends BarActiveRecord
         return $this->hasOne(User::className(), ['id' => 'transacties_user_id']);
     }
 
+    /**
+     * Retrieves a list of Mollie statussen
+     * @return array an array of available statussen.
+     */
+    public function getMollieStatusOptions() {
+        return [
+            self::MOLLIE_STATUS_open => 'Open',
+            self::MOLLIE_STATUS_cancelled => 'Geannuleerd',
+            self::MOLLIE_STATUS_expired => 'Verlopen',
+            self::MOLLIE_STATUS_failed => 'Mislukt',
+            self::MOLLIE_STATUS_paid => 'Betaald',
+            self::MOLLIE_STATUS_refunded => 'Terugbetaald',
+        ];
+    }
+
+    /**
+     * @return string the status text display
+     */
+    public function getMollieStatusText() {
+        $statusOptions = $this->mollieStatusOptions;
+        if (isset($statusOptions[$this->mollie_status])) {
+            return $statusOptions[$this->mollie_status];
+        }
+    }
+
+    /**
+     * @return string the status id
+     */
+    public function getMollieStatusId($status) {
+        $id = array_search( ucfirst($status),  $this->mollieStatusOptions);
+        if (isset($id)) {
+            return $id;
+        }
+        return FALSE;
+    }
+
     public function controleerStatusTransacties()
     {
         $transacties = Transacties::find()
@@ -152,5 +196,9 @@ class Transacties extends BarActiveRecord
             ->setSubject('Status Transacties');
         $message->send();
         return $transacties->count();
+    }
+
+    public function setRetrievedMollieStatus($mollie_status) {
+        $this->mollie_status = $this->getMollieStatusId($mollie_status);
     }
 }
