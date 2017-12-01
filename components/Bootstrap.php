@@ -10,5 +10,6 @@ class Bootstrap implements BootstrapInterface
     {
         // Here you can refer to Application object through $app variable
         $app->params['bonnen_path'] = $app->basePath . '/web/uploads/bonnen/';
+        $app->params['mollie'] = require($app->basePath . '/config/mollie.php');
     }
 }
