@@ -68,12 +68,6 @@ $toolbar = FALSE;
                                 return $model->getStatusText();
                             },
                         ],
-                        'mollie_status' => [
-                            'attribute' => 'mollie_status',
-                            'value' => function($model){
-                                return $model->getMollieStatusText();
-                            },
-                        ],
                         [
                             'attribute'=>'bonnen_id',
                             'format' => 'raw',

@@ -38,7 +38,7 @@ AppAsset::register($this);
     echo Nav::widget([
         'options' => ['class' => 'navbar-nav navbar-right'],
         'items' => [
-//            ['label' => 'Turflijst', 'url' => ['/turven/barinvoer']],
+            ['label' => 'Betalen', 'url' => ['/mollie/betaling']],
             ['label' => 'Beheerder',
                 'items' => [
                     [
