@@ -29,7 +29,7 @@ use yii\helpers\ArrayHelper;
     $form = ActiveForm::begin([
         'id' => 'prijslijst-form',
         'enableClientValidation' => true,
-        'enableAjaxValidation'   => true,
+        'enableAjaxValidation'   => false,
     ]);
 
     echo $form->field($model, 'assortiment_id')->widget(Select2::className(), [

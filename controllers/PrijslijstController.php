@@ -86,13 +86,17 @@ class PrijslijstController extends Controller
     {
         $model = new Prijslijst();
 
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->prijslijst_id]);
-        } else {
-            return $this->render('create', [
-                'model' => $model,
-            ]);
+        if ($model->load(Yii::$app->request->post())) {
+            if($model->save()) {
+                return $this->redirect(['view', 'id' => $model->prijslijst_id]);
+            }
+            foreach ($model->errors as $key => $error) {
+                Yii::$app->session->setFlash('warning', Yii::t('app', 'Fout met opslaan: ' . $key . ':' . $error[0]));
+            }
         }
+        return $this->render('create', [
+            'model' => $model,
+        ]);
     }
 
     /**

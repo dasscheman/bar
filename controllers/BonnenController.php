@@ -92,7 +92,7 @@ class BonnenController extends Controller
             // the following data will return an array
             $image = UploadedFile::getInstance($model, 'image_temp');
             // store the source file name
-            $model->image = $image->name;
+            $model->image = date('Y-m-d H:i:s') . '-' . $image->name;
             $path = Yii::$app->params['bonnen_path'] . $model->image;
             if($model->save()){
                 $image->saveAs($path);
@@ -124,6 +124,17 @@ class BonnenController extends Controller
             return $this->render('update', [
                 'model' => $model,
             ]);
+        }
+    }
+
+    public function actionDownload($id)
+    {
+        $download = Bonnen::findOne($id);
+        $path=Yii::getAlias('@webroot').'/uploads/bonnen/'.$download->image;
+        if (file_exists($path)) {
+            return Yii::$app->response->sendFile($path);
+        } else {
+            throw new NotFoundHttpException("can't find {$download->image} file");
         }
     }
 

@@ -22,7 +22,12 @@ use yii\helpers\Html;
                 <?php echo $this->render('/_alert') ?>
                 <?php echo $this->render('/_menu') ?>
                 <table class="table">
-                    <?php echo  $this->render('_form', ['model' => $model]); ?>
+                    <?php
+                    if(empty($modelBonnen)) {
+                        echo  $this->render('_form', ['modelTransacties' => $modelTransacties]);
+                    } else {
+                        echo  $this->render('_form-declaratie', ['modelTransacties' => $modelTransacties, 'modelBonnen' => $modelBonnen]);
+                    } ?>
                 </table>
             </div>
         </div>

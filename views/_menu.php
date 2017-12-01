@@ -49,6 +49,7 @@ echo Nav::widget([
             'items' => [
                 ['label' => 'Overzicht', 'url' => ['/transacties/index']],
                 ['label' => 'Toevoegen', 'url' => ['/transacties/create']],
+                ['label' => 'Declaratie toevoegen', 'url' => ['/transacties/create-declaratie']],
 //                ['label' => 'Something else here', 'url' => '#'],
             ],
         ],

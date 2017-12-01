@@ -10,6 +10,8 @@ use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
 use yii\filters\AccessControl;
+use app\models\Bonnen;
+use yii\web\UploadedFile;
 
 /**
  * TransactiesController implements the CRUD actions for Transacties model.
@@ -34,11 +36,11 @@ class TransactiesController extends Controller
                     'class' => AccessRule::className(),
                 ],
                 // We will override the default rule config with the new AccessRule class
-                'only' => ['index', 'view', 'create', 'update', 'delete'],
+                'only' => ['index', 'view', 'create', 'create-declaraties', 'update', 'delete'],
                 'rules' => [
                     [
                         'allow' => TRUE,
-                        'actions' => ['index', 'delete', 'create', 'update', 'view'],
+                        'actions' => ['index', 'delete', 'create', 'create-declaraties', 'update', 'view'],
                         'roles' =>  ['admin', 'beheerder'],
                     ],
                     [
@@ -91,9 +93,56 @@ class TransactiesController extends Controller
         } else {
             $model->datum = date("Y-m-d");
             return $this->render('create', [
-                'model' => $model,
+                'modelTransacties' => $model,
             ]);
         }
+    }
+
+    /**
+     * Creates a new Transacties model.
+     * If creation is successful, the browser will be redirected to the 'view' page.
+     * @return mixed
+     */
+    public function actionCreateDeclaratie()
+    {
+        $modelTransacties = new Transacties();
+        $modelBonnen = new Bonnen();
+
+        if ($modelTransacties->load(Yii::$app->request->post())){
+            $image = UploadedFile::getInstance($modelBonnen, 'image_temp');
+            if(!empty($image)) {
+                $modelBonnen->load(Yii::$app->request->post());
+                // store the source file name
+                $modelBonnen->image = date('Y-m-d H:i:s') . '-' . $image->name;
+                $modelBonnen->omschrijving = $modelTransacties->omschrijving;
+                $modelBonnen->type = Bonnen::TYPE_declaratie;
+                $modelBonnen->datum = $modelTransacties->datum;
+                $modelBonnen->bedrag = $modelTransacties->bedrag;
+
+                $path = Yii::$app->params['bonnen_path'] . $modelBonnen->image;
+                if($modelBonnen->save()){
+                    $image->saveAs($path);
+                } else {
+                    foreach ($modelBonnen->errors as $key => $error) {
+                        Yii::$app->session->setFlash('warning', Yii::t('app', 'Fout met opslaan: ' . $key . ':' . $error[0]));
+                    }
+                }
+                $modelTransacties->bon_id = $modelBonnen->bon_id;
+            }
+            if ($modelTransacties->save()) {
+                return $this->redirect(['view', 'id' => $modelTransacties->transacties_id]);
+            } else {
+                foreach ($modelBonnen->errors as $key => $error) {
+                    Yii::$app->session->setFlash('warning', Yii::t('app', 'Fout met opslaan: ' . $key . ':' . $error[0]));
+                }
+            }
+        }
+
+        $modelTransacties->datum = date("Y-m-d");
+        return $this->render('create', [
+            'modelTransacties' => $modelTransacties,
+            'modelBonnen' => $modelBonnen
+        ]);
     }
 
     /**
@@ -104,15 +153,42 @@ class TransactiesController extends Controller
      */
     public function actionUpdate($id)
     {
-        $model = $this->findModel($id);
+        $modelTransacties = $this->findModel($id);
+        $modelBonnen = $modelTransacties->bon;
 
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->transacties_id]);
-        } else {
-            return $this->render('update', [
-                'model' => $model,
-            ]);
+        if ($modelTransacties->load(Yii::$app->request->post())) {
+            $image = UploadedFile::getInstance($modelBonnen, 'image_temp');
+            if(!empty($image)) {
+                // store the source file name
+                $modelBonnen->image = date('Y-m-d H:i:s') . '-' . $image->name ;
+                $modelBonnen->omschrijving = $modelTransacties->omschrijving;
+                $modelBonnen->type = Bonnen::TYPE_declaratie;
+                $modelBonnen->datum = $modelTransacties->datum;
+                $modelBonnen->bedrag = $modelTransacties->bedrag;
+
+                $path = Yii::$app->params['bonnen_path'] . $modelBonnen->image;
+                if($modelBonnen->save()){
+                    $image->saveAs($path);
+                } else {
+                    foreach ($modelBonnen->errors as $key => $error) {
+                        Yii::$app->session->setFlash('warning', Yii::t('app', 'Fout met opslaan: ' . $key . ':' . $error[0]));
+                    }
+                }
+                $modelTransacties->bon_id = $modelBonnen->bon_id;
+            }
+            if ($modelTransacties->save()) {
+                return $this->redirect(['view', 'id' => $modelTransacties->transacties_id]);
+            } else {
+                foreach ($modelBonnen->errors as $key => $error) {
+                    Yii::$app->session->setFlash('warning', Yii::t('app', 'Fout met opslaan: ' . $key . ':' . $error[0]));
+                }
+            }
         }
+         
+        return $this->render('update', [
+            'modelTransacties' => $modelTransacties,
+            'modelBonnen' => $modelBonnen
+        ]);
     }
 
     /**

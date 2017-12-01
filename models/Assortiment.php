@@ -29,8 +29,9 @@ use app\models\BarActiveRecord;
 class Assortiment extends BarActiveRecord
 {
     const SOORT_fris = 1;
-    const SOORT_pils = 2;
+    const SOORT_bier = 2;
     const SOORT_wijn = 3;
+    const SOORT_snack = 4;
 
     const STATUS_beschikbaar = 1;
     const STATUS_niet_beschikbaar = 2;
@@ -71,23 +72,13 @@ class Assortiment extends BarActiveRecord
             'merk' => 'Merk',
             'soort' => 'Soort',
             'alcohol' => 'Alcohol',
-            'volume' => 'Volume',
+            'volume' => 'Volume (ml)',
             'status' => 'Status',
             'created_at' => 'Created At',
             'created_by' => 'Created By',
             'updated_at' => 'Updated At',
             'updated_by' => 'Updated By',
         ];
-    }
-
-    /**
-     * De het veld event_ID wordt altijd gezet.
-     */
-    public function beforeSave($insert) {
-        if (parent::beforeSave($insert)) {
-            return(true);
-        }
-        return(false);
     }
 
     /**
@@ -114,12 +105,49 @@ class Assortiment extends BarActiveRecord
         return $this->hasMany(Turven::className(), ['assortiment_id' => 'assortiment_id']);
     }
 
+        /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getTotaalTurven()
+    {
+        return $this->hasMany(Turven::className(), ['assortiment_id' => 'assortiment_id'])
+            ->sum('aantal');
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getOpbrengstTurven()
+    {
+        return $this->hasMany(Turven::className(), ['assortiment_id' => 'assortiment_id'])
+            ->sum('totaal_prijs');
+    }
+
     /**
      * @return \yii\db\ActiveQuery
      */
     public function getInkoops()
     {
         return $this->hasMany(Inkoop::className(), ['assortiment_id' => 'assortiment_id']);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getTotaalInkoop()
+    {
+        return $this->hasMany(Inkoop::className(), ['assortiment_id' => 'assortiment_id'])
+            ->sum('totaal_prijs');
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getPrijs()
+    {
+        return $this->hasMany(Prijslijst::className(), ['assortiment_id' => 'assortiment_id'])
+            ->andWhere(['<=','from', Yii::$app->setupdatetime->storeFormat(time(), 'date')])
+            ->andWhere(['>=','to', Yii::$app->setupdatetime->storeFormat(time(), 'date')]);
     }
 
     /**
@@ -146,8 +174,9 @@ class Assortiment extends BarActiveRecord
     public function getSoortOptions() {
         return [
             self::SOORT_fris => Yii::t('app', 'Fris'),
-            self::SOORT_pils => Yii::t('app', 'Pils'),
+            self::SOORT_bier => Yii::t('app', 'Bier'),
             self::SOORT_wijn => Yii::t('app', 'Wijn'),
+            self::SOORT_snack => Yii::t('app', 'Snacks'),
         ];
     }
 

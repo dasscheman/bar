@@ -8,6 +8,7 @@ $config = [
     'id' => 'basic',
     'name'=>'Bison Bar',
     'basePath' => dirname(__DIR__),
+    'timeZone' => 'Europe/Amsterdam',
     'bootstrap' => [
         'log',
         'app\components\Bootstrap',

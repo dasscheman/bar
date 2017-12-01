@@ -68,6 +68,7 @@ $toolbar = FALSE;
                         [
                             'class' => 'yii\grid\ActionColumn',
                             'template' => '{update} {view} {delete}',
+                            'headerOptions' => ['style' => 'width:14%'],
                         ],
                     ],
                     'toolbar'=> $toolbar,
