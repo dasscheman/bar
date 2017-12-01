@@ -193,13 +193,6 @@ class Turven extends BarActiveRecord
             ->orWhere(['turven.status' => Turven::STATUS_factuur_gegenereerd]);
 
         if (!$turven->exists() ) {
-            $message = Yii::$app->mailer->compose('mail_okey', [
-                    'type' => 'Turven',
-                ])
-                ->setFrom('noreply@biologenkantoor.nl')
-                ->setTo('daan@biologenkantoor.nl')
-                ->setSubject('Status Turven');
-            $message->send();
             return 0;
         }
 //        Yii::$app->mailer->htmlLayout('layouts/html');
