@@ -8,6 +8,7 @@ use app\controllers\TransactiesController;
 use app\models\Mollie;
 use app\models\BetalingType;
 use Mollie_API_Object_Method;
+use app\models\User;
 
 /**
  * TransactiesController implements the CRUD actions for Transacties model.
