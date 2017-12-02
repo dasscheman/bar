@@ -25,32 +25,32 @@ use app\models\BetalingType;
         'enableClientValidation' => true,
         'enableAjaxValidation'   => false,
     ]);
-    echo $form->field($model, 'transacties_user_id')->widget(Select2::className(), [
+    echo $form->field($modelTransacties, 'transacties_user_id')->widget(Select2::className(), [
         'data' => ArrayHelper::map(User::find()->all(), 'id', 'username'),
         'options'   => [
             'placeholder' => Yii::t('app', 'Selecteer gebruiker'),
             'id' => 'transacties_user_id',
         ],
     ]);
-    echo $form->field($model, 'omschrijving')->textInput();
-    echo $form->field($model, 'bedrag')->widget(MaskMoney::classname());
-    echo $form->field($model, 'type_id')->widget(Select2::className(), [
+    echo $form->field($modelTransacties, 'omschrijving')->textInput();
+    echo $form->field($modelTransacties, 'bedrag')->widget(MaskMoney::classname());
+    echo $form->field($modelTransacties, 'type_id')->widget(Select2::className(), [
         'data' => ArrayHelper::map(BetalingType::find()->all(), 'type_id', 'omschrijving'),
         'options'   => [
             'placeholder' => Yii::t('app', 'Selecteer betaling type'),
             'id' => 'type_id',
         ],
     ]);
-    echo $form->field($model, 'status')->widget(Select2::className(), [
-        'data' => $model->getStatusOptions(),
+    echo $form->field($modelTransacties, 'status')->widget(Select2::className(), [
+        'data' => $modelTransacties->getStatusOptions(),
         'options' => [
             'placeholder' => Yii::t('app', 'Selecteer status betaling'),
             'id' => 'status'
         ],
     ]);
 
-    echo $form->field($model, 'datum')->widget(DatePicker::className(), [
-        'model' => $model,
+    echo $form->field($modelTransacties, 'datum')->widget(DatePicker::className(), [
+        'model' => $modelTransacties,
         'attribute' => 'datum',
         'type' => DatePicker::TYPE_COMPONENT_PREPEND,
     //    'value' => '23-Feb-1982',

@@ -48,8 +48,12 @@ $toolbar = FALSE;
                                 return $model->getTransactiesUser()->one()->username;
                             },
                         ],
-//                                    'displayname',
-                        'datum',
+                        'datum' => [
+                            'attribute' => 'datum',
+                            'value' => function($model){
+                                return Yii::$app->setupdatetime->displayFormat($model->datum, 'php:d-M-Y');
+                            },
+                        ],
                         'omschrijving',
                         'bedrag',
                         'type_id' => [
@@ -62,6 +66,13 @@ $toolbar = FALSE;
                             'attribute' => 'status',
                             'value' => function($model){
                                 return $model->getStatusText();
+                            },
+                        ],
+                        [
+                            'attribute'=>'bonnen_id',
+                            'format' => 'raw',
+                            'value'=>function ($model) {
+                                 return Html::a($model->bon_id, ['bonnen/view', 'id' => $model->bon_id]);
                             },
                         ],
                         [
@@ -78,6 +89,7 @@ $toolbar = FALSE;
                         [
                             'class' => 'yii\grid\ActionColumn',
                             'template' => '{update} {view} {delete}',
+                            'headerOptions' => ['style' => 'width:16%'],
                         ],
                     ],
 

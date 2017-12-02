@@ -49,6 +49,7 @@ echo Nav::widget([
             'items' => [
                 ['label' => 'Overzicht', 'url' => ['/transacties/index']],
                 ['label' => 'Toevoegen', 'url' => ['/transacties/create']],
+                ['label' => 'Declaratie toevoegen', 'url' => ['/transacties/create-declaratie']],
 //                ['label' => 'Something else here', 'url' => '#'],
             ],
         ],
@@ -81,6 +82,14 @@ echo Nav::widget([
             'items' => [
                 ['label' => 'Overzicht', 'url' => ['/betaling-type/index']],
                 ['label' => 'Betaling type maken', 'url' => ['/betaling-type/create']],
+//                ['label' => 'Something else here', 'url' => '#'],
+            ],
+        ],
+        [
+            'label' => 'Favorieten',
+            'items' => [
+                ['label' => 'Overzicht', 'url' => ['/favorieten-lijsten/index']],
+                ['label' => 'Favorieten lijst maken', 'url' => ['/favorieten-lijsten/create']],
 //                ['label' => 'Something else here', 'url' => '#'],
             ],
         ],

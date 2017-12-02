@@ -42,7 +42,9 @@ class AssortimentSearch extends Assortiment
      */
     public function search($params)
     {
-        $query = Assortiment::find();
+        $query = Assortiment::find()
+            ->where('status =:status')
+            ->params([':status' => Assortiment::STATUS_beschikbaar]);
 
         // add conditions that should always apply here
 

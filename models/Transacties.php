@@ -68,7 +68,7 @@ class Transacties extends BarActiveRecord
     {
         return [
             'transacties_id' => 'Transacties ID',
-            'transacties_user_id' => 'Transacties User ID',
+            'transacties_user_id' => 'Transactie voor',
             'factuur_id' => Yii::t('app', 'Factuur ID'),
             'omschrijving' => 'Omschrijving',
             'bedrag' => 'Bedrag',
@@ -83,13 +83,6 @@ class Transacties extends BarActiveRecord
         ];
     }
  
-    /**
-      * @return \yii\db\ActiveQuery
-      */
-    public function getInkoops()
-    {
-        return $this->hasMany(Inkoop::className(), ['transacties_id' => 'transacties_id']);
-    }
 
     /**
      * @return \yii\db\ActiveQuery
@@ -148,13 +141,6 @@ class Transacties extends BarActiveRecord
 
 //        Yii::$app->mailer->htmlLayout('layouts/html');
         if(!$transacties->exists()){
-            $message = Yii::$app->mailer->compose('mail_okey', [
-                    'type' => 'Transacties',
-                ])
-                ->setFrom('noreply@biologenkantoor.nl')
-                ->setTo('daan@biologenkantoor.nl')
-                ->setSubject('Status Transacties');
-            $message->send();
             return 0;
         }
 

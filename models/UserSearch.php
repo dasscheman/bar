@@ -5,6 +5,7 @@ namespace app\models;
 use Yii;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
+use yii\helpers\ArrayHelper;
 use app\models\User;
 
 /**
@@ -40,9 +41,20 @@ class UserSearch extends User
      *
      * @return ActiveDataProvider
      */
-    public function search($params)
+    public function search($params, $lijst_id = NULL)
     {
-        $query = User::find();
+        if ($lijst_id === NULL) {
+            $query = User::find();            
+        } else {
+            $selected_users = Favorieten::find()
+                ->where(['lijst_id' => $lijst_id])
+                ->asArray()
+                ->select('selected_user_id')
+                ->all();
+
+            $ids = ArrayHelper::getColumn($selected_users, 'selected_user_id');
+            $query = User::find()->where(['id' => $ids]);
+        }
 
         $query->joinWith(['profile']);
 
@@ -79,6 +91,7 @@ class UserSearch extends User
 
         $query->andFilterWhere(['like', 'username', $this->username])
             ->andFilterWhere(['like', 'email', $this->email])
+//            ->andFilterWhere(['in', 'id', $this->id])
             ->andFilterWhere(['like', 'password_hash', $this->password_hash])
             ->andFilterWhere(['like', 'auth_key', $this->auth_key])
             ->andFilterWhere(['like', 'unconfirmed_email', $this->unconfirmed_email])

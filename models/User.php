@@ -24,23 +24,32 @@ use dektrium\user\models\User as BaseUser;
  *
  * @property Assortiment[] $assortiments
  * @property Assortiment[] $assortiments0
- * @property Factuur[] $factuurs
- * @property Factuur[] $factuurs0
+ * @property BetalingType[] $betalingTypes
+ * @property BetalingType[] $betalingTypes0
+ * @property Bonnen[] $bonnens
+ * @property Bonnen[] $bonnens0
+ * @property Favorieten[] $favorietens
+ * @property Favorieten[] $favorietens0
+ * @property Favorieten[] $favorietens1
+ * @property FavorietenLijsten[] $favorietenLijstens
+ * @property FavorietenLijsten[] $favorietenLijstens0
+ * @property FavorietenLijsten[] $favorietenLijstens1
+ * @property Inkoop[] $inkoops
+ * @property Inkoop[] $inkoops0
+ * @property Inkoop[] $inkoops1
+ * @property Prijslijst[] $prijslijsts
+ * @property Prijslijst[] $prijslijsts0
  * @property Profile $profile
  * @property SocialAccount[] $socialAccounts
  * @property Token[] $tokens
  * @property Transacties[] $transacties
  * @property Transacties[] $transacties0
  * @property Transacties[] $transacties1
- * @property TransactiesFactuur[] $transactiesFactuurs
- * @property TransactiesFactuur[] $transactiesFactuurs0
  * @property Turflijst[] $turflijsts
  * @property Turflijst[] $turflijsts0
  * @property Turven[] $turvens
  * @property Turven[] $turvens0
  * @property Turven[] $turvens1
- * @property TurvenFactuur[] $turvenFactuurs
- * @property TurvenFactuur[] $turvenFactuurs0
  */
 
 class User extends BaseUser
@@ -108,13 +117,108 @@ class User extends BaseUser
         return $this->hasMany(Assortiment::className(), ['updated_by' => 'id']);
     }
 
-    /**
-     * @return \yii\db\ActiveQuery
-     */
-    public function getFactuurs()
-    {
-        return $this->hasMany(Factuur::className(), ['created_by' => 'id']);
-    }
+    public function getBetalingTypes()
+     {
+         return $this->hasMany(BetalingType::className(), ['created_by' => 'id']);
+     }
+     /**
+      * @return \yii\db\ActiveQuery
+      */
+     public function getBetalingTypes0()
+     {
+         return $this->hasMany(BetalingType::className(), ['updated_by' => 'id']);
+     }
+     /**
+      * @return \yii\db\ActiveQuery
+      */
+     public function getBonnens()
+     {
+         return $this->hasMany(Bonnen::className(), ['created_by' => 'id']);
+     }
+     /**
+      * @return \yii\db\ActiveQuery
+      */
+     public function getBonnens0()
+     {
+         return $this->hasMany(Bonnen::className(), ['updated_by' => 'id']);
+     }
+     /**
+      * @return \yii\db\ActiveQuery
+      */
+     public function getFavorietens()
+     {
+         return $this->hasMany(Favorieten::className(), ['created_by' => 'id']);
+     }
+     /**
+      * @return \yii\db\ActiveQuery
+      */
+     public function getFavorietens0()
+     {
+         return $this->hasMany(Favorieten::className(), ['selected_user_id' => 'id']);
+     }
+     /**
+      * @return \yii\db\ActiveQuery
+      */
+     public function getFavorietens1()
+     {
+         return $this->hasMany(Favorieten::className(), ['updated_by' => 'id']);
+     }
+     /**
+      * @return \yii\db\ActiveQuery
+      */
+     public function getFavorietenLijstens()
+     {
+         return $this->hasMany(FavorietenLijsten::className(), ['created_by' => 'id']);
+     }
+     /**
+      * @return \yii\db\ActiveQuery
+      */
+     public function getFavorietenLijstens0()
+     {
+         return $this->hasMany(FavorietenLijsten::className(), ['updated_by' => 'id']);
+     }
+     /**
+      * @return \yii\db\ActiveQuery
+      */
+     public function getFavorietenLijstens1()
+     {
+         return $this->hasMany(FavorietenLijsten::className(), ['user_id' => 'id']);
+     }
+     /**
+      * @return \yii\db\ActiveQuery
+      */
+     public function getInkoops()
+     {
+         return $this->hasMany(Inkoop::className(), ['created_by' => 'id']);
+     }
+     /**
+      * @return \yii\db\ActiveQuery
+      */
+     public function getInkoops0()
+     {
+         return $this->hasMany(Inkoop::className(), ['updated_by' => 'id']);
+     }
+     /**
+      * @return \yii\db\ActiveQuery
+      */
+     public function getInkoops1()
+     {
+         return $this->hasMany(Inkoop::className(), ['inkoper_user_id' => 'id']);
+     }
+     /**
+      * @return \yii\db\ActiveQuery
+      */
+     public function getPrijslijsts()
+     {
+         return $this->hasMany(Prijslijst::className(), ['created_by' => 'id']);
+     }
+     /**
+      * @return \yii\db\ActiveQuery
+      */
+     public function getPrijslijsts0()
+     {
+         return $this->hasMany(Prijslijst::className(), ['updated_by' => 'id']);
+     }
 
     /**
      * @return \yii\db\ActiveQuery

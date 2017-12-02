@@ -8,8 +8,8 @@ class m171121_212700_gebruiker_beheerder_toevoegen extends Migration
     public function safeUp()
     {
         // Beheerder-account met wachtwoord beheerder
-        $this->batchInsert('user', ['id', 'username', 'password_hash', 'confirmed_at', 'created_at', 'updated_at'], [
-                ['1', 'beheerder', '$2y$10$45TeGMBQH81jHor1oX/W0.U2zK3EwTXdYjttVmaa8WahDavAwmZwm', mktime(), mktime(), mktime()]
+        $this->batchInsert('user', ['id', 'username', 'email', 'auth_key', 'password_hash', 'confirmed_at', 'created_at', 'updated_at'], [
+                ['1', 'beheerder', 'test@test.nl', 'ASDKFJweifjwefwks#$4fafsd', '$2y$10$45TeGMBQH81jHor1oX/W0.U2zK3EwTXdYjttVmaa8WahDavAwmZwm', mktime(), mktime(), mktime()]
         ]);
 
         // Profiel voor beheerder

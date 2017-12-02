@@ -33,9 +33,8 @@ use yii\widgets\DetailView;
                         'model' => $model,
                         'attributes' => [
                             'inkoop_id',
-                            'assortiment_id:datetime',
+                            'assortiment_id',
                             'datum',
-                            'inkoper_user_id',
                             'volume',
                             'aantal',
                             'totaal_prijs',
