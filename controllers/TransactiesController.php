@@ -26,7 +26,8 @@ class TransactiesController extends Controller
         return [
             'verbs' => [
                 'class' => VerbFilter::className(),
-                'actions' => [
+                    'actions' => [
+                        'webhook' => ['POST', 'GET'],
                     'delete' => ['POST'],
                 ],
             ],
@@ -43,10 +44,10 @@ class TransactiesController extends Controller
                         'actions' => ['index', 'delete', 'create', 'create-declaraties', 'update', 'view'],
                         'roles' =>  ['admin', 'beheerder'],
                     ],
-                    [
-                        'allow' => FALSE,  // deny all users
-                        'roles'=> ['*'],
-                    ],
+//                    [
+//                        'allow' => FALSE,  // deny all users
+//                        'roles'=> ['*'],
+//                    ],
                 ],
             ],
         ];

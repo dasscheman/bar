@@ -28,12 +28,25 @@ class MollieController extends TransactiesController
         $behaviors['access']['rules'][] =
             [
                 'allow' => TRUE,
-                'actions' => ['betaling', 'link-betaling', 'webhook', 'return-betaling'],
+                'actions' => ['betaling', 'link-betaling', 'return-betaling'],
                 'roles' =>  ['admin', 'beheerder'],
+            ];
+
+        $behaviors['access']['rules'][] =
+            [
+                'actions' => ['webhook'],
+                'allow' => true,
             ];
         return $behaviors;
     }
 
+    public function beforeAction($action)
+    {
+        if ($action->id === 'webhook') {
+            $this->enableCsrfValidation = false;
+        }
+        return parent::beforeAction($action);
+    }
 
     /**
      * Creates a new Transacties model.
@@ -68,8 +81,8 @@ class MollieController extends TransactiesController
                         "amount"       => $model->bedrag,
                         "method"       => Mollie_API_Object_Method::IDEAL,
                         "description"  => $model->omschrijving,
-                        "redirectUrl"  => "https://popupbar.biologenkantoor.nl/index.php?r=mollie/return-betaling&transacties_id={$model->transacties_id}",
-                        "webhookUrl"   => "https://popupbar.biologenkantoor.nl/index.php?r=mollie/webhook",
+                        "redirectUrl"  => "http://popupbar.biologenkantoor.nl/index.php?r=mollie/return-betaling&transacties_id={$model->transacties_id}",
+                        "webhookUrl"   => "http://popupbar.biologenkantoor.nl/index.php?r=mollie/webhook",
 //                        "redirectUrl"  => "https://bar.debison.nl/index.php?r=mollie/return?transacties_id={$model->transacties_id}",
 //                        "webhookUrl"   => "https://bar.debison.nl/index.php?r=mollie/webhook",
                         "metadata"     => array(
@@ -115,7 +128,7 @@ class MollieController extends TransactiesController
             /*
              * Retrieve the payment's current state.
              */
-            $payment = $mollie->payments->get(Yii::$app->request->post('transacties_id'));
+            $payment = $mollie->payments->get(Yii::$app->request->post('id'));
             $transacties_id = $payment->metadata->transacties_id;
             $model = Transacties::findOne($transacties_id);
 
@@ -157,7 +170,6 @@ class MollieController extends TransactiesController
         {
             echo "API call failed: " . htmlspecialchars($e->getMessage());
         }
-
     }
 
     public function actionReturnBetaling()

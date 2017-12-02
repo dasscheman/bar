@@ -146,12 +146,12 @@ class Transacties extends BarActiveRecord
      */
     public function getMollieStatusOptions() {
         return [
-            self::MOLLIE_STATUS_open => 'Open',
-            self::MOLLIE_STATUS_cancelled => 'Geannuleerd',
-            self::MOLLIE_STATUS_expired => 'Verlopen',
-            self::MOLLIE_STATUS_failed => 'Mislukt',
-            self::MOLLIE_STATUS_paid => 'Betaald',
-            self::MOLLIE_STATUS_refunded => 'Terugbetaald',
+            self::MOLLIE_STATUS_open => 'open',
+            self::MOLLIE_STATUS_cancelled => 'cancelled',
+            self::MOLLIE_STATUS_expired => 'expired',
+            self::MOLLIE_STATUS_failed => 'failed',
+            self::MOLLIE_STATUS_paid => 'paid',
+            self::MOLLIE_STATUS_refunded => 'refunded',
         ];
     }
 
@@ -169,7 +169,7 @@ class Transacties extends BarActiveRecord
      * @return string the status id
      */
     public function getMollieStatusId($status) {
-        $id = array_search( ucfirst($status),  $this->mollieStatusOptions);
+        $id = array_search( $status,  $this->mollieStatusOptions);
         if (isset($id)) {
             return $id;
         }
