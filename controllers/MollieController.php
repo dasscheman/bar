@@ -81,8 +81,8 @@ class MollieController extends TransactiesController
                         "amount"       => $model->bedrag,
                         "method"       => Mollie_API_Object_Method::IDEAL,
                         "description"  => $model->omschrijving,
-                        "redirectUrl"  => "http://popupbar.biologenkantoor.nl/index.php?r=mollie/return-betaling&transacties_id={$model->transacties_id}",
-                        "webhookUrl"   => "http://popupbar.biologenkantoor.nl/index.php?r=mollie/webhook",
+                        "redirectUrl"  => "https://popupbar.biologenkantoor.nl/index.php?r=mollie/return-betaling&transacties_id={$model->transacties_id}",
+                        "webhookUrl"   => "https://popupbar.biologenkantoor.nl/index.php?r=mollie/webhook",
 //                        "redirectUrl"  => "https://bar.debison.nl/index.php?r=mollie/return?transacties_id={$model->transacties_id}",
 //                        "webhookUrl"   => "https://bar.debison.nl/index.php?r=mollie/webhook",
                         "metadata"     => array(
