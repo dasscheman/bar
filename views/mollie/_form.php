@@ -46,7 +46,7 @@ use yii\helpers\Html;
             'id' => 'issuer'
         ],
     ]);
-    echo Html::submitButton(Yii::t('app', 'Save'), ['class' => 'btn btn-success btn-block', 'value'=>$user->id, 'name'=>'submit']);
+    echo Html::submitButton(Yii::t('app', 'Save'), ['class' => 'btn btn-success btn-block', 'value'=>$user->id, 'name'=>'user_id']);
 
     ActiveForm::end(); ?>
 

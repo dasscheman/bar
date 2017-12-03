@@ -58,11 +58,11 @@ class MollieController extends TransactiesController
         $model = new Mollie;
         
         if ($model->load(Yii::$app->request->post())) {
-            $user = User::findOne(Yii::$app->request->post('submit'));
+            $user = User::findOne(Yii::$app->request->post('user_id'));
 
             $model->transacties_user_id = $user->id;
             $model->type_id = BetalingType::getIdealId();
-            $model->datum = date("Y-m-d");
+            $model->datum = date('Y-m-d H:i:s');
             $model->status = Transacties::STATUS_ingevoerd;
             if($model->save()) {
                 try
