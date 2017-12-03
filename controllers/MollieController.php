@@ -9,6 +9,7 @@ use app\models\Mollie;
 use app\models\BetalingType;
 use Mollie_API_Object_Method;
 use app\models\User;
+use yii\web\NotFoundHttpException;
 
 /**
  * TransactiesController implements the CRUD actions for Transacties model.
@@ -22,19 +23,18 @@ class MollieController extends TransactiesController
     {
         $behaviors = parent::behaviors();
         $behaviors['access']['only'][] = 'betaling';
-        $behaviors['access']['only'][] = 'link-betaling';
         $behaviors['access']['only'][] = 'webhook';
         $behaviors['access']['only'][] = 'return-betaling';
         $behaviors['access']['rules'][] =
             [
                 'allow' => TRUE,
-                'actions' => ['betaling', 'link-betaling', 'return-betaling'],
+                'actions' => [],
                 'roles' =>  ['admin', 'beheerder'],
             ];
 
         $behaviors['access']['rules'][] =
             [
-                'actions' => ['webhook'],
+                'actions' => ['webhook', 'betaling', 'return-betaling'],
                 'allow' => true,
             ];
         return $behaviors;
@@ -55,18 +55,18 @@ class MollieController extends TransactiesController
      */
     public function actionBetaling()
     {
-        $mollie = new Mollie;
-        $model = new Transacties();
-
+        $model = new Mollie;
+        
         if ($model->load(Yii::$app->request->post())) {
-            $model->transacties_user_id = Yii::$app->user->id;
+            $user = User::findOne(Yii::$app->request->post('submit'));
+
+            $model->transacties_user_id = $user->id;
             $model->type_id = BetalingType::getIdealId();
             $model->datum = date("Y-m-d");
             $model->status = Transacties::STATUS_ingevoerd;
             if($model->save()) {
                 try
                 {
-                    $order_id = time();
                     /*
                      * Payment parameters:
                      *   amount        Amount in EUROs. This example creates a € 27.50 payment.
@@ -77,7 +77,7 @@ class MollieController extends TransactiesController
                      *   metadata      Custom metadata that is stored with the payment.
                      *   issuer        The customer's bank. If empty the customer can select it later.
                      */
-                    $payment = $mollie->payments->create(array(
+                    $payment = $model->mollie->payments->create(array(
                         "amount"       => $model->bedrag,
                         "method"       => Mollie_API_Object_Method::IDEAL,
                         "description"  => $model->omschrijving,
@@ -112,11 +112,21 @@ class MollieController extends TransactiesController
                     Yii::$app->session->setFlash('warning', Yii::t('app', 'Fout met opslaan: ' . $key . ':' . $error[0]));
                 }
             }
+        } else {
+            if(isset(Yii::$app->user->id)) {
+                $user = User::findOne(Yii::$app->user->id);
+            }
+            if (!isset($user)) {
+                $user = User::findByPayKey(Yii::$app->request->get('pay_key'));
+            }
+            if (!isset($user)) {
+                throw new NotFoundHttpException('Je bent niet ingelogt of de link uit je email is niet meer geldig.');
+            }
         }
         
         return $this->render('create', [
-            'modelTransacties' => $model,
-            'mollie' => $mollie,
+            'model' => $model,
+            'user' => $user
         ]);
     }
 
@@ -135,13 +145,40 @@ class MollieController extends TransactiesController
             /*
              * Update the transactie in the database.
              */
-            $model->setRetrievedMollieStatus($payment->status);
+            switch ($payment->status) {
+                case 'open':
+                    $model->mollie_status = Transacties::MOLLIE_STATUS_open;
+                    $model->status = Transacties::STATUS_ingevoerd;
+                    break;
+                case 'cancelled':
+                    $model->mollie_status = Transacties::MOLLIE_STATUS_cancelled;
+                    $model->status = Transacties::STATUS_geannuleerd;
+                    break;
+                case 'expired':
+                    $model->mollie_status = Transacties::MOLLIE_STATUS_expired;
+                    $model->status = Transacties::STATUS_ongeldig;
+                    break;
+                case 'failed':
+                    $model->mollie_status = Transacties::MOLLIE_STATUS_failed;
+                    $model->status = Transacties::STATUS_ongeldig;
+                    break;
+                case 'paid':
+                    $model->mollie_status = Transacties::MOLLIE_STATUS_paid;
+                    $model->status = Transacties::STATUS_gecontroleerd;
+                    break;
+                case 'refunded':
+                    $model->mollie_status = Transacties::MOLLIE_STATUS_refunded;
+                    $model->status = Transacties::STATUS_gecontroleerd;
+                    $model->type_id = BetalingType::getIdealTerugbetalingId();
+                    break;
+            }
             $model->save();
             if ($payment->isPaid() === TRUE)
             {
+
                 $user = User::findOne($model->transacties_user_id);
                 $message = Yii::$app->mailer->compose('mail_ontvangen_betaling', [
-                        'usersProfiel' => $user->profile,
+                        'user' => $user,
                     ])
                     ->setFrom('bar@debison.nl')
                     ->setTo($user->email)
@@ -154,7 +191,7 @@ class MollieController extends TransactiesController
             } elseif ($payment->isOpen() === FALSE) {
                 $user = User::findOne($model->transacties_user_id);
                 $message = Yii::$app->mailer->compose('mail_mislukte_betaling', [
-                        'usersProfiel' => $user->profile,
+                        'user' => $user,
                     ])
                     ->setFrom('bar@debison.nl')
                     ->setTo($user->email)
@@ -195,9 +232,11 @@ class MollieController extends TransactiesController
                 Yii::$app->session->setFlash('info', 'Betaling is teruggestord.');
                 break;
             default:
-                Yii::$app->session->setFlash('warning', Yii::t('app', 'Fout met opslaan: ' . $key . ':' . $error[0]));
+                Yii::$app->session->setFlash('warning', 'Ongeldige transactie, neem contact op met de beheerder.');
         }
-
+        if (!isset(Yii::$app->user->id)) {
+             Yii::$app->session->setFlash('primary', 'Log in om je overzicht te bekijken.');
+        }
         return $this->render('/user/overzicht', ['model' => User::findOne(Yii::$app->user->id)]);
     }
 }
