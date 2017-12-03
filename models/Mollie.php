@@ -6,22 +6,36 @@ use Yii;
 use Mollie_API_Client;
 use Mollie_API_Object_Method;
 use yii\helpers\ArrayHelper;
+use app\models\Transacties;
 
 /**
  * This is the model class for Mollie intergration.
  */
-class Mollie extends Mollie_API_Client
+class Mollie extends Transacties
 {
-    
+    public $mollie;
+    public $issuer;
+
     function __construct()
     {
         parent::__construct();
-        $this->setApiKey( Yii::$app->params['mollie']['test']);
+        $this->mollie = new Mollie_API_Client;
+        $this->mollie->setApiKey( Yii::$app->params['mollie']['test']);
 
     }
 
+    /**
+     * @inheritdoc
+     */
+    public function attributeLabels()
+    {
+        return [
+            'issuer' => 'Bank',
+        ];
+    }
+
     public function getIssuersOptions(){
-        $issuers = $this->issuers->all();
+        $issuers = $this->mollie->issuers->all();
         $list = [];
 		foreach ($issuers as $issuer)
 		{
