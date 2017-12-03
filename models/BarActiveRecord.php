@@ -13,6 +13,8 @@ abstract class BarActiveRecord extends ActiveRecord
     const STATUS_tercontrole = 3;
     const STATUS_factuur_gegenereerd = 4;
     const STATUS_factuur_verzonden = 5;
+    const STATUS_geannuleerd = 98;
+    const STATUS_ongeldig = 99;
 
     /**
     * Attaches the timestamp behavior to update our create and update times
@@ -47,6 +49,8 @@ abstract class BarActiveRecord extends ActiveRecord
             self::STATUS_tercontrole => 'Tercontrole',
             self::STATUS_factuur_gegenereerd => 'Factuur gegenereerd',
             self::STATUS_factuur_verzonden => 'Factuur verzonden',
+            self::STATUS_geannuleerd => 'Geannuleerd',
+            self::STATUS_ongeldig => 'Ongeldige transactie',
         ];
     }
 
