@@ -39,7 +39,6 @@ class Transacties extends BarActiveRecord
     const MOLLIE_STATUS_paid = 5;    
     const MOLLIE_STATUS_refunded = 6;
 
-    public $issuer;
     /**
      * @inheritdoc
      */

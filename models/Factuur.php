@@ -207,7 +207,7 @@ class Factuur extends BarActiveRecord
 
 //            Yii::$app->mailer->htmlLayout('layouts/html');
             $message = Yii::$app->mailer->compose('mail', [
-                    'usersProfiel' => $user->profile,
+                    'user' => $user,
                 ])
                 ->setFrom('bar@debison.nl')
                 ->setTo($user->email)
