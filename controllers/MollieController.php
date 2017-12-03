@@ -226,7 +226,7 @@ class MollieController extends TransactiesController
                 Yii::$app->session->setFlash('danger', 'Betaling is mislukt.');
                 break;
             case Transacties::MOLLIE_STATUS_paid:
-                Yii::$app->session->setFlash('succes', 'De betaling is met succes verwerkt.');
+                Yii::$app->session->setFlash('success', 'De betaling is met succes verwerkt.');
                 break;
             case Transacties::MOLLIE_STATUS_refunded:
                 Yii::$app->session->setFlash('info', 'Betaling is teruggestord.');
