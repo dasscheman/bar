@@ -10,7 +10,7 @@ use yii\helpers\Url;
 <!--<html>
 	<head></head>
 	<body>-->
-		Hallo <?php echo $usersProfiel->voornaam; ?>,<br>
+		Hallo <?php echo $user->profile->voornaam; ?>,<br>
 
         Zoals de meeste mensen wel mee gekregen hebben, heb ik het barbeheer overgenomen van Paul.
         Ik heb een nieuw turf systeem gemaakt en om het een en ander te testen krijg je hierbij een controle nota.

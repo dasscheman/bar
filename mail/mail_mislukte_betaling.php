@@ -10,7 +10,7 @@ use yii\helpers\Url;
 <!--<html>
 	<head></head>
 	<body>-->
-		Hallo <?php echo  $usersProfiel->voornaam; ?>,<br><br>
+		Hallo <?php echo  $user->profile->voornaam; ?>,<br><br>
 
         <br>
         Helaas is er iets niet goed gegaan met je online betaling. 

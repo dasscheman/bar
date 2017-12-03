@@ -10,14 +10,19 @@ use yii\helpers\Url;
 <!--<html>
 	<head></head>
 	<body>-->
-		Hallo <?php echo  $usersProfiel->voornaam; ?>,<br><br>
+		Hallo <?php echo  $user->profile->voornaam; ?>,<br><br>
 
 		hierbij ontvangt je de factuur voor de Bison bar. In de bijlage zie je een gedetaileerd overzicht.
 
         <br>
+        Het is nu ook mogelijk om met Ideal te betalen:
+        <?php
+            echo Html::a(' Direct betalen met ideal', ['/mollie/betaling', 'pay_key' => $user->pay_key]) ?>
+        <br>
+        <br>
 
         De meeste mensen zullen wel gezien hebben dat er een nieuwe digitale turflijst hangt.
-        De oude papieren turflijst hangt er nog wel, als back-up, maar ik denk dat die snel zal verdwijnen.
+        De er hangt nog wel een oude papieren turflijst, maar die dient alleen als back-up in het geval van technische storingen.
         <br><br>
         Met de nieuwe digitale turflijst is het ook mogelijk om in te loggen met het mail adres waarop je deze mail ontvangt.
         Je kunt dan ook turven registreren vanaf je mobiel. Als je dit wilt, dan moet je mij dat even laten weten.
@@ -33,10 +38,10 @@ use yii\helpers\Url;
         <br>
         Daarom wil ik een prepaid systeem gaan hanteren.
         Dit houdt in dat je een tegoed moet hebben om drinken te kunnen turven in de Bison Bar,
-        en dat je maximaal 10 euro 'rood' kunt staan.
+        en dat je maximaal 20 euro 'rood' kunt staan.
         <br>
         <br>
-        Komende periode is een overgansperiode je kunt nu nog meer dan 10 euro 'rood' staan,
+        Komende periode is een overgansperiode je kunt nu nog meer dan 20 euro 'rood' staan,
         maar op termijn zal dit prepaid systeem technisch ondersteund worden met oa Ideal betalingen.
 
         <br>
