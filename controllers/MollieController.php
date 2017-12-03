@@ -138,7 +138,7 @@ class MollieController extends TransactiesController
             /*
              * Retrieve the payment's current state.
              */
-            $payment = $mollie->payments->get(Yii::$app->request->post('id'));
+            $payment = $mollie->mollie->payments->get(Yii::$app->request->post('id'));
             $transacties_id = $payment->metadata->transacties_id;
             $model = Transacties::findOne($transacties_id);
 

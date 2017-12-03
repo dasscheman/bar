@@ -15,7 +15,7 @@ class m171202_082507_alter_user_table extends Migration
             $this->update(
                 'user',
                 [ 'pay_key' => \Yii::$app->security->generateRandomString() ],
-                'id =' . $user->id);
+                'id =' . $user['id']);
         }
     }
 
