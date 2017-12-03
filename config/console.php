@@ -36,6 +36,10 @@ $config = [
             'class' => 'app\components\SetupDateTime',
         ],
         'db' => $db,
+        'urlManager' => [
+            'class' => 'yii\web\UrlManager',
+            'scriptUrl' => 'http:localhost/Bar/web'
+        ]
     ],
 //    'authManager' => [
 //        'class' => 'dektrium\rbac\RbacConsoleModule',
