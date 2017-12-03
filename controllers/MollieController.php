@@ -211,19 +211,22 @@ class MollieController extends TransactiesController
 
     public function actionReturnBetaling()
     {
+        // 3 seond sleep om zeker te weten dat de webhook eerst is aangeroepen
+        // en de status gezet is.
+        sleep(3);
         $transactie = Transacties::findOne(Yii::$app->request->get('transacties_id'));
         switch ($transactie->mollie_status) {
             case Transacties::MOLLIE_STATUS_open:
                 Yii::$app->session->setFlash('warning', 'Je betaling wordt verwerkt.');
                 break;
             case Transacties::MOLLIE_STATUS_cancelled:
-                Yii::$app->session->setFlash('danger', 'Je betaling is geannuleerd.');
+                Yii::$app->session->setFlash('error', 'Je betaling is geannuleerd.');
                 break;
             case Transacties::MOLLIE_STATUS_expired:
-                Yii::$app->session->setFlash('danger', 'Betalingssessie is verlopen.');
+                Yii::$app->session->setFlash('error', 'Betalingssessie is verlopen.');
                 break;
             case Transacties::MOLLIE_STATUS_failed:
-                Yii::$app->session->setFlash('danger', 'Betaling is mislukt.');
+                Yii::$app->session->setFlash('error', 'Betaling is mislukt.');
                 break;
             case Transacties::MOLLIE_STATUS_paid:
                 Yii::$app->session->setFlash('success', 'De betaling is met succes verwerkt.');
