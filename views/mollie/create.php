@@ -17,7 +17,7 @@ use yii\helpers\Html;
         <div class="panel panel-default">
             <div class="panel-heading">
                 <?php
-                echo Html::encode('Betalen voor: ' . $user->profile->voornaam
+                echo Html::encode($user->profile->voornaam
                         . ' ' . $user->profile->tussenvoegsel
                         . ' ' . $user->profile->achternaam) ?>
             </div>

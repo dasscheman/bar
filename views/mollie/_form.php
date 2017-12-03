@@ -12,6 +12,8 @@
 use kartik\select2\Select2;
 use kartik\widgets\ActiveForm;
 use yii\helpers\Html;
+use yii\helpers\ArrayHelper;
+use app\models\User;
 
 ?>
 
@@ -22,7 +24,14 @@ use yii\helpers\Html;
         'enableAjaxValidation'   => false,
         'type' => ActiveForm::TYPE_HORIZONTAL,
     ]);
-
+    echo $form->field($model, 'transacties_user_id')->widget(Select2::className(), [
+        'data' => ArrayHelper::map(User::find()->all(), 'id', 'username'),
+        'options'   => [
+            'value' => $model->transacties_user_id,
+            'placeholder' => Yii::t('app', 'Selecteer gebruiker'),
+            'id' => 'transacties_user_id',
+        ],
+    ]);
     echo $form->field($model, 'omschrijving')->textInput();
     echo $form->field($model, 'bedrag')->widget(Select2::className(), [
         'data' => [
@@ -46,7 +55,7 @@ use yii\helpers\Html;
             'id' => 'issuer'
         ],
     ]);
-    echo Html::submitButton(Yii::t('app', 'Save'), ['class' => 'btn btn-success btn-block', 'value'=>$user->id, 'name'=>'user_id']);
+    echo Html::submitButton(Yii::t('app', 'Save'), ['class' => 'btn btn-success btn-block', ['value'=>$user->id, 'name'=>'user']]);
 
     ActiveForm::end(); ?>
 
