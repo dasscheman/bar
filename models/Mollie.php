@@ -27,6 +27,17 @@ class Mollie extends Transacties
     /**
      * @inheritdoc
      */
+    public function rules()
+    {
+        $rules = parent::rules();
+        $rules[] = [['issuer'], 'required'];
+        
+        return $rules;
+    }
+    
+    /**
+     * @inheritdoc
+     */
     public function attributeLabels()
     {
         return [
