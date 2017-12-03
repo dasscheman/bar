@@ -119,4 +119,12 @@ class BetalingType extends BarActiveRecord
         return;
     }
 
+    public function getIdealTerugbetalingId() {
+        $betaling = BetalingType::findOne(['omschrijving' => 'Ideal terugbetaling']);
+        
+        if (isset($betaling->type_id)) {
+            return $betaling->type_id;
+        }
+        return;
+    }
 }
