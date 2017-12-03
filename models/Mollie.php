@@ -31,6 +31,7 @@ class Mollie extends Transacties
     {
         return [
             'issuer' => 'Bank',
+            'transacties_user_id' => 'Betaling voor',
         ];
     }
 
