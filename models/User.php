@@ -485,7 +485,17 @@ class User extends BaseUser
     public static function findByUsername($username) {
         return static::findOne(['username' => $username]);
     }
-    
+
+    /**
+     * Finds user by username
+     *
+     * @param  string      $username
+     * @return static|null
+     */
+    public static function findByPayKey($key) {
+        return static::findOne(['pay_key' => $key]);
+    }
+
     /**
      * Generates password hash from password and sets it to the model
      *
