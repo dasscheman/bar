@@ -8,7 +8,8 @@ class m171201_082506_add_betaling_type extends Migration
     {
         // Betaling type voor declaraties en statiegeld
         $this->batchInsert('betaling_type', ['omschrijving', 'bijaf'], [
-                ['Ideal', 2]
+                ['Ideal', 2],
+                ['Ideal terugbetaling', 1]
         ]);
     }
 
