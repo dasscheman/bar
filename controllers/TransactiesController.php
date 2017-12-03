@@ -172,7 +172,7 @@ class TransactiesController extends Controller
                     $image->saveAs($path);
                 } else {
                     foreach ($modelBonnen->errors as $key => $error) {
-                        Yii::$app->session->setFlash('warning', Yii::t('app', 'Fout met opslaan: ' . $key . ':' . $error[0]));
+                        Yii::$app->session->setFlash('warning', Yii::t('app', 'Fout met opslaan: ' . $key . ': ' . $error[0]));
                     }
                 }
                 $modelTransacties->bon_id = $modelBonnen->bon_id;
@@ -181,7 +181,7 @@ class TransactiesController extends Controller
                 return $this->redirect(['view', 'id' => $modelTransacties->transacties_id]);
             } else {
                 foreach ($modelBonnen->errors as $key => $error) {
-                    Yii::$app->session->setFlash('warning', Yii::t('app', 'Fout met opslaan: ' . $key . ':' . $error[0]));
+                    Yii::$app->session->setFlash('warning', Yii::t('app', 'Fout met opslaan: ' . $key . ': ' . $error[0]));
                 }
             }
         }

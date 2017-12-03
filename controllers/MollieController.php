@@ -56,11 +56,9 @@ class MollieController extends TransactiesController
     public function actionBetaling()
     {
         $model = new Mollie;
-        
         if ($model->load(Yii::$app->request->post())) {
-            $user = User::findOne(Yii::$app->request->post('user_id'));
+            $user = User::findOne($model->transacties_user_id);
 
-            $model->transacties_user_id = $user->id;
             $model->type_id = BetalingType::getIdealId();
             $model->datum = date('Y-m-d H:i:s');
             $model->status = Transacties::STATUS_ingevoerd;
@@ -123,7 +121,8 @@ class MollieController extends TransactiesController
                 throw new NotFoundHttpException('Je bent niet ingelogt of de link uit je email is niet meer geldig.');
             }
         }
-        
+
+        $model->transacties_user_id = $user->id;
         return $this->render('create', [
             'model' => $model,
             'user' => $user
@@ -215,27 +214,31 @@ class MollieController extends TransactiesController
         // en de status gezet is.
         sleep(3);
         $transactie = Transacties::findOne(Yii::$app->request->get('transacties_id'));
-        switch ($transactie->mollie_status) {
-            case Transacties::MOLLIE_STATUS_open:
-                Yii::$app->session->setFlash('warning', 'Je betaling wordt verwerkt.');
-                break;
-            case Transacties::MOLLIE_STATUS_cancelled:
-                Yii::$app->session->setFlash('error', 'Je betaling is geannuleerd.');
-                break;
-            case Transacties::MOLLIE_STATUS_expired:
-                Yii::$app->session->setFlash('error', 'Betalingssessie is verlopen.');
-                break;
-            case Transacties::MOLLIE_STATUS_failed:
-                Yii::$app->session->setFlash('error', 'Betaling is mislukt.');
-                break;
-            case Transacties::MOLLIE_STATUS_paid:
-                Yii::$app->session->setFlash('success', 'De betaling is met succes verwerkt.');
-                break;
-            case Transacties::MOLLIE_STATUS_refunded:
-                Yii::$app->session->setFlash('info', 'Betaling is teruggestord.');
-                break;
-            default:
-                Yii::$app->session->setFlash('warning', 'Ongeldige transactie, neem contact op met de beheerder.');
+        if(isset($transactie->mollie_status)) {
+            switch ($transactie->mollie_status) {
+                case Transacties::MOLLIE_STATUS_open:
+                    Yii::$app->session->setFlash('warning', 'Je betaling wordt verwerkt.');
+                    break;
+                case Transacties::MOLLIE_STATUS_cancelled:
+                    Yii::$app->session->setFlash('error', 'Je betaling is geannuleerd.');
+                    break;
+                case Transacties::MOLLIE_STATUS_expired:
+                    Yii::$app->session->setFlash('error', 'Betalingssessie is verlopen.');
+                    break;
+                case Transacties::MOLLIE_STATUS_failed:
+                    Yii::$app->session->setFlash('error', 'Betaling is mislukt.');
+                    break;
+                case Transacties::MOLLIE_STATUS_paid:
+                    Yii::$app->session->setFlash('success', 'De betaling is met succes verwerkt.');
+                    break;
+                case Transacties::MOLLIE_STATUS_refunded:
+                    Yii::$app->session->setFlash('info', 'Betaling is teruggestord.');
+                    break;
+                default:
+                    Yii::$app->session->setFlash('warning', 'Ongeldige transactie, neem contact op met de beheerder.');
+            }
+        } else {
+            Yii::$app->session->setFlash('warning', 'Ongeldige transactie, neem contact op met de beheerder.');
         }
         if (!isset(Yii::$app->user->id)) {
              Yii::$app->session->setFlash('primary', 'Log in om je overzicht te bekijken.');
