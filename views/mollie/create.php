@@ -16,17 +16,18 @@ use yii\helpers\Html;
     <div class="col-md-12">
         <div class="panel panel-default">
             <div class="panel-heading">
-                <?= Html::encode('Betalen voor: ' . Yii::$app->user->identity->profile->voornaam 
-                        . ' ' . Yii::$app->user->identity->profile->tussenvoegsel
-                        . ' ' . Yii::$app->user->identity->profile->achternaam) ?>
+                <?php
+                echo Html::encode('Betalen voor: ' . $user->profile->voornaam
+                        . ' ' . $user->profile->tussenvoegsel
+                        . ' ' . $user->profile->achternaam) ?>
             </div>
             <div class="panel-body">
                 <?php echo $this->render('/_alert') ?>
                 <table class="table">
                     <?php
                     echo  $this->render('_form', [
-                        'modelTransacties' => $modelTransacties,
-                        'mollie' => $mollie,]);?>
+                        'model' => $model,
+                        'user' => $user]);?>
                 </table>
             </div>
         </div>
