@@ -17,6 +17,11 @@ use app\models\User;
         <table class="table">
             <?php
             echo $this->render('/_alert');
+            if(!isset($model)) { ?>
+                </table></div></div>
+                <?php
+                return;
+            }
             $attributes = [
                 [
                     'group'=>true,
