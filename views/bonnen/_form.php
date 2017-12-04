@@ -13,6 +13,7 @@ use yii\widgets\ActiveForm;
 use yii\helpers\Html;
 use kartik\widgets\DatePicker;
 use kartik\select2\Select2;
+use kartik\money\MaskMoney;
 
 ?>
 
@@ -29,13 +30,20 @@ use kartik\select2\Select2;
 
     echo $form->field($model, 'omschrijving')->textarea();
     echo $form->field($model, 'type')->widget(Select2::className(), [
-        'data' => $model->getStatusOptions(),
+        'data' => $model->getTypeOptions(),
         'options' => [
             'placeholder' => Yii::t('app', 'Selecteer type bon'),
             'id' => 'type'
         ],
     ]);
-    
+
+    echo $form->field($model, 'soort')->widget(Select2::className(), [
+        'data' => $model->getSoortOptions(),
+        'options' => [
+            'placeholder' => Yii::t('app', 'Selecteer soort bon'),
+            'id' => 'soort'
+        ],
+    ]);
     echo $form->field($model, 'image_temp')->fileInput();
     
     echo $form->field($model, 'datum')->widget(DatePicker::className(), [
@@ -52,7 +60,7 @@ use kartik\select2\Select2;
         ]
     ]);
 
-    echo $form->field($model, 'bedrag')->textInput(['maxlength' => true]);
+    echo $form->field($model, 'bedrag')->widget(MaskMoney::classname());
     echo Html::submitButton(Yii::t('rbac', 'Save'), ['class' => 'btn btn-success btn-block']);
 
     ActiveForm::end() ?>
