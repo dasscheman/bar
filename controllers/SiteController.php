@@ -8,6 +8,7 @@ use yii\web\Controller;
 use yii\filters\VerbFilter;
 use app\models\LoginForm;
 use app\models\ContactForm;
+use app\models\Turven;
 
 class SiteController extends Controller
 {
@@ -22,7 +23,7 @@ class SiteController extends Controller
                 'only' => ['logout'],
                 'rules' => [
                     [
-                        'actions' => ['logout'],
+                        'actions' => ['logout', 'grafieken'],
                         'allow' => true,
                         'roles' => ['@'],
                     ],
@@ -110,6 +111,31 @@ class SiteController extends Controller
         }
         return $this->render('contact', [
             'model' => $model,
+        ]);
+    }
+
+    /**
+     * Displays contact page.
+     *
+     * @return string
+     */
+    public function actionGrafieken()
+    {
+        $date = date("Ymd");
+        $date1 = date("Ymd", strtotime("-1 months"));
+        $turven = Turven::find()
+                ->where('month(datum) = month(' . $date . ')')
+                ->all();
+        $turven1 = Turven::find()
+                ->where('month(datum) = month(' . $date1 . ')')
+                ->all();
+
+        d($turven);
+        dd($turven1);
+        return $this->render('grafieken', [
+            'maanden' => $maanden,
+            'inkmosten' => $inkomsten,
+            'uitgaven' => $uitgaven,
         ]);
     }
 
