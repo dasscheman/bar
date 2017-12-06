@@ -4,9 +4,7 @@
  * Bar App de Bison by daan@biolgenkantoor.nl
  */
 
-use yii\helpers\Html;
 use kartik\tabs\TabsX;
-use app\models\Favorieten;
 use app\models\FavorietenLijsten;
 use app\models\UserSearch;
 
@@ -36,7 +34,9 @@ use app\models\UserSearch;
                 ],
             ];
 
-            $lijsten = FavorietenLijsten::findAll(['user_id' => Yii::$app->user->identity->id]);
+            $lijsten = FavorietenLijsten::find()
+                ->where(['user_id' => Yii::$app->user->identity->id])
+                ->all();
             foreach ($lijsten as $lijst) {
                 $userSearchModel = new UserSearch();
                 $userDataProvider = $userSearchModel->search(Yii::$app->request->queryParams, $lijst);
