@@ -9,6 +9,8 @@ use yii\filters\VerbFilter;
 use app\models\LoginForm;
 use app\models\ContactForm;
 use app\models\Turven;
+use app\models\Inkoop;
+use app\models\Assortiment;
 
 class SiteController extends Controller
 {
@@ -121,21 +123,69 @@ class SiteController extends Controller
      */
     public function actionGrafieken()
     {
-        $date = date("Ymd");
-        $date1 = date("Ymd", strtotime("-1 months"));
-        $turven = Turven::find()
-                ->where('month(datum) = month(' . $date . ')')
-                ->all();
-        $turven1 = Turven::find()
-                ->where('month(datum) = month(' . $date1 . ')')
-                ->all();
+        $i = 0;
+        $maanden = [];
+        $inkomsten = [];
+        $uitgaven = [];
+        $volume_inkoop = [];
+        $volume_verkoop = [];
 
-        d($turven);
-        dd($turven1);
+        if (Yii::$app->request->get('assortiment_id') !== NULL) {
+
+            while ($i < 3) {
+                $date = date("Ymd", strtotime("-$i months"));
+                $maanden[] = date("M", strtotime("-$i months"));
+                $inkomsten[date("M", strtotime("-$i months"))] = (float) Turven::find()
+                    ->where('month(datum) = month(' . $date . ')')
+                    ->andWhere('assortiment_id = ' . Yii::$app->request->get('assortiment_id'))
+                    ->sum('totaal_prijs');
+
+                $aantal = (float) Turven::find()
+                    ->where('month(datum) = month(' . $date . ')')
+                    ->andWhere('assortiment_id = ' . Yii::$app->request->get('assortiment_id'))
+                    ->sum('aantal');
+
+                $item = Assortiment::findOne(Yii::$app->request->get('assortiment_id'));
+                $volume_verkoop[date("M", strtotime("-$i months"))] = (float) $aantal * (float) $item->volume / (float) 1000;
+
+                $uitgaven[date("M", strtotime("-$i months"))] = (float) Inkoop::find()
+                    ->where('month(datum) = month(' . $date . ')')
+                    ->andWhere('assortiment_id = ' . Yii::$app->request->get('assortiment_id'))
+                    ->sum('totaal_prijs');
+
+                $volume_inkoop[date("M", strtotime("-$i months"))] = (float) Inkoop::find()
+                    ->where('month(datum) = month(' . $date . ')')
+                    ->andWhere('assortiment_id = ' . Yii::$app->request->get('assortiment_id'))
+                    ->sum('volume');
+
+                $i++;
+            }
+        } else {
+            while ($i < 3) {
+                $date = date("Ymd", strtotime("-$i months"));
+                $maanden[] = date("M", strtotime("-$i months"));
+                $inkomsten[date("M", strtotime("-$i months"))] = (float) Turven::find()
+                    ->where('month(datum) = month(' . $date . ')')
+                    ->sum('totaal_prijs');
+
+
+                $uitgaven[date("M", strtotime("-$i months"))] = (float) Inkoop::find()
+                    ->where('month(datum) = month(' . $date . ')')
+                    ->sum('totaal_prijs');
+
+                $i++;
+            }
+        }
+
+        $assortimentItems = Assortiment::findAll(['status' => Assortiment::STATUS_beschikbaar]);
+
         return $this->render('grafieken', [
             'maanden' => $maanden,
-            'inkmosten' => $inkomsten,
+            'inkomsten' => $inkomsten,
             'uitgaven' => $uitgaven,
+            'volume_verkoop' => $volume_verkoop,
+            'volume_inkoop' => $volume_inkoop,
+            'assortimentItems' => $assortimentItems,
         ]);
     }
 
