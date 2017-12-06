@@ -54,7 +54,7 @@ use app\models\User;
                 'tab' => $tab
             ],
             [
-                'class' => 'btn btn-success',
+                'class' => 'btn-lg btn-success',
                 !empty($count)?'':'disabled' => 'disabled'
             ]
         );
@@ -65,7 +65,7 @@ use app\models\User;
                 '#' => $tab
             ],
             [ 
-                'class' => 'btn btn-danger',
+                'class' => 'btn-lg btn-danger',
                 'data' => [
                     'confirm' => 'Je turven zijn niet opgeslagen',
                 ],
