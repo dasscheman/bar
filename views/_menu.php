@@ -54,9 +54,10 @@ echo Nav::widget([
             ],
         ],
         [
-            'label' => 'Inkoop',
+            'label' => 'Voorraad',
             'items' => [
-                ['label' => 'Overzicht', 'url' => ['/inkoop/index']],
+                ['label' => 'Actueel', 'url' => ['/inkoop/index-actueel']],
+                ['label' => 'History', 'url' => ['/inkoop/index']],
                 ['label' => 'Toevoegen', 'url' => ['/inkoop/create']],
 //                ['label' => 'Something else here', 'url' => '#'],
             ],
