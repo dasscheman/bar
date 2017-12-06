@@ -151,11 +151,13 @@ class SiteController extends Controller
                 $uitgaven[date("M", strtotime("-$i months"))] = (float) Inkoop::find()
                     ->where('month(datum) = month(' . $date . ')')
                     ->andWhere('assortiment_id = ' . Yii::$app->request->get('assortiment_id'))
+                    ->andWhere('status = ' . Inkoop::STATUS_verkocht)
                     ->sum('totaal_prijs');
 
                 $volume_inkoop[date("M", strtotime("-$i months"))] = (float) Inkoop::find()
                     ->where('month(datum) = month(' . $date . ')')
                     ->andWhere('assortiment_id = ' . Yii::$app->request->get('assortiment_id'))
+                    ->andWhere('status = ' . Inkoop::STATUS_verkocht)
                     ->sum('volume');
 
                 $i++;
@@ -171,6 +173,7 @@ class SiteController extends Controller
 
                 $uitgaven[date("M", strtotime("-$i months"))] = (float) Inkoop::find()
                     ->where('month(datum) = month(' . $date . ')')
+                    ->andWhere('status = ' . Inkoop::STATUS_verkocht)
                     ->sum('totaal_prijs');
 
                 $i++;
