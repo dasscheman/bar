@@ -42,12 +42,68 @@ class InkoopSearch extends Inkoop
      */
     public function search($params)
     {
-        $query = Inkoop::find();
+        $query = Inkoop::find()
+            ->where(['not', ['status' => Inkoop::STATUS_voorraad]]);
 
         // add conditions that should always apply here
 
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
+            'sort' => [
+                'defaultOrder' => [
+                    'datum' => SORT_DESC,
+                ]
+            ],
+        ]);
+
+        $this->load($params);
+
+        if (!$this->validate()) {
+            // uncomment the following line if you do not want to return any records when validation fails
+            // $query->where('0=1');
+            return $dataProvider;
+        }
+
+        // grid filtering conditions
+        $query->andFilterWhere([
+            'inkoop_id' => $this->inkoop_id,
+            'assortiment_id' => $this->assortiment_id,
+            'datum' => $this->datum,
+            'volume' => $this->volume,
+            'aantal' => $this->aantal,
+            'totaal_prijs' => $this->totaal_prijs,
+            'type' => $this->type,
+            'status' => $this->status,
+            'created_at' => $this->created_at,
+            'created_by' => $this->created_by,
+            'updated_at' => $this->updated_at,
+            'updated_by' => $this->updated_by,
+        ]);
+
+        return $dataProvider;
+    }
+
+    /**
+     * Creates data provider instance with search query applied
+     *
+     * @param array $params
+     *
+     * @return ActiveDataProvider
+     */
+    public function searchActueel($params)
+    {
+        $query = Inkoop::find()
+            ->where(['status' => Inkoop::STATUS_voorraad]);
+
+        // add conditions that should always apply here
+
+        $dataProvider = new ActiveDataProvider([
+            'query' => $query,
+            'sort' => [
+                'defaultOrder' => [
+                    'datum' => SORT_DESC,
+                ]
+            ],
         ]);
 
         $this->load($params);
