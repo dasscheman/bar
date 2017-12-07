@@ -25,6 +25,8 @@ class BetalingType extends BarActiveRecord
     const BIJAF_af = 1;
     const BIJAF_bij = 2;
 
+    const STATE_system = 1;
+    const STATE_custom = 2;
     /**
      * @inheritdoc
      */
@@ -108,6 +110,28 @@ class BetalingType extends BarActiveRecord
             return $bijafOptions[$this->bijaf];
         }
         return "Onbekende type ({$this->bijaf})";
+    }
+
+    /**
+     * Retrieves a list of statussen
+     * @return array an array of available statussen.
+     */
+    public function getStateOptions() {
+        return [
+            self::STATE_system => 'Systeem',
+            self::STATE_custom => 'Custom',
+        ];
+    }
+
+    /**
+     * @return string the status text display
+     */
+    public function getStateText() {
+        $stateOptions = $this->stateOptions;
+        if (isset($stateOptions[$this->state])) {
+            return $stateOptions[$this->state];
+        }
+        return "Onbekende staat ({$this->state})";
     }
 
     public function getIdealId() {

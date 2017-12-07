@@ -64,7 +64,7 @@ class BetalingTypeController extends Controller
     public function actionCreate()
     {
         $model = new BetalingType();
-
+        $model->state = $model::STATE_custom;
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
             return $this->redirect(['view', 'id' => $model->type_id]);
         } else {
@@ -84,9 +84,13 @@ class BetalingTypeController extends Controller
     {
         $model = $this->findModel($id);
 
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
+        if ($model->load(Yii::$app->request->post()) && $model->state !== $model::STATE_system && $model->save()) {
             return $this->redirect(['view', 'id' => $model->type_id]);
         } else {
+
+            if ($model->state === $model::STATE_system) {
+                Yii::$app->session->setFlash('warning', 'Je kunt dit betalingstype niet aanpassen. Dit is een systeem type.');
+            }
             return $this->render('update', [
                 'model' => $model,
             ]);
@@ -101,8 +105,12 @@ class BetalingTypeController extends Controller
      */
     public function actionDelete($id)
     {
-        $this->findModel($id)->delete();
-
+        $model = $this->findModel($id);
+        if ($model->state === $model::STATE_system) {
+            Yii::$app->session->setFlash('warning', 'Je kunt dit betalingstype niet wissen. Dit is een systeem type.');
+        } else {
+            $model->delete();
+        }
         return $this->redirect(['index']);
     }
 
