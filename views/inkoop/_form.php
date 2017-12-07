@@ -3,7 +3,6 @@
 use yii\helpers\Html;
 use yii\helpers\ArrayHelper;
 use yii\widgets\ActiveForm;
-use kartik\widgets\DatePicker;
 use kartik\select2\Select2;
 use app\models\Assortiment;
 
@@ -49,20 +48,6 @@ use app\models\Bonnen;
         ],
     ]);
 
-//    echo $form->field($model, 'datum')->widget(DatePicker::className(), [
-//        'model' => $model,
-//        'attribute' => 'datum',
-//        'type' => DatePicker::TYPE_COMPONENT_PREPEND,
-//    //    'value' => '23-Feb-1982',
-//        'options'   => [
-//            'placeholder' => Yii::t('app', 'Datum'),
-//        ],
-//        'pluginOptions' => [
-//            'autoclose'=>true,
-//            'format' => 'yyyy-mm-dd'
-//        ]
-//    ]);
-
     echo $form->field($model, 'volume')->textInput();
 
     echo $form->field($model, 'aantal')->textInput();
@@ -75,14 +60,6 @@ use app\models\Bonnen;
         'options' => [
             'placeholder' => Yii::t('app', 'Selecteer type inkoop'),
             'id' => 'status'
-        ],
-    ]);
-
-    echo $form->field($model, 'status')->widget(Select2::className(), [
-        'data' => $model->getStatusOptions(),
-        'options' => [
-            'placeholder' => Yii::t('app', 'Selecteer status inkoop'),
-            'id' => 'type'
         ],
     ]);
 

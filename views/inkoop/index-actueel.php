@@ -24,10 +24,11 @@ $toolbar = FALSE;
     <div class="col-md-12">
         <div class="panel panel-default">
             <div class="panel-heading">
-                <?= Html::encode('Voorraad history') ?>
+                <?= Html::encode('Actuele voorraad') ?>
             </div>
             <div class="panel-body">
-                <?php echo $this->render('/_alert');
+                <?php
+                echo $this->render('/_alert');
                 echo $this->render('/_menu');
                 Pjax::begin();
                 echo GridView::widget([
@@ -77,8 +78,36 @@ $toolbar = FALSE;
 
                         [
                             'class' => 'yii\grid\ActionColumn',
-                            'headerOptions' => ['style' => 'width:15%'],
-                            'template' => '{update} {view} {delete}',
+                            'headerOptions' => ['style' => 'width:20%'],
+                            'template' => '{update} {view} {delete} {verbruikt} {afschrijven}',
+                            'buttons' => [
+                                'verbruikt' => function ($url, $model) {
+                                    return Html::a(
+                                        '<span class="glyphicon glyphicon-shopping-cart"></span>',
+                                        [
+                                            'inkoop/verbruikt',
+                                            'id' => $model->inkoop_id,
+                                        ],
+                                        [
+                                            'title' => 'Noteer als verbruikt',
+                                            'class'=>'btn btn-primary btn-xs',
+                                        ]
+                                    );
+                                },
+                                'afschrijven' => function ($url, $model) {
+                                    return Html::a(
+                                        '<span class="glyphicon glyphicon-exclamation-sign"></span>',
+                                        [
+                                            'inkoop/afschrijven',
+                                            'id' => $model->inkoop_id,
+                                        ],
+                                        [
+                                            'title' => 'Schrijf Voorraad af',
+                                            'class'=>'btn btn-primary btn-xs',
+                                        ]
+                                    );
+                                },
+                            ],
                         ],
                     ],
 

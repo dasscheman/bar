@@ -230,7 +230,6 @@ class FactuurController extends Controller
                 $turf->factuur_id = NULL;
                 if(!$turf->save()) {
                     $dbTransaction->rollBack();
-                    var_dump(4);
                     return FALSE;
                 }
             }
