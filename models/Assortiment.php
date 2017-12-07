@@ -32,6 +32,7 @@ class Assortiment extends BarActiveRecord
     const SOORT_bier = 2;
     const SOORT_wijn = 3;
     const SOORT_snack = 4;
+    const SOORT_overige = 5;
 
     const STATUS_beschikbaar = 1;
     const STATUS_niet_beschikbaar = 2;
@@ -51,7 +52,7 @@ class Assortiment extends BarActiveRecord
     public function rules()
     {
         return [
-            [['name', 'alcohol', 'status'], 'required'],
+            [['name', 'alcohol', 'status', 'soort'], 'required'],
             [['alcohol', 'status', 'created_by', 'updated_by'], 'integer'],
             [['volume'], 'number'],
             [['name', 'alcohol', 'status', 'created_at', 'updated_at'], 'safe'],
@@ -177,6 +178,7 @@ class Assortiment extends BarActiveRecord
             self::SOORT_bier => Yii::t('app', 'Bier'),
             self::SOORT_wijn => Yii::t('app', 'Wijn'),
             self::SOORT_snack => Yii::t('app', 'Snacks'),
+            self::SOORT_overige => Yii::t('app', 'Overige'),
         ];
     }
 
