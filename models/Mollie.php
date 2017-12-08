@@ -73,24 +73,23 @@ class Mollie extends Transacties
         foreach ($users as $user)
         {
             if($user->getBalans() < 0 && $mollie->checkUserMandates($user->mollie_customer_id) ) {
-                $transactie = new Transacties;
-                $transactie->transacties_user_id = $user->id;
-                $transactie->omschrijving = 'Automatisch ophogen BisonBar';
-                $transactie->bedrag = $user->mollie_bedrag;
-                $transactie->type_id = BetalingType::getIdealId();
-                $transactie->status = self::STATUS_ingevoerd;
-                $transactie->datum = date("Y-m-d");
-                if (!$transactie->save()) {
-                    throw new NotFoundHttpException('Je bent niet ingelogt of de link uit je email is niet meer geldig.');
+                $mollie->transacties_user_id = $user->id;
+                $mollie->omschrijving = 'Automatisch ophogen BisonBar met ' . $user->mollie_bedrag . ' Euro';
+                $mollie->bedrag = $user->mollie_bedrag;
+                $mollie->type_id = BetalingType::getIdealId();
+                $mollie->status = self::STATUS_ingevoerd;
+                $mollie->datum = date("Y-m-d");
+                if (!$mollie->save()) {
+                    throw new NotFoundHttpException('Kan transactie niet opslaan.');
                 }
 
                 $mollie['parameters'] = [
                     'amount'        => $user->mollie_bedrag,
                     'customerId'    => $user->mollie_customer_id,
                     'recurringType' => 'recurring',       // important
-                    'description'   => $transactie->omschrijving,
+                    'description'   => $mollie->omschrijving,
                     "metadata"     => [
-                        "transacties_id" => $transactie->transacties_id,
+                        "transacties_id" => $mollie->transacties_id,
                     ],
                 ];
                 $mollie->createPayment();
