@@ -165,7 +165,8 @@ class Mollie extends Transacties
         }
     }
 
-    public function createPayment() {
+    public function createPayment()
+    {
         try
         {
             $payment = $this->mollie->payments->create($this->parameters);

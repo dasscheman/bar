@@ -61,13 +61,21 @@ class MollieController extends TransactiesController
             $model->type_id = BetalingType::getIdealId();
             $model->datum = date('Y-m-d H:i:s');
             $model->status = Transacties::STATUS_ingevoerd;
-            $model->setParameters();
-            if ($model->automatische_betaling) {
-                $model->createUser();
-            }
-            $payment = $model->createPayment();
-            if ($payment) {
-                $this->redirect($payment);
+            if($model->save()) {
+                $model->setParameters();
+                if ($model->automatische_betaling) {
+                    $model->createUser();
+                }
+
+                $payment = $model->createPayment();
+
+                if ($payment) {
+                    $this->redirect($payment);
+                }
+            } else {
+                foreach ($this->errors as $key => $error) {
+                    Yii::$app->session->setFlash('warning', Yii::t('app', 'Fout met opslaan: ' . $key . ':' . $error[0]));
+                }
             }
         }
 
