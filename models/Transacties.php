@@ -38,6 +38,8 @@ class Transacties extends BarActiveRecord
     const MOLLIE_STATUS_failed = 4;
     const MOLLIE_STATUS_paid = 5;    
     const MOLLIE_STATUS_refunded = 6;
+    const MOLLIE_STATUS_pending = 7;
+    const MOLLIE_STATUS_paidout = 8;
 
     /**
      * @inheritdoc
@@ -151,6 +153,8 @@ class Transacties extends BarActiveRecord
             self::MOLLIE_STATUS_failed => 'failed',
             self::MOLLIE_STATUS_paid => 'paid',
             self::MOLLIE_STATUS_refunded => 'refunded',
+            self::MOLLIE_STATUS_pending => 'pending',
+            self::MOLLIE_STATUS_paidout => 'paidout'
         ];
     }
 
