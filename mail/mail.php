@@ -51,5 +51,20 @@ use yii\helpers\Url;
 		Met vriendelijke groet,<br>
 		<br>
 		Daan Asscheman<br>
+
+        <br>
+        <br>
+        <br>
+        <?php
+        if($user->automatische_betaling) {
+            ?>
+            Je maakt gebruik van automatisch ophogen, je tegoed wordt automatisch ogehoogd met <?php number_format($user->mollie_bedrag, 2, ',', ' ') ?> €
+            <br>
+            Hier kun je automatisch ophogen stop zetten of de hoogte van het bedrag wijzigen:
+            <?php echo Html::a(' Automatisch ophogen wijzigen', ['/mollie/automatisch-betaling-updaten', 'pay_key' => $user->pay_key]);
+        } else {
+            ?> Je maakt geen gebruik van automatisch ophogen. <?php
+        } ?>
+
 <!-- 	</body>
 </html>-->
