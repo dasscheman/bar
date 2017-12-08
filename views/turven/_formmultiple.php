@@ -19,7 +19,7 @@ use app\models\Turflijst;
 
 ?>
 
-<div class="assortiment-form">
+<div class="turven-form">
     <?php
 
     $form = ActiveForm::begin([

@@ -13,85 +13,62 @@ echo Nav::widget([
     ],
     'items' => [
         [
-            'label' => 'Assortiment',
-            'items' => [
-                ['label' => 'Overzicht', 'url' => ['/assortiment/index']],
-                ['label' => 'Toevoegen', 'url' => ['/assortiment/create']],
-//                ['label' => 'Something else here', 'url' => '#'],
-            ],
-        ],
-        [
-            'label' => 'Turflijst',
-            'items' => [
-                ['label' => 'Overzicht', 'url' => ['/turflijst/index']],
-                ['label' => 'Toevoegen', 'url' => ['/turflijst/create']],
-//                ['label' => 'Something else here', 'url' => '#'],
-            ],
-        ],
-        [
-            'label' => 'Prijslijst',
-            'items' => [
-                ['label' => 'Overzicht', 'url' => ['/prijslijst/index']],
-                ['label' => 'Toevoegen', 'url' => ['/prijslijst/create']],
-//                ['label' => 'Something else here', 'url' => '#'],
-            ],
-        ],
-        [
-            'label' => 'Turven',
-            'items' => [
-                ['label' => 'Overzicht', 'url' => ['/turven/index']],
-                ['label' => 'Toevoegen', 'url' => ['/turven/create']],
-//                ['label' => 'Something else here', 'url' => '#'],
-            ],
-        ],
-        [
-            'label' => 'Transacties',
-            'items' => [
-                ['label' => 'Overzicht', 'url' => ['/transacties/index']],
-                ['label' => 'Toevoegen', 'url' => ['/transacties/create']],
-                ['label' => 'Declaratie toevoegen', 'url' => ['/transacties/create-declaratie']],
-//                ['label' => 'Something else here', 'url' => '#'],
-            ],
-        ],
-        [
             'label' => 'Voorraad',
             'items' => [
                 ['label' => 'Actueel', 'url' => ['/inkoop/index-actueel']],
                 ['label' => 'History', 'url' => ['/inkoop/index']],
-                ['label' => 'Toevoegen', 'url' => ['/inkoop/create']],
-//                ['label' => 'Something else here', 'url' => '#'],
-            ],
-        ],
-        [
-            'label' => 'Facturen',
-            'items' => [
-                ['label' => 'Overzicht', 'url' => ['/factuur/index']],
-                ['label' => 'Facturen maken', 'url' => ['/factuur/create']],
-//                ['label' => 'Something else here', 'url' => '#'],
             ],
         ],
         [
             'label' => 'Bonnen',
-            'items' => [
-                ['label' => 'Overzicht', 'url' => ['/bonnen/index']],
-                ['label' => 'Bon invoeren', 'url' => ['/bonnen/create']],
-//                ['label' => 'Something else here', 'url' => '#'],
-            ],
+            'url' => ['/bonnen/index']
+        ],
+        [
+            'label' => 'Assortiment',
+            'url' => ['/assortiment/index']
+        ],
+        [
+            'label' => 'Turven',
+            'url' => ['/turven/index']
+        ],
+        [
+            'label' => 'Transacties',
+            'url' => ['/transacties/index']
+        ],
+        [
+            'label' => 'Facturen',
+            'url' => ['/factuur/index']
+        ],
+        [
+            'label' => 'Turflijst',
+            'url' => ['/turflijst/index']
+        ],
+        [
+            'label' => 'Prijslijst',
+            'url' => ['/prijslijst/index']
         ],
         [
             'label' => 'Betaling typs',
-            'items' => [
-                ['label' => 'Overzicht', 'url' => ['/betaling-type/index']],
-                ['label' => 'Betaling type maken', 'url' => ['/betaling-type/create']],
-//                ['label' => 'Something else here', 'url' => '#'],
-            ],
+            'url' => ['/betaling-type/index']
         ],
         [
             'label' => 'Favorieten',
+            'url' => ['/favorieten-lijsten/index']
+        ],
+        [
+            'label' => 'Toevoegen',
             'items' => [
-                ['label' => 'Overzicht', 'url' => ['/favorieten-lijsten/index']],
+                ['label' => 'Assortiment toevoegen', 'url' => ['/assortiment/create']],
+                ['label' => 'Bon invoeren', 'url' => ['/bonnen/create']],
+                ['label' => 'Declaratie toevoegen', 'url' => ['/transacties/create-declaratie']],
+                ['label' => 'Transactie toevoegen', 'url' => ['/transacties/create']],
+                ['label' => 'Turven toevoegen', 'url' => ['/turven/create']],
+                ['label' => 'Facturen genereren', 'url' => ['/factuur/create']],
+                ['label' => 'Turflijst Toevoegen', 'url' => ['/turflijst/create']],
+                ['label' => 'Voorraad toevoegen', 'url' => ['/inkoop/create']],
+                ['label' => 'Prijslijst Toevoegen', 'url' => ['/prijslijst/create']],
+                ['label' => 'Betaling type maken', 'url' => ['/betaling-type/create']],
                 ['label' => 'Favorieten lijst maken', 'url' => ['/favorieten-lijsten/create']],
-//                ['label' => 'Something else here', 'url' => '#'],
             ],
         ],
 //        [

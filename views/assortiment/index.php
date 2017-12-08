@@ -7,6 +7,7 @@
 use kartik\grid\GridView;
 use yii\helpers\Html;
 use yii\widgets\Pjax;
+use app\models\Assortiment;
 
 /**
  * @var \yii\web\View $this
@@ -24,6 +25,7 @@ $heading = FALSE;
 $exportConfig = FALSE;
 $responsiveWrap = FALSE;
 $toolbar = FALSE;
+$pjax = FALSE; //TRUE zorgt ervoor dat de columnen vertraagd verspringen, dat is irritant.
 ?>
 
 <div class="row">
@@ -43,7 +45,6 @@ $toolbar = FALSE;
                     'filterModel'  => $searchModel,
                     'layout'       => "{items}\n{pager}",
                     'columns' => [
-//                        'assortiment_id',
                         'name',
                         'merk',
                         'soort' => [
@@ -51,16 +52,30 @@ $toolbar = FALSE;
                             'value' => function($model){
                                 return $model->getSoortText();
                             },
+                            'filter' => Assortiment::getSoortOptions(),
                         ],
                         'status' => [
                             'attribute' => 'status',
                             'value' => function($model){
                                 return $model->getStatusText();
                             },
+                            'filter' => Assortiment::getStatusOptions(),
                         ],
                         'alcohol' => [
                             'attribute' => 'alcohol',
                             'headerOptions' => ['style' => 'width:2%'],
+                            // translate lookup value
+                            'value' => function ($model) {
+                                $boolean = [
+                                    '0' => 'Nee',
+                                    '1' => 'Ja'
+                                ];
+                                return $boolean[$model->alcohol];
+                            },
+                            'filter' => [
+                                '0' => 'Nee',
+                                '1' => 'Ja'
+                            ],
                         ],
                         'volume',
                         'prijs' => [
@@ -98,8 +113,8 @@ $toolbar = FALSE;
                         ],
                         [
                             'class' => 'yii\grid\ActionColumn',
-                            'template' => '{update} {view} {delete}',
                             'headerOptions' => ['style' => 'width:20%'],
+                            'template' => '{update} {view} {delete}',
                         ],
                     ],
 
@@ -108,7 +123,7 @@ $toolbar = FALSE;
                     'responsiveWrap' => $responsiveWrap,
                     'headerRowOptions'=>['class'=>'kartik-sheet-style'],
                     'filterRowOptions'=>['class'=>'kartik-sheet-style'],
-                    'pjax'=>true, // pjax is set to always true for this demo
+                    'pjax' => $pjax, // pjax is set to always true for this demo
                     'bordered'=>$bordered,
                     'striped'=>$striped,
                     'condensed'=>$condensed,

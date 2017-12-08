@@ -130,3 +130,22 @@ a.desc:after {
 .panel-heading {
     font-size: 22px;
 }
+.container-fluid{
+    padding-top: 70px;
+    padding-right: 100px;
+    padding-left: 100px;
+}
+
+.assortiment-form,
+.betaling-type-form,
+.bonnen-form,
+.factuur-form,
+.favorieten-form,
+.inkoop-form,
+.prijslijst-form,
+.transacties-form,
+.turflijst-form,
+.turven-form {
+    padding-left: 190px;
+    padding-right: 190px;
+}
