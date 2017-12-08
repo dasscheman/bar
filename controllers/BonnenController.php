@@ -60,6 +60,7 @@ class BonnenController extends Controller
         $searchModel = new BonnenSearch();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
+        $this->layout = 'main-fluid';
         return $this->render('index', [
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
@@ -87,6 +88,7 @@ class BonnenController extends Controller
     {
         $model = new Bonnen();
 
+        $this->layout = 'main-fluid';
         if ($model->load(Yii::$app->request->post())) {
             // get the uploaded file instance. for multiple file uploads
             // the following data will return an array
@@ -118,6 +120,7 @@ class BonnenController extends Controller
     {
         $model = $this->findModel($id);
 
+        $this->layout = 'main-fluid';
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
             return $this->redirect(['view', 'id' => $model->bon_id]);
         } else {

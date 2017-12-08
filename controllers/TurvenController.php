@@ -69,6 +69,7 @@ class TurvenController extends Controller
         $searchModel = new TurvenSearch();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
+        $this->layout = 'main-fluid';
         return $this->render('index', [
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
@@ -215,6 +216,7 @@ class TurvenController extends Controller
             $models[] = new Turven();
         }
 
+        $this->layout = 'main-fluid';
         if (Turven::loadMultiple($models, Yii::$app->request->post())) {
             $count = 0;
             $dbTransaction = Yii::$app->db->beginTransaction();
@@ -281,6 +283,7 @@ class TurvenController extends Controller
     {
         $model = $this->findModel($id);
 
+        $this->layout = 'main-fluid';
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
             return $this->redirect(['view', 'id' => $model->turven_id]);
         } else {

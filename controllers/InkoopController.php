@@ -60,6 +60,7 @@ class InkoopController extends Controller
         $searchModel = new InkoopSearch();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
+        $this->layout = 'main-fluid';
         return $this->render('index', [
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
@@ -73,9 +74,9 @@ class InkoopController extends Controller
     public function actionIndexActueel()
     {
         $searchModel = new InkoopSearch();
-//        dd(Yii::$app->request->queryParams);
         $dataProvider = $searchModel->searchActueel(Yii::$app->request->queryParams);
 
+        $this->layout = 'main-fluid';
         return $this->render('index-actueel', [
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
@@ -103,6 +104,7 @@ class InkoopController extends Controller
     {
         $model = new Inkoop();
 
+        $this->layout = 'main-fluid';
         if ($model->load(Yii::$app->request->post())) {
             $bon = Bonnen::findOne($model->bon_id);
             $model->datum = $bon->datum;
@@ -153,6 +155,7 @@ class InkoopController extends Controller
     {
         $model = $this->findModel($id);
 
+        $this->layout = 'main-fluid';
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
             return $this->redirect(['view', 'id' => $model->inkoop_id]);
         } else {
@@ -181,6 +184,7 @@ class InkoopController extends Controller
         $searchModel = new InkoopSearch();
         $dataProvider = $searchModel->searchActueel(Yii::$app->request->queryParams);
 
+        $this->layout = 'main-fluid';
         return $this->render('index-actueel', [
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
