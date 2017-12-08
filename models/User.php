@@ -54,6 +54,8 @@ use dektrium\user\models\User as BaseUser;
 
 class User extends BaseUser
 {
+    public $balans;
+    
      /**
      * @inheritdoc
      */
@@ -408,6 +410,16 @@ class User extends BaseUser
             ->sum('totaal_prijs');
     }
 
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getBalans()
+    {
+        $vorig_openstaand =  $this->getSumOldBijTransactiesUser() - $this->getSumOldTurvenUsers() - $this->getSumOldAfTransactiesUser();
+        $this->balans = $vorig_openstaand - $this->sumNewTurvenUsers + $this->sumNewBijTransactiesUser - $this->sumNewAfTransactiesUser;
+        return $this->balans;
+    }
+    
     /**
      * @return \yii\db\ActiveQuery
      */
