@@ -7,6 +7,7 @@ use Mollie_API_Client;
 use Mollie_API_Object_Method;
 use yii\helpers\ArrayHelper;
 use app\models\Transacties;
+use yii\web\NotFoundHttpException;
 
 /**
  * This is the model class for Mollie intergration.
@@ -26,13 +27,20 @@ class Mollie extends Transacties
 
     }
 
+    public function scenarios()
+    {
+        $scenarios = parent::scenarios();
+        $scenarios['betaling'] = ['issuer']; //Scenario Values Only Accepted
+        return $scenarios;
+    }
+
     /**
      * @inheritdoc
      */
     public function rules()
     {
         $rules = parent::rules();
-        $rules[] = [['issuer'], 'required'];
+        $rules[] = [['issuer'], 'required', 'on' => 'betaling'];
         $rules[] = [['automatische_betaling'], 'safe'];
         
         return $rules;
@@ -80,7 +88,9 @@ class Mollie extends Transacties
                 $mollie->status = self::STATUS_ingevoerd;
                 $mollie->datum = date("Y-m-d");
                 if (!$mollie->save()) {
-                    throw new NotFoundHttpException('Kan transactie niet opslaan.');
+                    foreach ($mollie->errors as $key => $error) {
+                        Yii::$app->session->setFlash('warning', Yii::t('app', 'Fout met opslaan: ' . $key . ':' . $error[0]));
+                    }
                 }
 
                 $mollie['parameters'] = [

@@ -56,6 +56,7 @@ class MollieController extends TransactiesController
     public function actionBetaling()
     {
         $model = new Mollie;
+        $model->scenario = 'betaling';
         if ($model->load(Yii::$app->request->post())) {
             $model->transacties_user_id = Yii::$app->user->id;
             $model->type_id = BetalingType::getIdealId();
