@@ -105,7 +105,6 @@ class Mollie extends Transacties
 
     public function checkUserMandates($mollie_user_id){
         $mandates = $this->mollie->customers_mandates->withParentId($mollie_user_id)->all();
-        var_dump($mandates); exit;
         foreach ($mandates['data'] as $mandate) {
             if($mandate->status === 'valid') {
                 return TRUE;
