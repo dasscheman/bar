@@ -24,14 +24,6 @@ use app\models\User;
         'enableAjaxValidation'   => false,
         'type' => ActiveForm::TYPE_HORIZONTAL,
     ]);
-    echo $form->field($model, 'transacties_user_id')->widget(Select2::className(), [
-        'data' => ArrayHelper::map(User::find()->all(), 'id', 'username'),
-        'options'   => [
-            'value' => $model->transacties_user_id,
-            'placeholder' => Yii::t('app', 'Selecteer gebruiker'),
-            'id' => 'transacties_user_id',
-        ],
-    ]);
     echo $form->field($model, 'omschrijving')->textInput();
     echo $form->field($model, 'bedrag')->widget(Select2::className(), [
         'data' => [
@@ -43,7 +35,7 @@ use app\models\User;
             100 => '100 euro'
         ],
         'options'   => [
-            'placeholder' => Yii::t('app', 'Selecteer de hoogte van het teged dat je wilt kopen'),
+            'placeholder' => Yii::t('app', 'Selecteer de hoogte van het tegoed dat je wilt kopen'),
             'id' => 'turflijst_id',
         ],
     ]);
@@ -55,6 +47,11 @@ use app\models\User;
             'id' => 'issuer'
         ],
     ]);
+
+    echo Html::encode('Je kunt je betalingen automatisch laten uitvoeren op het moment dat je tegoed onder 0 euro komt. '
+            . 'Je tegoed wordt dan verhoogd met het bedrag dat je hier invult. '
+            . 'Elke mail die je onvangt zal een link bevatten waarmee je eenvoudig automatisch verhogen uit kan zetten.');
+    echo $form->field($model, 'automatische_betaling')->checkbox();
     echo Html::submitButton(Yii::t('app', 'Save'), ['class' => 'btn btn-success btn-block', ['value'=>$user->id, 'name'=>'user']]);
 
     ActiveForm::end(); ?>

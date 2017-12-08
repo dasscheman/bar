@@ -29,18 +29,17 @@ use yii\widgets\DetailView;
     <div class="col-md-12">
         <div class="panel panel-default">
             <div class="panel-heading">
-                <?= Html::encode($this->title) ?>
+                <?= Html::encode('Aanpassen van automatisch ophogen') ?>
             </div>
             <div class="panel-body">
                 <?php echo $this->render('/_alert') ?>
-                <?php echo $this->render('/_menu') ?>
                 <table class="table">
                     <?php
-                    if(empty($modelBonnen)) {
-                        echo  $this->render('_form', ['modelTransacties' => $modelTransacties]);
+                    if($actie === 'update') {
+                        echo  $this->render('_form_update', ['model' => $model]);
                     } else {
-                        echo  $this->render('_form-declaratie', ['modelTransacties' => $modelTransacties, 'modelBonnen' => $modelBonnen]);
-                    } ?>
+                        echo  $this->render('_form_annuleren', ['model' => $model]);
+                    }?>
                 </table>
             </div>
         </div>
