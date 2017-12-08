@@ -28,15 +28,15 @@ class MollieController extends TransactiesController
         $behaviors['access']['rules'][] =
             [
                 'allow' => TRUE,
-                'actions' => [],
-                'roles' =>  ['admin', 'beheerder'],
+                'actions' => ['webhook', 'betaling', 'return-betaling', 'automatisch-betaling-updaten'],
+                'roles' =>  ['admin', 'beheerder', 'onlinebetalen'],
             ];
 
-        $behaviors['access']['rules'][] =
-            [
-                'actions' => ['webhook', 'betaling', 'return-betaling', 'automatisch-betaling-updaten'],
-                'allow' => true,
-            ];
+//        $behaviors['access']['rules'][] =
+//            [
+//                'actions' => ['webhook', 'betaling', 'return-betaling', 'automatisch-betaling-updaten'],
+//                'allow' => true,
+//            ];
         return $behaviors;
     }
 
