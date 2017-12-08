@@ -82,7 +82,7 @@ class Mollie extends Transacties
         {
             if($user->getBalans() < 0 && $mollie->checkUserMandates($user->mollie_customer_id) ) {
                 $mollie->transacties_user_id = $user->id;
-                $mollie->omschrijving = 'Automatisch ophogen BisonBar met ' . $user->mollie_bedrag . ' Euro';
+                $mollie->omschrijving = 'Automatisch ophogen BisonBar met ' . number_format($user->mollie_bedrag, 2, ',', ' ') . ' Euro';
                 $mollie->bedrag = $user->mollie_bedrag;
                 $mollie->type_id = BetalingType::getIdealId();
                 $mollie->status = self::STATUS_ingevoerd;
