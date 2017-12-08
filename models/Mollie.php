@@ -76,7 +76,7 @@ class Mollie extends Transacties
                 $transactie = new Transacties;
                 $transactie->transacties_user_id = $user->id;
                 $transactie->omschrijving = 'Automatisch ophogen BisonBar';
-                $transactie->bedrag = $user->bedrag;
+                $transactie->bedrag = $user->mollie_bedrag;
                 $transactie->type_id = BetalingType::getIdealId();
                 $transactie->status = self::STATUS_ingevoerd;
                 $transactie->datum = date("Y-m-d");
@@ -105,7 +105,7 @@ class Mollie extends Transacties
 
     public function checkUserMandates($mollie_user_id){
         $mandates = $this->mollie->customers_mandates->withParentId($mollie_user_id)->all();
-        foreach ($mandates['data'] as $mandate) {
+        foreach ($mandates->data as $key => $mandate) {
             if($mandate->status === 'valid') {
                 return TRUE;
             }
