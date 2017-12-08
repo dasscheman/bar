@@ -140,6 +140,10 @@ class MollieController extends TransactiesController
                     break;
                 case 'refunded':
                     $model->mollie_status = Transacties::MOLLIE_STATUS_refunded;
+                    // TODO Netter zou zijn om de refund aan te roepen en ook te 
+                    // controleren hoeveel er terug gestord wordt. Voor nu kan
+                    // alleen het hele debrag terug gestord worden.
+                    $model->bedrag = 0;
                     $model->status = Transacties::STATUS_gecontroleerd;
                     $model->type_id = BetalingType::getIdealTerugbetalingId();
                     break;
