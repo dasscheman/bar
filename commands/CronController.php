@@ -7,6 +7,7 @@ use yii\console\Controller;
 use app\models\Factuur;
 use app\models\Turven;
 use app\models\Transacties;
+use app\models\Mollie;
 
 /**
  * Test controller
@@ -35,16 +36,25 @@ class CronController extends Controller {
         $time_end = microtime(true);
         echo date("l jS \of F Y h:i:s A") . ': Processing for '.($time_end-$time_start).' seconds';
         echo "\n\n";
-        
+
         $time_start = microtime(true);
         $turven_controleren = Turven::controleerStatusTurven();
         echo date("l jS \of F Y h:i:s A") . ': Er zijn '.($turven_controleren).' turven die gecontroleerd moeten wordne';
         echo "\n";
+
         $transacties_controleren = Transacties::controleerStatusTransacties();
         echo date("l jS \of F Y h:i:s A") . ': Er zijn '.($transacties_controleren).' transacties die gecontroleerd moeten worden';
         echo "\n";
         $time_end = microtime(true);
         echo 'Processing for '.($time_end-$time_start).' seconds';
+        echo "\n\n";
+
+        $time_start = microtime(true);
+        $aantal = Mollie::automatischOphogen();
+        echo 'Er zijn '.($aantal).' users automatisch opgehoogd';
+        echo "\n";
+        $time_end = microtime(true);
+        echo date("l jS \of F Y h:i:s A") . ': Processing for '.($time_end-$time_start).' seconds';
         echo "\n\n";
     }
 
