@@ -213,6 +213,69 @@ use app\models\User;
                 'groupOptions'=>['class'=>'text-right']
             ];
 
+            if(!empty($model->invalidTransactionsNotInvoiced)) {
+                $attributes[] = [
+                    'group'=>true,
+                    'label'=>'Transactie die (nog) niet mee berekend zijn',
+                    'rowOptions'=>['class'=>'info'],
+            //            'groupOptions'=>['class'=>'text-center']
+                ];
+
+                $attributes[] = [
+                    'columns' => [
+                        [
+                            'label' => 'Omschrijving',
+                            'value' => 'Tansactie omschrijving',
+                            'displayOnly'=>true,
+                            'valueColOptions'=>['style'=>'width:15%'],
+                            'labelColOptions'=>['style'=>'width:15%']
+                        ],
+                        [
+                            'label' => 'type',
+                            'value' => 'status',
+                            'displayOnly'=>true,
+                            'valueColOptions'=>['style'=>'width:15%'],
+                            'labelColOptions'=>['style'=>'width:15%']
+                        ],
+                        [
+                            'label' => 'Datum',
+                            'value' => 'Bedrag',
+                            'displayOnly'=>true,
+                            'valueColOptions'=>['style'=>'width:20%'],
+                            'labelColOptions'=>['style'=>'width:20%']
+                        ]
+                    ]
+                ];
+                foreach ($model->invalidTransactionsNotInvoiced as $transactieInvalid) {
+
+                    $attributes[] = [
+                        'columns' => [
+                            [
+                                'label' => $transactieInvalid->omschrijving,
+                                'value' => $transactieInvalid->type->omschrijving,
+                                'displayOnly'=>true,
+                                'valueColOptions'=>['style'=>'width:15%'],
+                                'labelColOptions'=>['style'=>'width:15%']
+                            ],
+                            [
+                                'label' => $transactieInvalid->statusText,
+                                'value' => $transactieInvalid->getMollieStatusText(),
+                                'displayOnly'=>true,
+                                'valueColOptions'=>['style'=>'width:15%'],
+                                'labelColOptions'=>['style'=>'width:15%']
+                            ],
+                            [
+                                'label' => $transactieInvalid->datum,
+                                'value' => number_format($transactieInvalid->bedrag, 2, ',', ' ') . ' €',
+                                'displayOnly'=>true,
+                                'valueColOptions'=>['style'=>'width:20%'],
+                                'labelColOptions'=>['style'=>'width:20%']
+                            ]
+                        ]
+                    ];
+                }
+            }
+
             $vorig_openstaand =  $model->getSumOldBijTransactiesUser() - $model->getSumOldTurvenUsers() - $model->getSumOldAfTransactiesUser();
             $attributes[] = [
                 'group'=>true,

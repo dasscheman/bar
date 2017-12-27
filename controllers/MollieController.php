@@ -31,12 +31,7 @@ class MollieController extends TransactiesController
                 'actions' => ['webhook', 'betaling', 'return-betaling', 'automatisch-betaling-updaten'],
                 'roles' =>  ['admin', 'beheerder', 'onlinebetalen'],
             ];
-
-//        $behaviors['access']['rules'][] =
-//            [
-//                'actions' => ['webhook', 'betaling', 'return-betaling', 'automatisch-betaling-updaten'],
-//                'allow' => true,
-//            ];
+        
         return $behaviors;
     }
 
@@ -74,7 +69,7 @@ class MollieController extends TransactiesController
                     $this->redirect($payment);
                 }
             } else {
-                foreach ($this->errors as $key => $error) {
+                foreach ($model->errors as $key => $error) {
                     Yii::$app->session->setFlash('warning', Yii::t('app', 'Fout met opslaan: ' . $key . ':' . $error[0]));
                 }
             }
@@ -122,31 +117,37 @@ class MollieController extends TransactiesController
                 case 'open':
                     $model->mollie_status = Transacties::MOLLIE_STATUS_open;
                     $model->status = Transacties::STATUS_ingevoerd;
+                    $model->factuur_id = NULL;
                     break;
                 case 'cancelled':
                     $model->mollie_status = Transacties::MOLLIE_STATUS_cancelled;
                     $model->status = Transacties::STATUS_geannuleerd;
+                    $model->factuur_id = NULL;
                     break;
                 case 'expired':
                     $model->mollie_status = Transacties::MOLLIE_STATUS_expired;
                     $model->status = Transacties::STATUS_ongeldig;
+                    $model->factuur_id = NULL;
                     break;
                 case 'failed':
                     $model->mollie_status = Transacties::MOLLIE_STATUS_failed;
                     $model->status = Transacties::STATUS_ongeldig;
+                    $model->factuur_id = NULL;
+                    break;
+                case 'pending':
+                    $model->mollie_status = Transacties::MOLLIE_STATUS_pending;
+                    $model->status = Transacties::STATUS_ingevoerd;
+                    $model->factuur_id = NULL;
                     break;
                 case 'paid':
                     $model->mollie_status = Transacties::MOLLIE_STATUS_paid;
                     $model->status = Transacties::STATUS_gecontroleerd;
+                    $model->factuur_id = NULL;
                     break;
                 case 'refunded':
                     $model->mollie_status = Transacties::MOLLIE_STATUS_refunded;
-                    // TODO Netter zou zijn om de refund aan te roepen en ook te 
-                    // controleren hoeveel er terug gestord wordt. Voor nu kan
-                    // alleen het hele debrag terug gestord worden.
-                    $model->bedrag = 0;
-                    $model->status = Transacties::STATUS_gecontroleerd;
-                    $model->type_id = BetalingType::getIdealTerugbetalingId();
+                    $model->status = Transacties::STATUS_teruggestord;
+                    $model->factuur_id = NULL;
                     break;
             }
             $model->save();

@@ -30,7 +30,7 @@ class Mollie extends Transacties
     public function scenarios()
     {
         $scenarios = parent::scenarios();
-        $scenarios['betaling'] = ['issuer']; //Scenario Values Only Accepted
+        $scenarios['betaling'] = ['issuer', 'omschrijving', 'bedrag']; //Scenario Values Only Accepted
         return $scenarios;
     }
 
@@ -40,7 +40,7 @@ class Mollie extends Transacties
     public function rules()
     {
         $rules = parent::rules();
-        $rules[] = [['issuer'], 'required', 'on' => 'betaling'];
+        $rules[] = [['issuer', 'omschrijving', 'bedrag'], 'required', 'on' => 'betaling'];
         $rules[] = [['automatische_betaling'], 'safe'];
         
         return $rules;
@@ -80,32 +80,35 @@ class Mollie extends Transacties
         $count = 0;
         foreach ($users as $user)
         {
-            if($user->getBalans() < 0 && $mollie->checkUserMandates($user->mollie_customer_id) ) {
-                $mollie->transacties_user_id = $user->id;
-                $mollie->omschrijving = 'Automatisch ophogen BisonBar met ' . number_format($user->mollie_bedrag, 2, ',', ' ') . ' Euro';
-                $mollie->bedrag = $user->mollie_bedrag;
-                $mollie->type_id = BetalingType::getIdealId();
-                $mollie->status = self::STATUS_ingevoerd;
-                $mollie->datum = date("Y-m-d");
-                if (!$mollie->save()) {
-                    foreach ($mollie->errors as $key => $error) {
-                        Yii::$app->session->setFlash('warning', Yii::t('app', 'Fout met opslaan: ' . $key . ':' . $error[0]));
-                    }
-                }
-
-                $mollie['parameters'] = [
-                    'amount'        => $user->mollie_bedrag,
-                    'customerId'    => $user->mollie_customer_id,
-                    'recurringType' => 'recurring',       // important
-                    'description'   => $mollie->omschrijving,
-                    "metadata"     => [
-                        "transacties_id" => $mollie->transacties_id,
-                    ],
-                ];
-                $mollie->createPayment();
-            } else {
+            // Wanneer een user een pending traansactie heeft, dan gaan we niet
+            // een nieuwe transactie opstarten.
+            if($user->getBalans() > 0 ||
+               !$mollie->checkUserMandates($user->mollie_customer_id ||
+               $mollie->pendingTransactionsExists($user->id)) ) {
                 continue;
             }
+            $mollie->transacties_user_id = $user->id;
+            $mollie->omschrijving = 'Automatisch ophogen BisonBar met ' . number_format($user->mollie_bedrag, 2, ',', ' ') . ' Euro';
+            $mollie->bedrag = $user->mollie_bedrag;
+            $mollie->type_id = BetalingType::getIdealId();
+            $mollie->status = self::STATUS_ingevoerd;
+            $mollie->datum = date("Y-m-d");
+            if (!$mollie->save()) {
+                foreach ($mollie->errors as $key => $error) {
+                    Yii::$app->session->setFlash('warning', Yii::t('app', 'Fout met opslaan: ' . $key . ':' . $error[0]));
+                }
+            }
+
+            $mollie['parameters'] = [
+                'amount'        => $user->mollie_bedrag,
+                'customerId'    => $user->mollie_customer_id,
+                'recurringType' => 'recurring',       // important
+                'description'   => $mollie->omschrijving,
+                "metadata"     => [
+                    "transacties_id" => $mollie->transacties_id,
+                ],
+            ];
+            $mollie->createPayment();
 
             $count++;
         }
@@ -120,6 +123,13 @@ class Mollie extends Transacties
             }
         }
         return FALSE;
+    }
+
+    public function pendingTransactionsExists($user_id){
+        return Transacties::findOne()
+            ->where(['transacties_user_id' => $user_id])
+            ->andWhere(['mollie_status' => self::MOLLIE_STATUS_pending])
+            ->exists();
     }
 
     public function setParameters() {

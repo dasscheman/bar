@@ -98,7 +98,10 @@ class FactuurController extends Controller
             return $this->redirect(['index']);
         }
         foreach ($users as $user) {
-            if (!$user->getNewAfTransactiesUser()->exists() && !$user->getNewBijTransactiesUser()->exists() && !$user->getNewTurvenUsers()->exists()) {
+            if (!$user->getNewAfTransactiesUser()->exists() &&
+                !$user->getNewBijTransactiesUser()->exists() &&
+                !$user->getNewTurvenUsers()->exists() &&
+                !$user->getInvalidTransactionsNotInvoiced()->exists()) {
                 continue;
             }
             $factuur = new Factuur;
@@ -107,6 +110,7 @@ class FactuurController extends Controller
 
             $new_bij_transacties = $user->getNewBijTransactiesUser()->all();
             $new_af_transacties = $user->getNewAfTransactiesUser()->all();
+            $new_invalid_transacties = $user->getInvalidTransactionsNotInvoiced()->all();
             $new_turven = $user->getNewTurvenUsers()->all();
             $sum_new_bij_transacties = $user->getSumNewBijTransactiesUser();
             $sum_new_af_transacties = $user->getSumNewAfTransactiesUser();
@@ -120,6 +124,7 @@ class FactuurController extends Controller
                     'user' => $user,
                     'new_bij_transacties' => $new_bij_transacties,
                     'new_af_transacties' => $new_af_transacties,
+                    'new_invalid_transacties' => $new_invalid_transacties,
                     'new_turven' => $new_turven,
                     'sum_new_bij_transacties' => $sum_new_bij_transacties,
                     'sum_new_af_transacties' => $sum_new_af_transacties,

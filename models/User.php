@@ -297,6 +297,23 @@ class User extends BaseUser
     /**
      * @return \yii\db\ActiveQuery
      */
+    public function getInvalidTransactionsNotInvoiced ()
+    {
+        $status = [
+            Transacties::STATUS_ingevoerd,
+            Transacties::STATUS_tercontrole,
+            Transacties::STATUS_teruggestord,
+            Transacties::STATUS_geannuleerd,
+            Transacties::STATUS_ongeldig
+        ];
+        return $this->hasMany(Transacties::className(), ['transacties_user_id' => 'id'])
+            ->Where(['in', 'transacties.status', $status])
+            ->andWhere('ISNULL(factuur_id)');
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
     public function getSumNewBijTransactiesUser()
     {
         $test  = BetalingType::find()->where(['bijaf'=>BetalingType::BIJAF_bij])->asArray()->all();
