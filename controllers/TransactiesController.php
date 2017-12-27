@@ -62,6 +62,7 @@ class TransactiesController extends Controller
         $searchModel = new TransactiesSearch();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
+        $this->layout = 'main-fluid';
         return $this->render('index', [
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
@@ -89,6 +90,7 @@ class TransactiesController extends Controller
     {
         $model = new Transacties();
 
+        $this->layout = 'main-fluid';
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
             return $this->redirect(['view', 'id' => $model->transacties_id]);
         } else {
@@ -109,6 +111,7 @@ class TransactiesController extends Controller
         $modelTransacties = new Transacties();
         $modelBonnen = new Bonnen();
 
+        $this->layout = 'main-fluid';
         if ($modelTransacties->load(Yii::$app->request->post())){
             $image = UploadedFile::getInstance($modelBonnen, 'image_temp');
             if(!empty($image)) {

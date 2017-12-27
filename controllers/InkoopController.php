@@ -35,11 +35,11 @@ class InkoopController extends Controller
                     'class' => AccessRule::className(),
                 ],
                 // We will override the default rule config with the new AccessRule class
-                'only' => ['index', 'view', 'create', 'update', 'delete'],
+                'only' => ['index', 'index-actueel', 'view', 'create', 'update', 'verbruikt', 'afgeschreven', 'delete'],
                 'rules' => [
                     [
                         'allow' =>  true,
-                        'actions' => ['index', 'delete', 'create', 'update', 'view'],
+                        'actions' => ['index', 'index-actueel', 'delete', 'create', 'update', 'verbruikt', 'afgeschreven', 'view'],
                         'roles' =>  ['admin', 'beheerder'],
                     ],
                     [
@@ -60,7 +60,24 @@ class InkoopController extends Controller
         $searchModel = new InkoopSearch();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
+        $this->layout = 'main-fluid';
         return $this->render('index', [
+            'searchModel' => $searchModel,
+            'dataProvider' => $dataProvider,
+        ]);
+    }
+
+    /**
+     * Lists all Inkoop models.
+     * @return mixed
+     */
+    public function actionIndexActueel()
+    {
+        $searchModel = new InkoopSearch();
+        $dataProvider = $searchModel->searchActueel(Yii::$app->request->queryParams);
+
+        $this->layout = 'main-fluid';
+        return $this->render('index-actueel', [
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
         ]);
@@ -87,16 +104,41 @@ class InkoopController extends Controller
     {
         $model = new Inkoop();
 
+        $this->layout = 'main-fluid';
         if ($model->load(Yii::$app->request->post())) {
             $bon = Bonnen::findOne($model->bon_id);
             $model->datum = $bon->datum;
-            if(!$model->save()){
-                foreach ($model->errors as $key => $error) {
-                    Yii::$app->session->setFlash('warning', Yii::t('app', 'Fout met opslaan: ' . $key . ':' . $error[0]));
+            $count = $model->aantal;
+            $dbTransaction = Yii::$app->db->beginTransaction();
+            try {
+                for ($i = 1; $i <= $count; $i++) {
+
+                    $modelTemp = new Inkoop();
+                    $modelTemp->attributes = $model->attributes;
+                    $modelTemp->aantal = 1;
+                    $modelTemp->status = Inkoop::STATUS_voorraad;
+                    if(!$modelTemp->save()){
+                        foreach ($modelTemp->errors as $key => $error) {
+                            Yii::$app->session->setFlash('warning', Yii::t('app', 'Fout met opslaan: ' . $key . ':' . $error[0]));
+                        }
+
+                        $dbTransaction->rollBack();
+                        return $this->render('create', [
+                            'model' => $model,
+                        ]);
+                    }
                 }
-            } else {
-                return $this->redirect(['view', 'id' => $model->inkoop_id]);
+                $dbTransaction->commit();
+            } catch (\Exception $e) {
+                Yii::$app->session->setFlash('warning', Yii::t('app', 'Je kunt deze inkoop niet opslaan'));
             }
+            $searchModel = new InkoopSearch();
+            $dataProvider = $searchModel->searchActueel(Yii::$app->request->queryParams);
+
+            return $this->render('index-actueel', [
+                'searchModel' => $searchModel,
+                'dataProvider' => $dataProvider,
+            ]);
         }
         return $this->render('create', [
             'model' => $model,
@@ -113,6 +155,7 @@ class InkoopController extends Controller
     {
         $model = $this->findModel($id);
 
+        $this->layout = 'main-fluid';
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
             return $this->redirect(['view', 'id' => $model->inkoop_id]);
         } else {
@@ -120,6 +163,57 @@ class InkoopController extends Controller
                 'model' => $model,
             ]);
         }
+    }
+
+    /**
+     * Updates an existing Inkoop model.
+     * If update is successful, the browser will be redirected to the 'view' page.
+     * @param integer $id
+     * @return mixed
+     */
+    public function actionAfschrijven($id)
+    {
+        $model = $this->findModel($id);
+        $model->status = Inkoop::STATUS_afgeschreven;
+        $model->datum = date('Y-m-d H:i:s');
+        if(!$model->save()){
+            foreach ($model->errors as $key => $error) {
+                Yii::$app->session->setFlash('warning', Yii::t('app', 'Fout met opslaan: ' . $key . ':' . $error[0]));
+            }
+        }
+        $searchModel = new InkoopSearch();
+        $dataProvider = $searchModel->searchActueel(Yii::$app->request->queryParams);
+
+        $this->layout = 'main-fluid';
+        return $this->render('index-actueel', [
+            'searchModel' => $searchModel,
+            'dataProvider' => $dataProvider,
+        ]);
+    }
+
+    /**
+     * Updates an existing Inkoop model.
+     * If update is successful, the browser will be redirected to the 'view' page.
+     * @param integer $id
+     * @return mixed
+     */
+    public function actionVerbruikt($id)
+    {
+        $model = $this->findModel($id);
+        $model->status = Inkoop::STATUS_verkocht;
+        $model->datum = date('Y-m-d H:i:s');
+        if(!$model->save()){
+            foreach ($model->errors as $key => $error) {
+                Yii::$app->session->setFlash('warning', Yii::t('app', 'Fout met opslaan: ' . $key . ':' . $error[0]));
+            }
+        }
+        $searchModel = new InkoopSearch();
+        $dataProvider = $searchModel->searchActueel(Yii::$app->request->queryParams);
+
+        return $this->render('index-actueel', [
+            'searchModel' => $searchModel,
+            'dataProvider' => $dataProvider,
+        ]);
     }
 
     /**

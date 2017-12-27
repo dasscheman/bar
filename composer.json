@@ -27,7 +27,8 @@
         "prawee/yii2-widgets": "dev-master",
         "kartik-v/yii2-detail-view": "*",
         "kartik-v/yii2-tabs-x": "*",
-        "mollie/mollie-api-php": "1.9.*"
+        "mollie/mollie-api-php": "1.9.*",
+        "2amigos/yii2-highcharts-widget": "~1.0"
     },
     "require-dev": {
         "yiisoft/yii2-debug": "~2.0.0",

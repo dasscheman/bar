@@ -56,10 +56,10 @@ class AssortimentController extends Controller
      */
     public function actionIndex()
     {
-//        dd( Yii::$app->user);
         $searchModel = new AssortimentSearch();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
+        $this->layout = 'main-fluid';
         return $this->render('index', [
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
@@ -86,6 +86,7 @@ class AssortimentController extends Controller
     public function actionCreate()
     {
         $model = new Assortiment();
+        $this->layout = 'main-fluid';
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
             return $this->redirect(['view', 'id' => $model->assortiment_id]);
         } else {
@@ -104,7 +105,7 @@ class AssortimentController extends Controller
     public function actionUpdate($id)
     {
         $model = $this->findModel($id);
-
+        $this->layout = 'main-fluid';
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
             return $this->redirect(['view', 'id' => $model->assortiment_id]);
         }

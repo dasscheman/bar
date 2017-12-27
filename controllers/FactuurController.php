@@ -64,6 +64,7 @@ class FactuurController extends Controller
         $searchModel = new FactuurSearch();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
+        $this->layout = 'main-fluid';
         return $this->render('index', [
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
@@ -235,7 +236,6 @@ class FactuurController extends Controller
                 $turf->factuur_id = NULL;
                 if(!$turf->save()) {
                     $dbTransaction->rollBack();
-                    var_dump(4);
                     return FALSE;
                 }
             }

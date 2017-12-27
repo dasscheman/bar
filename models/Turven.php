@@ -227,7 +227,7 @@ class Turven extends BarActiveRecord
                     return FALSE;
                 }
                 $model->prijslijst_id = $prijslijst->prijslijst_id;
-                $model->totaal_prijs = number_format($count * $prijslijst->prijs, 2);
+                $model->totaal_prijs = $count * $prijslijst->prijs;
 
                 if(!$model->save()) {
                     $dbTransaction->rollBack();
@@ -266,7 +266,7 @@ class Turven extends BarActiveRecord
                     return FALSE;
                 }
                 $model->prijslijst_id = $prijslijst->prijslijst_id;
-                $model->totaal_prijs = number_format($prijslijst->prijs, 2);
+                $model->totaal_prijs = $prijslijst->prijs;
 
                 if(!$model->save()) {
                     $dbTransaction->rollBack();

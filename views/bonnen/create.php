@@ -16,7 +16,7 @@ use yii\helpers\Html;
     <div class="col-md-12">
         <div class="panel panel-default">
             <div class="panel-heading">
-                <?= Html::encode('Factuur toevoegen') ?>
+                <?= Html::encode('Bon toevoegen') ?>
             </div>
             <div class="panel-body">
                 <?php 

@@ -11,7 +11,7 @@ use yii\helpers\Html;
     <div class="col-md-12">
         <div class="panel panel-default">
             <div class="panel-heading">
-                <?= Html::encode('Assortiment toevoegen') ?>
+                <?= Html::encode('Voorraad toevoegen') ?>
             </div>
             <div class="panel-body">
                 <?php echo $this->render('/_alert') ?>

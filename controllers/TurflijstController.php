@@ -59,6 +59,7 @@ class TurflijstController extends Controller
         $searchModel = new TurflijstSearch();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
+        $this->layout = 'main-fluid';
         return $this->render('index', [
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
@@ -86,6 +87,7 @@ class TurflijstController extends Controller
     {
         $model = new Turflijst();
 
+        $this->layout = 'main-fluid';
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
             return $this->redirect(['view', 'id' => $model->turflijst_id]);
         } else {
@@ -105,6 +107,7 @@ class TurflijstController extends Controller
     {
         $model = $this->findModel($id);
 
+        $this->layout = 'main-fluid';
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
             return $this->redirect(['view', 'id' => $model->turflijst_id]);
         } else {
