@@ -523,5 +523,32 @@ class User extends BaseUser
 
         return FALSE;
     }
+    
+    /**
+     * Controleer limieten
+     *
+     * @param int $id Assortiment id.
+     * @return string Name of assortiment.
+     */
+    public function limitenControleren() {
 
+        $users = User::find()->all();
+        foreach ($users as $user) {
+            $vorig_openstaand =  $user->getSumOldBijTransactiesUser() - $user->getSumOldTurvenUsers() - $user->getSumOldAfTransactiesUser();
+            $nieuw_openstaand = $vorig_openstaand - $user->sumNewTurvenUsers + $user->sumNewBijTransactiesUser - $user->sumNewAfTransactiesUser;
+            if($user->profile->limit_bereikt) {
+                if($user->profile->limit < $nieuw_openstaand ) {
+                    $user->profile->limit_bereikt = FALSE;
+                    $user->profile->save();
+                }
+                continue;
+            }
+            if(($user->profile->limit === NULL &&
+               $nieuw_openstaand < -20 ) || 
+                ($user->profile->limit > $nieuw_openstaand )) {
+                $user->profile->limit_bereikt = TRUE;
+                $user->profile->save();
+            }
+        }
+    }
 }
