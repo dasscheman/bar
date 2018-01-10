@@ -130,40 +130,77 @@ class SiteController extends Controller
         $volume_inkoop = [];
         $volume_verkoop = [];
 
-        if (Yii::$app->request->get('assortiment_id') !== NULL) {
+        if (Yii::$app->request->get('merk') !== NULL) {
 
-            while ($i < 3) {
+            $assortiments = Assortiment::find()
+                    ->where('merk =:merk')
+                    ->params([':merk' => Yii::$app->request->get('merk')])
+                    ->all();
+
+
+
+            while ($i < 4) {
                 $date = date("Ymd", strtotime("-$i months"));
                 $maanden[] = date("M", strtotime("-$i months"));
-                $inkomsten[date("M", strtotime("-$i months"))] = (float) Turven::find()
-                    ->where('month(datum) = month(' . $date . ')')
-                    ->andWhere('assortiment_id = ' . Yii::$app->request->get('assortiment_id'))
-                    ->sum('totaal_prijs');
+//                $volume_verkoop[date("M", strtotime("-$i months"))];
+                foreach ($assortiments as $assortiment) {
+                    $inkomsten_temp = (float) Turven::find()
+                        ->where('month(datum) = month(' . $date . ')')
+                        ->andWhere('assortiment_id = ' . $assortiment->assortiment_id)
+                        ->sum('totaal_prijs');
 
-                $aantal = (float) Turven::find()
-                    ->where('month(datum) = month(' . $date . ')')
-                    ->andWhere('assortiment_id = ' . Yii::$app->request->get('assortiment_id'))
-                    ->sum('aantal');
 
-                $item = Assortiment::findOne(Yii::$app->request->get('assortiment_id'));
-                $volume_verkoop[date("M", strtotime("-$i months"))] = (float) $aantal * (float) $item->volume / (float) 1000;
+                    if(isset($inkomsten[date("M", strtotime("-$i months"))])) {
+                        $inkomsten[date("M", strtotime("-$i months"))] = $inkomsten_temp + $inkomsten[date("M", strtotime("-$i months"))];
+                    } else {
+                        $inkomsten[date("M", strtotime("-$i months"))] = $inkomsten_temp;
+                    }
 
-                $uitgaven[date("M", strtotime("-$i months"))] = (float) Inkoop::find()
-                    ->where('month(datum) = month(' . $date . ')')
-                    ->andWhere('assortiment_id = ' . Yii::$app->request->get('assortiment_id'))
-                    ->andWhere('status = ' . Inkoop::STATUS_verkocht)
-                    ->sum('totaal_prijs');
+                    $aantal = (float) Turven::find()
+                        ->where('month(datum) = month(' . $date . ')')
+                        ->andWhere('assortiment_id = ' . $assortiment->assortiment_id)
+                        ->sum('aantal');
 
-                $volume_inkoop[date("M", strtotime("-$i months"))] = (float) Inkoop::find()
-                    ->where('month(datum) = month(' . $date . ')')
-                    ->andWhere('assortiment_id = ' . Yii::$app->request->get('assortiment_id'))
-                    ->andWhere('status = ' . Inkoop::STATUS_verkocht)
-                    ->sum('volume');
+                    $item = Assortiment::findOne($assortiment->assortiment_id);
+                    $volume = (float) $aantal * (float) $item->volume / (float) 1000;
+                    
+//                    var_dump($volume, c); exit;
 
+                    if(isset($volume_verkoop[date("M", strtotime("-$i months"))])) {
+                        $volume_verkoop[date("M", strtotime("-$i months"))] = $volume + $volume_verkoop[date("M", strtotime("-$i months"))];
+                    } else {
+                        $volume_verkoop[date("M", strtotime("-$i months"))] = $volume;
+                    }
+
+                    var_dump($volume_verkoop);
+                    $uitgaven_temp = (float) Inkoop::find()
+                        ->where('month(datum) = month(' . $date . ')')
+                        ->andWhere('assortiment_id = ' . $assortiment->assortiment_id)
+                        ->andWhere('status = ' . Inkoop::STATUS_verkocht)
+                        ->sum('totaal_prijs');
+
+                    if (isset( $uitgaven[date("M", strtotime("-$i months"))])) {
+                        $uitgaven[date("M", strtotime("-$i months"))] = $uitgaven[date("M", strtotime("-$i months"))] + $uitgaven_temp;
+                    } else {
+                        $uitgaven[date("M", strtotime("-$i months"))] = $uitgaven_temp;
+                    }
+
+                    $volume_inkoop_temp = (float) Inkoop::find()
+                        ->where('month(datum) = month(' . $date . ')')
+                        ->andWhere('assortiment_id = ' . $assortiment->assortiment_id)
+                        ->andWhere('status = ' . Inkoop::STATUS_verkocht)
+                        ->sum('volume');
+
+                    if(isset($volume_inkoop[date("M", strtotime("-$i months"))])) {
+                        $volume_inkoop[date("M", strtotime("-$i months"))] = $volume_inkoop[date("M", strtotime("-$i months"))] + $volume_inkoop_temp;
+                    } else {
+                        $volume_inkoop[date("M", strtotime("-$i months"))] = $volume_inkoop_temp;
+                    }
+                }
                 $i++;
             }
         } else {
-            while ($i < 3) {
+            while ($i < 4) {
                 $date = date("Ymd", strtotime("-$i months"));
                 $maanden[] = date("M", strtotime("-$i months"));
                 $inkomsten[date("M", strtotime("-$i months"))] = (float) Turven::find()
@@ -180,8 +217,11 @@ class SiteController extends Controller
             }
         }
 
-        $assortimentItems = Assortiment::findAll(['status' => Assortiment::STATUS_beschikbaar]);
-
+        $assortimentItems = Assortiment::find()
+            ->where(['status' => Assortiment::STATUS_beschikbaar])
+            ->groupBy('merk')
+            ->all();
+        
         return $this->render('grafieken', [
             'maanden' => $maanden,
             'inkomsten' => $inkomsten,

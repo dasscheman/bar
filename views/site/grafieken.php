@@ -12,8 +12,8 @@ $this->title = 'Overzichten';
     <?php
     foreach ($assortimentItems as $item) {
         echo Html::a(
-            $item->name,
-            [ '/site/grafieken', 'assortiment_id' => $item->assortiment_id ],
+            $item->merk,
+            [ '/site/grafieken', 'merk' => $item->merk ],
             [ 'class' => 'btn-lg btn-info namen' ]
         );
     } ?>
