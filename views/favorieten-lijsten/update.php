@@ -23,6 +23,9 @@ use app\models\Assortiment;
             if(!empty($modelsUsers)) {
                 foreach ($modelsUsers as $user) {
                     if(in_array($user->id, $users)) {
+                        if($user->profile->limit_bereikt) {
+                            continue;
+                        }
                         echo Html::a(
                             $user->profile->name,
                             [
@@ -69,6 +72,9 @@ use app\models\Assortiment;
         <?php
         foreach ($modelsUsers as $user) {
             if(!in_array($user->id, $users)) {
+                if($user->profile->limit_bereikt) {
+                    continue;
+                }
                 echo Html::a(
                     $user->profile->name,
                     [

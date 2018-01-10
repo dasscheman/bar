@@ -13,6 +13,9 @@ use yii\helpers\Html;
 <div class="knoppen">
     <?php
     foreach ($models as $user) {
+        if($user->profile->limit_bereikt) {
+            continue;
+        }
         echo Html::a(
             $user->profile->name,
             [ 'barinvoer', 'user_id' => $user->id ],
