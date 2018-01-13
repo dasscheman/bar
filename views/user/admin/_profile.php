@@ -11,6 +11,7 @@
 
 use yii\bootstrap\ActiveForm;
 use yii\helpers\Html;
+use kartik\money\MaskMoney;
 
 /**
  * @var yii\web\View $this
@@ -19,28 +20,30 @@ use yii\helpers\Html;
  */
 ?>
 
-<?php $this->beginContent('@dektrium/user/views/admin/update.php', ['user' => $user]) ?>
+<?php
+    $this->beginContent('@dektrium/user/views/admin/update.php', ['user' => $user]);
 
-<?php $form = ActiveForm::begin([
-    'layout' => 'horizontal',
-    'enableAjaxValidation' => true,
-    'enableClientValidation' => false,
-    'fieldConfig' => [
-        'horizontalCssClasses' => [
-            'wrapper' => 'col-sm-9',
+    $form = ActiveForm::begin([
+        'layout' => 'horizontal',
+        'enableAjaxValidation' => true,
+        'enableClientValidation' => false,
+        'fieldConfig' => [
+            'horizontalCssClasses' => [
+                'wrapper' => 'col-sm-9',
+            ],
         ],
-    ],
-]); ?>
+    ]);
 
-<?= $form->field($profile, 'name') ?>
-<?= $form->field($profile, 'voornaam') ?>
-<?= $form->field($profile, 'tussenvoegsel') ?>
-<?= $form->field($profile, 'achternaam') ?>
-<?= $form->field($profile, 'public_email') ?>
-<?= $form->field($profile, 'website') ?>
-<?= $form->field($profile, 'location') ?>
-<?= $form->field($profile, 'gravatar_email') ?>
-<?= $form->field($profile, 'bio')->textarea() ?>
+    echo $form->field($profile, 'name');
+    echo $form->field($profile, 'voornaam');
+    echo $form->field($profile, 'tussenvoegsel');
+    echo $form->field($profile, 'achternaam');
+    echo $form->field($profile, 'public_email');
+    echo $form->field($profile, 'limit_hard')->widget(MaskMoney::classname());
+    echo $form->field($profile, 'limit_bereikt')->checkbox();
+    echo $form->field($profile, 'limit_ophogen')->widget(MaskMoney::classname());
+
+?>
 
 <div class="form-group">
     <div class="col-lg-offset-3 col-lg-9">

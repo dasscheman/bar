@@ -14,6 +14,13 @@ use app\models\User;
 class UserSearch extends User
 {
     public $displayname;
+    public $sumNewBijTransactiesUser;
+    public $sumNewAfTransactiesUser;
+    public $sumOldBijTransactiesUser;
+    public $sumOldAfTransactiesUser;
+    public $sumNewTurvenUsers;
+    public $sumOldTurvenUsers;
+
     /**
      * @inheritdoc
      */
@@ -21,7 +28,11 @@ class UserSearch extends User
     {
         return [
             [['id', 'confirmed_at', 'blocked_at', 'created_at', 'updated_at', 'flags', 'last_login_at'], 'integer'],
-            [['username', 'email', 'password_hash', 'auth_key', 'unconfirmed_email', 'registration_ip', 'displayname'], 'safe'],
+            [[
+                'username', 'email', 'password_hash', 'auth_key', 'unconfirmed_email', 'registration_ip', 'displayname',
+                'sumNewBijTransactiesUser', 'sumNewAfTransactiesUser', 'sumOldBijTransactiesUser', 'sumOldAfTransactiesUser',
+                'sumNewTurvenUsers', 'sumOldTurvenUsers',
+                'sum_new_turven_users', 'sum_old_turven_users' ], 'safe'],
         ];
     }
 
@@ -44,7 +55,8 @@ class UserSearch extends User
     public function search($params, $lijst_id = NULL)
     {
         if ($lijst_id === NULL) {
-            $query = User::find();            
+            $query = User::find()
+                    ->where('ISNULL(blocked_at)');
         } else {
             $selected_users = Favorieten::find()
                 ->where(['lijst_id' => $lijst_id])
@@ -53,7 +65,9 @@ class UserSearch extends User
                 ->all();
 
             $ids = ArrayHelper::getColumn($selected_users, 'selected_user_id');
-            $query = User::find()->where(['id' => $ids]);
+            $query = User::find()
+                    ->where(['id' => $ids])
+                    ->andWhere('ISNULL(blocked_at)');
         }
 
         $query->joinWith(['profile']);
@@ -81,6 +95,13 @@ class UserSearch extends User
         // grid filtering conditions
         $query->andFilterWhere([
             'id' => $this->id,
+            'openstaand' => $this->openstaand,
+            'sumNewBijTransactiesUser' => $this->sumNewBijTransactiesUser,
+            'sumNewAfTransactiesUser' => $this->sumNewAfTransactiesUser,
+            'sumOldBijTransactiesUser' => $this->sumOldBijTransactiesUser,
+            'sumOldAfTransactiesUser' => $this->sumOldAfTransactiesUser,
+            'sumNewTurvenUsers' => $this->sumNewTurvenUsers,
+            'sumOldTurvenUsers' => $this->sumOldTurvenUsers,
             'confirmed_at' => $this->confirmed_at,
             'blocked_at' => $this->blocked_at,
             'created_at' => $this->created_at,
