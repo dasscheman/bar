@@ -49,20 +49,6 @@ class CronController extends Controller {
         echo "\n\n";
     }
 
-
-    public function actionNight() {
-        // called every two minutes
-        // */2 * * * * ~/sites/www/yii2/yii cron/day
-
-        $time_start = microtime(true);
-        $aantal = User::limitenControleren();
-        echo 'Er zijn '.($aantal).' limieten overschreden';
-        echo "\n";
-        $time_end = microtime(true);
-        echo date("l jS \of F Y h:i:s A") . ': Processing for '.($time_end-$time_start).' seconds';
-        echo "\n\n";
-    }
-
     public function actionMonth() {
 
     }
