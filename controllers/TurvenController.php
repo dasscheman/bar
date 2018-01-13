@@ -123,6 +123,9 @@ class TurvenController extends Controller
                 return $this->redirect(['barinvoer', '#' => $tab]);
             }
 
+            if(!User::limitenControleren($user_id)) {
+                Yii::$app->session->setFlash('warning', Yii::t('app', 'Wat errug, betalen pannenkoek! Vanaf 1 maart kun je niet meer turven als je meer dan 20 euro in het rood staat.'));
+            }
             return $this->render('bar-invoer', [
                 'assortSearchModel' => $assortSearchModel,
                 'assortDataProvider' => $assortDataProvider,

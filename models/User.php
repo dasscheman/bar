@@ -54,6 +54,8 @@ use dektrium\user\models\User as BaseUser;
 
 class User extends BaseUser
 {
+    public $openstaand;
+
      /**
      * @inheritdoc
      */
@@ -98,6 +100,13 @@ class User extends BaseUser
             'updated_at' => 'Updated At',
             'flags' => 'Flags',
             'last_login_at' => 'Last Login At',
+            'sumNewBijTransactiesUser' => 'New betaling bij',
+            'sumNewAfTransactiesUser' => 'New betaling af',
+            'sumOldBijTransactiesUser' => 'Oud betaling bij',
+            'sumOldAfTransactiesUser' => 'Oud betaling af',
+            'sumNewTurvenUsers' => 'New turven',
+            'sumOldTurvenUsers' => 'Oud turven',
+            'openstaand' => 'Openstaand bedrag',
         ];
     }
 
@@ -411,6 +420,16 @@ class User extends BaseUser
     /**
      * @return \yii\db\ActiveQuery
      */
+    public function getOpenstaand()
+    {
+            $vorig_openstaand =  $this->getSumOldBijTransactiesUser() - $this->getSumOldTurvenUsers() - $this->getSumOldAfTransactiesUser();
+            $nieuw_openstaand = $vorig_openstaand - $this->sumNewTurvenUsers + $this->sumNewBijTransactiesUser - $this->sumNewAfTransactiesUser;
+            return $nieuw_openstaand;
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
     public function getTurvens0()
     {
         return $this->hasMany(Turven::className(), ['created_by' => 'id']);
@@ -523,5 +542,26 @@ class User extends BaseUser
 
         return FALSE;
     }
+    
+    /**
+     * Controleer limieten
+     *
+     * @param int $id user id.
+     * @return bolean.
+     */
+    public function limitenControleren($id) {
+        $user = User::findOne($id);
+        // Zet de default limiet
+        $limiet = -20;
 
+        if($user->profile->limit_hard !== NULL) {
+            $limiet = $user->profile->limit_hard;
+        }
+
+        if($user->Openstaand < $limiet) {
+            return FALSE;
+        }
+
+        return TRUE;
+    }
 }

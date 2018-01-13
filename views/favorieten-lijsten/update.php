@@ -23,6 +23,19 @@ use app\models\Assortiment;
             if(!empty($modelsUsers)) {
                 foreach ($modelsUsers as $user) {
                     if(in_array($user->id, $users)) {
+                        if(!$user->limitenControleren($user->id)) {
+                            echo Html::a(
+                                $user->profile->name,
+                                [
+                                    'favorieten-aanpassen',
+                                    'id' => $model->favorieten_lijsten_id,
+                                    'remove' => $user->id,
+                                    'users' => $users],
+                                [ 'class' => 'btn-lg btn-danger namen' ]
+                            );
+                            // Na 1 maart 2018 continue
+                            continue;
+                        }
                         echo Html::a(
                             $user->profile->name,
                             [
@@ -69,6 +82,19 @@ use app\models\Assortiment;
         <?php
         foreach ($modelsUsers as $user) {
             if(!in_array($user->id, $users)) {
+                if(!$user->limitenControleren($user->id)) {
+                    echo Html::a(
+                        $user->profile->name,
+                        [
+                            'favorieten-aanpassen',
+                            'id' => $model->favorieten_lijsten_id,
+                            'remove' => $user->id,
+                            'users' => $users],
+                        [ 'class' => 'btn-lg btn-danger namen' ]
+                    );
+                    // Na 1 maart 2018 continue
+                    continue;
+                }
                 echo Html::a(
                     $user->profile->name,
                     [
