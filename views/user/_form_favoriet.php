@@ -13,7 +13,13 @@ use yii\helpers\Html;
 <div class="knoppen">
     <?php
     foreach ($models as $user) {
-        if($user->profile->limit_bereikt) {
+        if(!$user->limitenControleren($user->id)) {
+            echo Html::a(
+                $user->profile->name,
+                [ 'barinvoer', 'user_id' => $user->id, 'tab' => 'w1-tab2'],
+                [ 'class' => 'btn-lg btn-danger namen' ]
+            );
+            // Na 1 maart 2018 alleen continue
             continue;
         }
         echo Html::a(
