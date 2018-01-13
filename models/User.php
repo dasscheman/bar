@@ -54,6 +54,8 @@ use dektrium\user\models\User as BaseUser;
 
 class User extends BaseUser
 {
+    public $openstaand;
+
      /**
      * @inheritdoc
      */
@@ -98,6 +100,13 @@ class User extends BaseUser
             'updated_at' => 'Updated At',
             'flags' => 'Flags',
             'last_login_at' => 'Last Login At',
+            'sumNewBijTransactiesUser' => 'New betaling bij',
+            'sumNewAfTransactiesUser' => 'New betaling af',
+            'sumOldBijTransactiesUser' => 'Oud betaling bij',
+            'sumOldAfTransactiesUser' => 'Oud betaling af',
+            'sumNewTurvenUsers' => 'New turven',
+            'sumOldTurvenUsers' => 'Oud turven',
+            'openstaand' => 'Openstaand bedrag',
         ];
     }
 
@@ -411,6 +420,16 @@ class User extends BaseUser
     /**
      * @return \yii\db\ActiveQuery
      */
+    public function getOpenstaand()
+    {
+            $vorig_openstaand =  $this->getSumOldBijTransactiesUser() - $this->getSumOldTurvenUsers() - $this->getSumOldAfTransactiesUser();
+            $nieuw_openstaand = $vorig_openstaand - $this->sumNewTurvenUsers + $this->sumNewBijTransactiesUser - $this->sumNewAfTransactiesUser;
+            return $nieuw_openstaand;
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
     public function getTurvens0()
     {
         return $this->hasMany(Turven::className(), ['created_by' => 'id']);
@@ -527,28 +546,22 @@ class User extends BaseUser
     /**
      * Controleer limieten
      *
-     * @param int $id Assortiment id.
-     * @return string Name of assortiment.
+     * @param int $id user id.
+     * @return bolean.
      */
-    public function limitenControleren() {
+    public function limitenControleren($id) {
+        $user = User::findOne($id);
+        // Zet de default limiet
+        $limiet = -20;
 
-        $users = User::find()->all();
-        foreach ($users as $user) {
-            $vorig_openstaand =  $user->getSumOldBijTransactiesUser() - $user->getSumOldTurvenUsers() - $user->getSumOldAfTransactiesUser();
-            $nieuw_openstaand = $vorig_openstaand - $user->sumNewTurvenUsers + $user->sumNewBijTransactiesUser - $user->sumNewAfTransactiesUser;
-            if($user->profile->limit_bereikt) {
-                if($user->profile->limit < $nieuw_openstaand ) {
-                    $user->profile->limit_bereikt = FALSE;
-                    $user->profile->save();
-                }
-                continue;
-            }
-            if(($user->profile->limit === NULL &&
-               $nieuw_openstaand < -20 ) || 
-                ($user->profile->limit > $nieuw_openstaand )) {
-                $user->profile->limit_bereikt = TRUE;
-                $user->profile->save();
-            }
+        if($user->profile->limit_hard !== NULL) {
+            $limiet = $user->profile->limit_hard;
         }
+
+        if($user->Openstaand < $limiet) {
+            return FALSE;
+        }
+
+        return TRUE;
     }
 }
