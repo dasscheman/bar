@@ -12,6 +12,8 @@ use app\models\Inkoop;
  */
 class InkoopSearch extends Inkoop
 {
+    public $assortiment_name;
+    
     /**
      * @inheritdoc
      */
@@ -19,7 +21,7 @@ class InkoopSearch extends Inkoop
     {
         return [
             [['inkoop_id', 'assortiment_id', 'aantal', 'type', 'status', 'created_by', 'updated_by'], 'integer'],
-            [['datum', 'created_at', 'updated_at'], 'safe'],
+            [['datum', 'created_at', 'updated_at', 'assortiment_name'], 'safe'],
             [['volume', 'totaal_prijs'], 'number'],
         ];
     }
@@ -43,7 +45,7 @@ class InkoopSearch extends Inkoop
     public function search($params)
     {
         $query = Inkoop::find()
-            ->where(['not', ['status' => Inkoop::STATUS_voorraad]]);
+            ->joinWith(['assortiment']);
 
         // add conditions that should always apply here
 
@@ -55,6 +57,12 @@ class InkoopSearch extends Inkoop
                 ]
             ],
         ]);
+
+        $dataProvider->sort->attributes['assortiment_name'] =
+        [
+            'asc' => ['assortiment.name' => SORT_ASC],
+            'desc' => ['assortiment.name' => SORT_DESC],
+        ];
 
         $this->load($params);
 
@@ -68,17 +76,19 @@ class InkoopSearch extends Inkoop
         $query->andFilterWhere([
             'inkoop_id' => $this->inkoop_id,
             'assortiment_id' => $this->assortiment_id,
-            'datum' => $this->datum,
             'volume' => $this->volume,
             'aantal' => $this->aantal,
-            'totaal_prijs' => $this->totaal_prijs,
             'type' => $this->type,
-            'status' => $this->status,
+            'inkoop.status' => $this->status,
             'created_at' => $this->created_at,
             'created_by' => $this->created_by,
             'updated_at' => $this->updated_at,
             'updated_by' => $this->updated_by,
         ]);
+
+        $query->andFilterWhere(['like', 'assortiment.name', $this->assortiment_name]);
+        $query->andFilterWhere(['like', 'datum', $this->datum]);
+        $query->andFilterWhere(['like', 'totaal_prijs', $this->totaal_prijs]);
 
         return $dataProvider;
     }
@@ -93,7 +103,8 @@ class InkoopSearch extends Inkoop
     public function searchActueel($params)
     {
         $query = Inkoop::find()
-            ->where(['status' => Inkoop::STATUS_voorraad]);
+            ->where(['inkoop.status' => Inkoop::STATUS_voorraad])
+            ->joinWith(['assortiment']);
 
         // add conditions that should always apply here
 
@@ -105,6 +116,12 @@ class InkoopSearch extends Inkoop
                 ]
             ],
         ]);
+
+        $dataProvider->sort->attributes['assortiment_name'] =
+        [
+            'asc' => ['assortiment.name' => SORT_ASC],
+            'desc' => ['assortiment.name' => SORT_DESC],
+        ];
 
         $this->load($params);
 
@@ -118,17 +135,19 @@ class InkoopSearch extends Inkoop
         $query->andFilterWhere([
             'inkoop_id' => $this->inkoop_id,
             'assortiment_id' => $this->assortiment_id,
-            'datum' => $this->datum,
             'volume' => $this->volume,
             'aantal' => $this->aantal,
-            'totaal_prijs' => $this->totaal_prijs,
             'type' => $this->type,
-            'status' => $this->status,
+            'inkoop.status' => $this->status,
             'created_at' => $this->created_at,
             'created_by' => $this->created_by,
             'updated_at' => $this->updated_at,
             'updated_by' => $this->updated_by,
         ]);
+
+        $query->andFilterWhere(['like', 'assortiment.name', $this->assortiment_name]);
+        $query->andFilterWhere(['like', 'datum', $this->datum]);
+        $query->andFilterWhere(['like', 'totaal_prijs', $this->totaal_prijs]);
 
         return $dataProvider;
     }

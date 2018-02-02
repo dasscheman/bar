@@ -227,7 +227,7 @@ class Factuur extends BarActiveRecord
 
     public function updateAfterSendFactuur()
     {
-        $this->verzend_datum = date("Y-m-d");
+        $this->verzend_datum = date("Y-m-d H:i:s");
 
         $transacties = $this->getTransacties()->all();
         $turven = $this->getTurvens()->all();

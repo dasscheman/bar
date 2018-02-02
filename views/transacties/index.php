@@ -6,7 +6,9 @@
 use kartik\grid\GridView;
 use yii\helpers\Html;
 use yii\widgets\Pjax;
-
+use app\models\Transacties;
+use app\models\BetalingType;
+use yii\helpers\ArrayHelper;
 /**
  * @var \yii\web\View $this
  * @var \yii\data\ActiveDataProvider $dataProvider
@@ -32,7 +34,7 @@ $toolbar = FALSE;
                 <?= Html::encode('Transacties overzicht') ?>
             </div>
             <div class="panel-body">
-                <?php 
+                <?php
                 echo $this->render('/_alert');
                 echo $this->render('/_menu');
                 Pjax::begin();
@@ -58,12 +60,14 @@ $toolbar = FALSE;
                         'bedrag',
                         'type_id' => [
                             'attribute' => 'type_id',
+                            'filter'=> ArrayHelper::map(BetalingType::find()->asArray()->all(), 'type_id', 'omschrijving'),
                             'value' => function($model){
                                 return $model->getType()->one()->omschrijving;
                             },
                         ],
                         'status' => [
                             'attribute' => 'status',
+                            'filter'=> Transacties::getStatusOptions(),
                             'value' => function($model){
                                 return $model->getStatusText();
                             },
@@ -82,12 +86,9 @@ $toolbar = FALSE;
                                 return empty($model->factuur_id)?'':Html::a('Factuur ' . $model->factuur_id, ['factuur/view', 'id' => $model->factuur_id]);
                              },
                          ],
-//                            'created_by',
-//                            'created_at',
-//                            'updated_by',
-//                            'updated_at',
                         [
                             'class' => 'yii\grid\ActionColumn',
+                            'header'=>'Actions',
                             'template' => '{update} {view} {delete}',
                             'headerOptions' => ['style' => 'width:16%'],
                         ],

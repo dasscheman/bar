@@ -53,14 +53,7 @@ $toolbar = FALSE;
                         'naam',
                         'verzend_datum' => [
                             'attribute' => 'verzend_datum',
-                            'value' => function($model){
-                                return empty($model->datum)?'':Yii::$app->setupdatetime->displayFormat($model->datum, 'php:d-M-Y');
-                            },
                         ],
-                        'created_at',
-                        'created_by',
-                        'created_at',
-                        'created_by',
                         [
                             'class' => 'yii\grid\ActionColumn',
                             'header'=>'Actions',

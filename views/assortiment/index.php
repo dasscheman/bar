@@ -113,7 +113,8 @@ $pjax = FALSE; //TRUE zorgt ervoor dat de columnen vertraagd verspringen, dat is
                         ],
                         [
                             'class' => 'yii\grid\ActionColumn',
-                            'headerOptions' => ['style' => 'width:20%'],
+                            'header'=>'Actions',
+                            'headerOptions' => ['style' => 'width:10%'],
                             'template' => '{update} {view} {delete}',
                         ],
                     ],

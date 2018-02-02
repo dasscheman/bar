@@ -16,12 +16,8 @@ echo Nav::widget([
             'label' => 'Voorraad',
             'items' => [
                 ['label' => 'Actueel', 'url' => ['/inkoop/index-actueel']],
-                ['label' => 'History', 'url' => ['/inkoop/index']],
+                ['label' => 'Alles', 'url' => ['/inkoop/index']],
             ],
-        ],
-        [
-            'label' => 'Bonnen',
-            'url' => ['/bonnen/index']
         ],
         [
             'label' => 'Assortiment',
@@ -40,20 +36,17 @@ echo Nav::widget([
             'url' => ['/factuur/index']
         ],
         [
-            'label' => 'Turflijst',
-            'url' => ['/turflijst/index']
-        ],
-        [
             'label' => 'Prijslijst',
             'url' => ['/prijslijst/index']
         ],
         [
-            'label' => 'Betaling typs',
-            'url' => ['/betaling-type/index']
-        ],
-        [
-            'label' => 'Favorieten',
-            'url' => ['/favorieten-lijsten/index']
+            'label' => 'Overige',
+            'items' => [
+                ['label' => 'Favorieten', 'url' => ['/favorieten-lijsten/index']],
+                ['label' => 'Betaling typs', 'url' => ['/betaling-type/index']],
+                ['label' => 'Turflijst', 'url' => ['/turflijst/index']],
+                ['label' => 'Bonnen','url' => ['/bonnen/index']],
+            ],
         ],
         [
             'label' => 'Toevoegen',
@@ -71,9 +64,5 @@ echo Nav::widget([
                 ['label' => 'Favorieten lijst maken', 'url' => ['/favorieten-lijsten/create']],
             ],
         ],
-//        [
-//            'label' => Yii::t('app', 'Facturen'),
-//            'url' => ['/factuur/index'],
-//        ],
     ],
 ]);

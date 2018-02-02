@@ -163,8 +163,6 @@ class SiteController extends Controller
 
                     $item = Assortiment::findOne($assortiment->assortiment_id);
                     $volume = (float) $aantal * (float) $item->volume / (float) 1000;
-                    
-//                    var_dump($volume, c); exit;
 
                     if(isset($volume_verkoop[date("M", strtotime("-$i months"))])) {
                         $volume_verkoop[date("M", strtotime("-$i months"))] = $volume + $volume_verkoop[date("M", strtotime("-$i months"))];
@@ -172,7 +170,6 @@ class SiteController extends Controller
                         $volume_verkoop[date("M", strtotime("-$i months"))] = $volume;
                     }
 
-                    var_dump($volume_verkoop);
                     $uitgaven_temp = (float) Inkoop::find()
                         ->where('month(datum) = month(' . $date . ')')
                         ->andWhere('assortiment_id = ' . $assortiment->assortiment_id)

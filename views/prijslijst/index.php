@@ -7,6 +7,8 @@
 use yii\helpers\Html;
 use kartik\grid\GridView;
 use yii\widgets\Pjax;
+use app\models\Assortiment;
+use yii\helpers\ArrayHelper;
 
 /* @var $this yii\web\View */
 /* @var $searchModel app\models\PrijslijstSearch */
@@ -40,10 +42,10 @@ $toolbar = FALSE;
                     'filterModel' => $searchModel,
                     'layout'       => "{items}\n{pager}",
                     'columns' => [
-                        'prijslijst_id',
                         [
                             'attribute'=>'assortiment_id',
                             'format' => 'raw',
+                            'filter'=> ArrayHelper::map(Assortiment::find()->asArray()->all(), 'assortiment_id', 'name'),
                             'value'=>function ($model) {
                                  return Html::a($model->getAssortiment()->one()->name, ['assortiment/view', 'id' => $model->assortiment_id]);
                              },
@@ -61,12 +63,9 @@ $toolbar = FALSE;
                                 return Yii::$app->setupdatetime->displayFormat($model->to, 'php:d-M-Y');
                             },
                         ],
-                        // 'created_at',
-                        // 'created_by',
-                        // 'updated_at',
-                        // 'updated_by',
                         [
                             'class' => 'yii\grid\ActionColumn',
+                            'header'=>'Actions',
                             'template' => '{update} {view} {delete}',
                             'headerOptions' => ['style' => 'width:14%'],
                         ],
