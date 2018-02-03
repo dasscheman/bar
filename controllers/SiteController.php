@@ -139,8 +139,6 @@ class SiteController extends Controller
                     ->params([':merk' => Yii::$app->request->get('merk')])
                     ->all();
 
-
-
             while ($i < 4) {
                 $date = date("Ymd", strtotime("-$i months"));
                 $maanden[] = date("M", strtotime("-$i months"));
@@ -176,8 +174,8 @@ class SiteController extends Controller
                         ->andWhere('status = ' . Inkoop::STATUS_verkocht)
                         ->sum('totaal_prijs');
 
-                    if (isset( $uitgaven[date("M", strtotime("-$i months"))])) {
-                        $uitgavenDrank[date("M", strtotime("-$i months"))] = $uitgaven[date("M", strtotime("-$i months"))] + $uitgaven_temp;
+                    if (isset( $uitgavenDrank[date("M", strtotime("-$i months"))])) {
+                        $uitgavenDrank[date("M", strtotime("-$i months"))] = $uitgavenDrank[date("M", strtotime("-$i months"))] + $uitgaven_temp;
                     } else {
                         $uitgavenDrank[date("M", strtotime("-$i months"))] = $uitgaven_temp;
                     }
