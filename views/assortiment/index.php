@@ -77,6 +77,22 @@ $pjax = FALSE; //TRUE zorgt ervoor dat de columnen vertraagd verspringen, dat is
                                 '1' => 'Ja'
                             ],
                         ],
+                        'change_stock_auto' => [
+                            'attribute' => 'change_stock_auto',
+                            'headerOptions' => ['style' => 'width:2%'],
+                            // translate lookup value
+                            'value' => function ($model) {
+                                $boolean = [
+                                    '0' => 'Nee',
+                                    '1' => 'Ja'
+                                ];
+                                return $boolean[$model->change_stock_auto];
+                            },
+                            'filter' => [
+                                '0' => 'Nee',
+                                '1' => 'Ja'
+                            ],
+                        ],
                         'volume',
                         'prijs' => [
                             'attribute' => 'prijs',

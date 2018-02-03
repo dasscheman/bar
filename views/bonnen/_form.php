@@ -25,7 +25,6 @@ use kartik\money\MaskMoney;
         'enableAjaxValidation'   => false,
         'id'   => 'bonnen-form',
         'options'=> ['enctype'=>'multipart/form-data'],
-//        'action' => ['bonnen/create'],// important
     ]);
 
     echo $form->field($model, 'omschrijving')->textarea();

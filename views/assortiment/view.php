@@ -41,6 +41,7 @@ use kartik\detail\DetailView
                             'merk',
                             'soort',
                             'alcohol',
+                            'change_stock_auto',
                             'volume',
                             'status',
                             'created_at',

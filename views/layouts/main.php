@@ -39,6 +39,7 @@ AppAsset::register($this);
         'options' => ['class' => 'navbar-nav navbar-right'],
         'items' => [
             ['label' => 'Overzicht', 'url' => ['/site/grafieken']],
+            ['label' => 'Voorraad', 'url' => ['/inkoop/overzicht-actueel']],
             ['label' => 'Beheerder',
                 'items' => [
                     [

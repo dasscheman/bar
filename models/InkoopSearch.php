@@ -21,7 +21,7 @@ class InkoopSearch extends Inkoop
     {
         return [
             [['inkoop_id', 'assortiment_id', 'aantal', 'type', 'status', 'created_by', 'updated_by'], 'integer'],
-            [['datum', 'created_at', 'updated_at', 'assortiment_name'], 'safe'],
+            [['omschrijving', 'datum', 'created_at', 'updated_at', 'assortiment_name'], 'safe'],
             [['volume', 'totaal_prijs'], 'number'],
         ];
     }
@@ -86,6 +86,7 @@ class InkoopSearch extends Inkoop
             'updated_by' => $this->updated_by,
         ]);
 
+        $query->andFilterWhere(['like', 'omschrijving', $this->omschrijving]);
         $query->andFilterWhere(['like', 'assortiment.name', $this->assortiment_name]);
         $query->andFilterWhere(['like', 'datum', $this->datum]);
         $query->andFilterWhere(['like', 'totaal_prijs', $this->totaal_prijs]);
@@ -145,6 +146,69 @@ class InkoopSearch extends Inkoop
             'updated_by' => $this->updated_by,
         ]);
 
+        $query->andFilterWhere(['like', 'assortiment.name', $this->assortiment_name]);
+        $query->andFilterWhere(['like', 'datum', $this->datum]);
+        $query->andFilterWhere(['like', 'totaal_prijs', $this->totaal_prijs]);
+
+        return $dataProvider;
+    }
+    /**
+     * Creates data provider instance with search query applied
+     *
+     * @param array $params
+     *
+     * @return ActiveDataProvider
+     */
+    public function searchActueelOverview($params)
+    {
+        $query = Inkoop::find()
+            ->select(['omschrijving, inkoop.assortiment_id, COUNT(aantal) AS totaal_aantal'])
+            ->where(['inkoop.status' => Inkoop::STATUS_voorraad])
+            ->andWhere(['assortiment.status' => Assortiment::STATUS_beschikbaar])
+            ->groupBy(['omschrijving', 'inkoop.assortiment_id'])
+            ->joinWith(['assortiment']);
+
+        // add conditions that should always apply here
+
+        $dataProvider = new ActiveDataProvider([
+            'query' => $query,
+            'sort' => [
+                'defaultOrder' => [
+                    'datum' => SORT_DESC,
+                ]
+            ],
+        ]);
+
+        $dataProvider->sort->attributes['assortiment_name'] =
+        [
+            'asc' => ['assortiment.name' => SORT_ASC],
+            'desc' => ['assortiment.name' => SORT_DESC],
+        ];
+
+        $this->load($params);
+
+        if (!$this->validate()) {
+            // uncomment the following line if you do not want to return any records when validation fails
+            // $query->where('0=1');
+            return $dataProvider;
+        }
+
+        // grid filtering conditions
+        $query->andFilterWhere([
+            'inkoop_id' => $this->inkoop_id,
+            'assortiment_id' => $this->assortiment_id,
+            'totaal_aantal' => $this->totaal_aantal,
+            'volume' => $this->volume,
+            'aantal' => $this->aantal,
+            'type' => $this->type,
+            'inkoop.status' => $this->status,
+            'created_at' => $this->created_at,
+            'created_by' => $this->created_by,
+            'updated_at' => $this->updated_at,
+            'updated_by' => $this->updated_by,
+        ]);
+
+        $query->andFilterWhere(['like', 'omschrijving', $this->omschrijving]);
         $query->andFilterWhere(['like', 'assortiment.name', $this->assortiment_name]);
         $query->andFilterWhere(['like', 'datum', $this->datum]);
         $query->andFilterWhere(['like', 'totaal_prijs', $this->totaal_prijs]);

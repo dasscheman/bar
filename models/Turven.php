@@ -195,7 +195,7 @@ class Turven extends BarActiveRecord
         if (!$turven->exists() ) {
             return 0;
         }
-//        Yii::$app->mailer->htmlLayout('layouts/html');
+
         $message = Yii::$app->mailer->compose('mail_status_turven', [
                 'turven' => $turven->all(),
             ])
@@ -236,6 +236,9 @@ class Turven extends BarActiveRecord
                     }
                     return FALSE;
                 }
+                if($assortiment->change_stock_auto) {
+                    Inkoop::voorraadBijWerken($assort_id, $count, Inkoop::STATUS_verkocht);
+                }
             }
             $dbTransaction->commit();
         } catch (\Exception $e) {
@@ -247,13 +250,14 @@ class Turven extends BarActiveRecord
 
     public function saveRondje($users, $invoer_item)
     {
+        $count = 1;
         $date = Yii::$app->setupdatetime->storeFormat(time(), 'datetime');
         $dbTransaction = Yii::$app->db->beginTransaction();
         try {
             foreach($users as $user) {
                 $model = new Turven();
                 $model->assortiment_id = $invoer_item;
-                $model->aantal = 1;
+                $model->aantal = $count;
                 $model->datum = $date;
                 $model->consumer_user_id = $user;
                 $model->status = TURVEN::STATUS_gecontroleerd;
@@ -274,6 +278,10 @@ class Turven extends BarActiveRecord
                         Yii::$app->session->setFlash('warning', Yii::t('app', 'Kan turven niet opslaan:' . $error[0]));
                     }
                     return FALSE;
+                }
+
+                if($assortiment->change_stock_auto) {
+                    Inkoop::voorraadBijWerken($invoer_item, $count, Inkoop::STATUS_verkocht);
                 }
             }
             $dbTransaction->commit();
