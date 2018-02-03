@@ -20,7 +20,7 @@ use yii\helpers\Html;
                 echo $this->render('/_alert');
                 foreach ($dataProvider->getModels() as $assortItem) {
                     echo Html::a(
-                        $assortItem->omschrijving . ' ' . $assortItem->assortiment->merk . ' (' . $assortItem->totaal_aantal . ')',
+                        $assortItem->totaal_aantal . ' X ' . $assortItem->omschrijving . ' (<i>' . $assortItem->assortiment->merk . '</i>)',
                         [
                             'nieuw-geopend',
                             'assortiment_id' => $assortItem->assortiment_id,

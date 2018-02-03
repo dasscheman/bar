@@ -75,7 +75,7 @@ class Inkoop extends BarActiveRecord
             'assortiment_id' => 'Assortiment ID',
             'bon_id' => 'Bon ID',
             'datum' => 'Datum',
-            'volume' => 'Volume per stuk',
+            'volume' => 'Volume per stuk (l)',
             'aantal' => 'Aantal',
             'totaal_prijs' => 'Prijs per stuk',
             'type' => 'Type',

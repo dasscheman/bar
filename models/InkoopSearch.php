@@ -165,6 +165,7 @@ class InkoopSearch extends Inkoop
             ->select(['omschrijving, inkoop.assortiment_id, COUNT(aantal) AS totaal_aantal'])
             ->where(['inkoop.status' => Inkoop::STATUS_voorraad])
             ->andWhere(['assortiment.status' => Assortiment::STATUS_beschikbaar])
+            ->orderBy('omschrijving')
             ->groupBy(['omschrijving', 'inkoop.assortiment_id'])
             ->joinWith(['assortiment']);
 

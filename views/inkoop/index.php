@@ -37,8 +37,8 @@ $toolbar = FALSE;
                     'filterModel' => $searchModel,
                     'layout'       => "{items}\n{pager}",
                     'columns' => [
+                        'omschrijving',
                         [
-                            'omschrijving',
                             'attribute'=>'assortiment_name',
                             'format' => 'raw',
                             'value'=>function ($model) {
