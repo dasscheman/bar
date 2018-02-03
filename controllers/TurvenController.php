@@ -85,7 +85,7 @@ class TurvenController extends Controller
         $count = [];
 
         $assortSearchModel = new AssortimentSearch();
-        $assortDataProvider = $assortSearchModel->search(Yii::$app->request->queryParams);
+        $assortDataProvider = $assortSearchModel->searchAvailable(Yii::$app->request->queryParams);
         if(Yii::$app->request->get('user_id') !== NULL) {
             $user_id = Yii::$app->request->get('user_id');
             if(Yii::$app->request->get('count') !== NULL) {
