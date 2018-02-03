@@ -3,14 +3,16 @@
 namespace app\controllers;
 
 use Yii;
-use yii\filters\AccessControl;
-use yii\web\Controller;
-use yii\filters\VerbFilter;
-use app\models\LoginForm;
-use app\models\ContactForm;
-use app\models\Turven;
-use app\models\Inkoop;
+
 use app\models\Assortiment;
+use app\models\ContactForm;
+use app\models\Inkoop;
+use app\models\Kosten;
+use app\models\LoginForm;
+use app\models\Turven;
+use yii\filters\AccessControl;
+use yii\filters\VerbFilter;
+use yii\web\Controller;
 
 class SiteController extends Controller
 {
@@ -125,8 +127,8 @@ class SiteController extends Controller
     {
         $i = 0;
         $maanden = [];
-        $inkomsten = [];
-        $uitgaven = [];
+        $uitgavenMateriaal = [];
+        $series = [];
         $volume_inkoop = [];
         $volume_verkoop = [];
 
@@ -142,13 +144,11 @@ class SiteController extends Controller
             while ($i < 4) {
                 $date = date("Ymd", strtotime("-$i months"));
                 $maanden[] = date("M", strtotime("-$i months"));
-//                $volume_verkoop[date("M", strtotime("-$i months"))];
                 foreach ($assortiments as $assortiment) {
                     $inkomsten_temp = (float) Turven::find()
                         ->where('month(datum) = month(' . $date . ')')
                         ->andWhere('assortiment_id = ' . $assortiment->assortiment_id)
                         ->sum('totaal_prijs');
-
 
                     if(isset($inkomsten[date("M", strtotime("-$i months"))])) {
                         $inkomsten[date("M", strtotime("-$i months"))] = $inkomsten_temp + $inkomsten[date("M", strtotime("-$i months"))];
@@ -177,9 +177,9 @@ class SiteController extends Controller
                         ->sum('totaal_prijs');
 
                     if (isset( $uitgaven[date("M", strtotime("-$i months"))])) {
-                        $uitgaven[date("M", strtotime("-$i months"))] = $uitgaven[date("M", strtotime("-$i months"))] + $uitgaven_temp;
+                        $uitgavenDrank[date("M", strtotime("-$i months"))] = $uitgaven[date("M", strtotime("-$i months"))] + $uitgaven_temp;
                     } else {
-                        $uitgaven[date("M", strtotime("-$i months"))] = $uitgaven_temp;
+                        $uitgavenDrank[date("M", strtotime("-$i months"))] = $uitgaven_temp;
                     }
 
                     $volume_inkoop_temp = (float) Inkoop::find()
@@ -196,7 +196,11 @@ class SiteController extends Controller
                 }
                 $i++;
             }
+            $series[] = ['name' => 'Inkomsten', 'data' => array_values($inkomsten), 'stack' => 'inkomsten'];
+            $series[] = ['name' => 'Uitgaven Drank', 'data' => array_values($uitgavenDrank), 'stack' => 'uitgaven'];
+
         } else {
+            $kosteTypes = Kosten::getTypeOptions();
             while ($i < 4) {
                 $date = date("Ymd", strtotime("-$i months"));
                 $maanden[] = date("M", strtotime("-$i months"));
@@ -204,13 +208,24 @@ class SiteController extends Controller
                     ->where('month(datum) = month(' . $date . ')')
                     ->sum('totaal_prijs');
 
-
-                $uitgaven[date("M", strtotime("-$i months"))] = (float) Inkoop::find()
+                $uitgavenDrank[date("M", strtotime("-$i months"))] = (float) Inkoop::find()
                     ->where('month(datum) = month(' . $date . ')')
                     ->andWhere('status = ' . Inkoop::STATUS_verkocht)
                     ->sum('totaal_prijs');
 
+                foreach($kosteTypes as $key => $kostenType) {
+                    $uitgavenMateriaal[$kostenType][date("M", strtotime("-$i months"))] = (float) Kosten::find()
+                        ->where('month(datum) = month(' . $date . ')')
+                        ->andWhere('type = ' . $key)
+                        ->sum('prijs');
+                }
+
                 $i++;
+            }
+            $series[] = ['name' => 'Inkomsten', 'data' => array_values($inkomsten), 'stack' => 'inkomsten'];
+            $series[] = ['name' => 'Drank', 'data' => array_values($uitgavenDrank), 'stack' => 'uitgaven'];
+            foreach($uitgavenMateriaal as $key => $value) {
+                $series[] = ['name' => $key, 'data' => array_values($value), 'stack' => 'uitgaven'];
             }
         }
 
@@ -221,8 +236,7 @@ class SiteController extends Controller
         
         return $this->render('grafieken', [
             'maanden' => $maanden,
-            'inkomsten' => $inkomsten,
-            'uitgaven' => $uitgaven,
+            'series' => $series,
             'volume_verkoop' => $volume_verkoop,
             'volume_inkoop' => $volume_inkoop,
             'assortimentItems' => $assortimentItems,
@@ -242,7 +256,6 @@ class SiteController extends Controller
     public function actionError()
     {
         $exception = Yii::$app->errorHandler->exception;
-//        dd($exception);
         if ($exception !== null) {
             return $this->render('error', ['exception' => $exception]);
         }

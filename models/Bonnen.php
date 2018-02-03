@@ -122,6 +122,32 @@ class Bonnen extends BarActiveRecord
     /**
      * @return \yii\db\ActiveQuery
      */
+    public function getSumInkoop()
+    {
+        return $this->hasMany(Inkoop::className(), ['bon_id' => 'bon_id'])
+            ->sum('totaal_prijs');
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getKostens()
+    {
+        return $this->hasMany(Kosten::className(), ['bon_id' => 'bon_id']);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getSumKosten()
+    {
+        return $this->hasMany(Kosten::className(), ['bon_id' => 'bon_id'])
+            ->sum('prijs');
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
     public function getTransacties()
     {
         return $this->hasMany(Transacties::className(), ['bon_id' => 'bon_id']);

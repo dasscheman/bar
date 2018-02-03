@@ -20,6 +20,10 @@ echo Nav::widget([
             ],
         ],
         [
+            'label' => 'Kosten',
+            'url' => ['/kosten/index']
+        ],
+        [
             'label' => 'Assortiment',
             'url' => ['/assortiment/index']
         ],
@@ -59,6 +63,7 @@ echo Nav::widget([
                 ['label' => 'Facturen genereren', 'url' => ['/factuur/create']],
                 ['label' => 'Turflijst Toevoegen', 'url' => ['/turflijst/create']],
                 ['label' => 'Voorraad toevoegen', 'url' => ['/inkoop/create']],
+                ['label' => 'Kosten toevoegen', 'url' => ['/kosten/create']],
                 ['label' => 'Prijslijst Toevoegen', 'url' => ['/prijslijst/create']],
                 ['label' => 'Betaling type maken', 'url' => ['/betaling-type/create']],
                 ['label' => 'Favorieten lijst maken', 'url' => ['/favorieten-lijsten/create']],

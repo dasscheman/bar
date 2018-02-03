@@ -2,8 +2,8 @@
 
 /* @var $this yii\web\View */
 
-use yii\helpers\Html;
 use dosamigos\highcharts\HighCharts;
+use yii\helpers\Html;
 
 $this->title = 'Overzichten';
 ?>
@@ -24,6 +24,11 @@ $this->title = 'Overzichten';
                 'chart' => [
                         'type' => 'column'
                 ],
+                'plotOptions' => [
+                    'column' => [
+                        'stacking' => 'normal'
+                    ]
+                ],
                 'title' => [
                      'text' => 'Totaal overzicht'
                      ],
@@ -35,10 +40,7 @@ $this->title = 'Overzichten';
                         'text' => 'Euro'
                     ]
                 ],
-                'series' => [
-                    ['name' => 'Inkomsten', 'data' => array_values($inkomsten)],
-                    ['name' => 'Uitgaven', 'data' => array_values($uitgaven)]
-                ]
+                'series' => $series
             ]
         ]);
 

@@ -3,10 +3,9 @@
 use yii\helpers\Html;
 use kartik\grid\GridView;
 use yii\widgets\Pjax;
-use app\models\Inkoop;
 
 /* @var $this yii\web\View */
-/* @var $searchModel app\models\InkoopSearch */
+/* @var $searchModel app\models\KostenSearch */
 /* @var $dataProvider yii\data\ActiveDataProvider */
 
 $bordered = FALSE;
@@ -30,49 +29,23 @@ $toolbar = FALSE;
             <div class="panel-body">
                 <?php echo $this->render('/_alert');
                 echo $this->render('/_menu');
-                Pjax::begin();
-                echo GridView::widget([
-                    'id' => 'kv-grid-inkoop',
+                Pjax::begin(); ?>    <?= GridView::widget([
+                    'id' => 'kv-grid-kosten',
                     'dataProvider' => $dataProvider,
                     'filterModel' => $searchModel,
                     'layout'       => "{items}\n{pager}",
                     'columns' => [
                         [
-                            'attribute'=>'assortiment_name',
+                            'attribute'=>'bon_id',
                             'format' => 'raw',
                             'value'=>function ($model) {
-                                 return Html::a($model->assortiment->name, ['assortiment/view', 'id' => $model->assortiment_id]);
-                             },
-                        ],
-                        'datum' => [
-                            'attribute' => 'datum',
-                            'value' => function($model){
-                                return empty($model->datum)?'':Yii::$app->setupdatetime->displayFormat($model->datum, 'php:d-M-Y');
+                                 return Html::a($model->bon_id, ['bonnen/view', 'id' => $model->bon_id]);
                             },
                         ],
-                        'volume',
-                        'aantal',
-                        'totaal_prijs' => [
-                            'attribute' => 'totaal_prijs',
-                            'value' => function($model){
-                                return number_format($model->totaal_prijs, 2, ',', ' ') . ' €';
-                            }
-                        ],
-                        'type' => [
-                            'attribute' => 'type',
-                            'filter'=> Inkoop::getTypeOptions(),
-                            'value' => function($model){
-                                return $model->getTypeText();
-                            },
-                        ],
-                        'status' => [
-                            'attribute' => 'status',
-                            'filter'=> Inkoop::getStatusOptions(),
-                            'value' => function($model){
-                                return $model->getStatusText();
-                            },
-                        ],
-                        [
+                        'omschrijving',
+                        'datum',
+                        'prijs',
+                      [
                             'class' => 'yii\grid\ActionColumn',
                             'header'=>'Actions',
                             'headerOptions' => ['style' => 'width:15%'],
