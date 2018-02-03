@@ -229,6 +229,7 @@ class SiteController extends Controller
 
         $assortimentItems = Assortiment::find()
             ->where(['status' => Assortiment::STATUS_beschikbaar])
+            ->orWhere(['status' => Assortiment::STATUS_tijdelijk_niet_beschikbaar])
             ->groupBy('merk')
             ->all();
         
