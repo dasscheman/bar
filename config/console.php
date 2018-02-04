@@ -9,6 +9,7 @@ $config = [
     'bootstrap' => [
         'log',
         'app\components\Bootstrap',
+        'telegram'
     ],
     'controllerNamespace' => 'app\commands',
 //    'controllerNamespace' => 'console\controllers',
@@ -36,13 +37,18 @@ $config = [
             'class' => 'app\components\SetupDateTime',
         ],
         'db' => $db,
+        'urlManager' => [
+            'class' => 'yii\web\UrlManager',
+            'scriptUrl' => 'http://localhost/Bar/'
+    ]
     ],
 //    'authManager' => [
 //        'class' => 'dektrium\rbac\RbacConsoleModule',
 //        'defaultRoles' => ['guest', 'user'],
 //    ],
     'modules' => [
-        'rbac' => 'dektrium\rbac\RbacConsoleModule'
+        'rbac' => 'dektrium\rbac\RbacConsoleModule',
+        'telegram' => require(__DIR__ . '/telegram.php')
     ],
     'params' => $params,
     /*

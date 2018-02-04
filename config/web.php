@@ -102,7 +102,8 @@ $config = [
         'rbac' => 'dektrium\rbac\RbacWebModule',
         'gridview' =>  [
              'class' => '\kartik\grid\Module'
-         ]
+         ],
+        'telegram' => require(__DIR__ . '/telegram.php'),
     ],
     'params' => $params,
 ];

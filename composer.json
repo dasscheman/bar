@@ -27,7 +27,8 @@
         "prawee/yii2-widgets": "dev-master",
         "kartik-v/yii2-detail-view": "*",
         "kartik-v/yii2-tabs-x": "*",
-        "2amigos/yii2-highcharts-widget": "~1.0"
+        "2amigos/yii2-highcharts-widget": "~1.0",
+        "onmotion/yii2-telegram": "*"
     },
     "require-dev": {
         "yiisoft/yii2-debug": "~2.0.0",

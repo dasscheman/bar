@@ -45,6 +45,7 @@ Vanaf de root
 - `php yii migrate/up --migrationPath=@yii/rbac/migrations`
 - `php yii migrate/up --migrationPath=@vendor/dektrium/yii2-user/migrations`
 - `php yii migrate/up`
+- `php yii migrate --migrationPath=@vendor/onmotion/yii2-telegram/migrations`
 - `php yii serve`
 
 Ga met je browser naar http://localhost:8080
