@@ -7,22 +7,83 @@ use Longman\TelegramBot\Request;
 
 class TestCommand extends UserCommand
 {
-    protected $name = 'test';                      // Your command's name
-    protected $description = 'A command for test'; // Your command description
-    protected $usage = '/test';                    // Usage of your command
-    protected $version = '1.0.0';                  // Version of your command
+    /**#@+
+     * {@inheritdoc}
+     */
+    protected $name = 'whoami';
+    protected $description = 'Show your id, name and username';
+    protected $usage = '/whoami';
+    protected $version = '1.0.1';
+    protected $public = true;
+    public $enabled = false;
+    /**#@-*/
 
+    /**
+     * {@inheritdoc}
+     */
     public function execute()
     {
-        $message = $this->getMessage();            // Get Message object
+        $message = $this->getMessage();
 
-        $chat_id = $message->getChat()->getId();   // Get the current Chat ID
+        $user_id = $message->getFrom()->getId();
+        $chat_id = $message->getChat()->getId();
+        $message_id = $message->getMessageId();
+        $text = $message->getText(true);
 
-        $data = [                                  // Set up the new message data
-            'chat_id' => $chat_id,                 // Set Chat ID to send the message to
-            'text'    => 'This is just a Test...', // Set message to send
+        //Send chat action
+        Request::sendChatAction(['chat_id' => $chat_id, 'action' => 'typing']);
+
+        $caption = 'Your Id: ' . $user_id . "\n";
+        $caption .= 'Name: ' . $message->getFrom()->getFirstName()
+        . ' ' . $message->getFrom()->getLastName() . "\n";
+        $caption .= 'Username: ' . $message->getFrom()->getUsername();
+
+        //Fetch user profile photo
+        $limit = 10;
+        $offset = null;
+        $ServerResponse = Request::getUserProfilePhotos([
+            'user_id' => $user_id ,
+            'limit'   => $limit,
+            'offset'  => $offset,
+        ]);
+
+        //Check if the request isOK
+        if ($ServerResponse->isOk()) {
+            $UserProfilePhoto = $ServerResponse->getResult();
+            $totalcount = $UserProfilePhoto->getTotalCount();
+        } else {
+            $totalcount = 0;
+        }
+
+        $data = [
+            'chat_id'             => $chat_id,
+            'reply_to_message_id' => $message_id,
         ];
 
-        return Request::sendMessage($data);        // Send message!
+        if ($totalcount > 0) {
+            $photos = $UserProfilePhoto->getPhotos();
+            //I pick the latest photo with the hight definition
+            $photo = $photos[0][2];
+            $file_id = $photo->getFileId();
+
+            $data['photo'] = $file_id;
+            $data['caption'] = $caption;
+
+            $result = Request::sendPhoto($data);
+
+            //Download the image pictures
+            //Download after send message response to speedup response
+            $file_id = $photo->getFileId();
+            $ServerResponse = Request::getFile(['file_id' => $file_id]);
+            if ($ServerResponse->isOk()) {
+                Request::downloadFile($ServerResponse->getResult());
+            }
+        } else {
+            //No Photo just send text
+            $data['text'] = $caption;
+            $result = Request::sendMessage($data);
+        }
+
+        return $result;
     }
 }

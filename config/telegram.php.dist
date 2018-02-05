@@ -6,5 +6,5 @@ return [
     'BOT_NAME' => 'YourBotName_bot',
     'hook_url' => 'https://yourhost.com/telegram/default/hook', // must be https!
     'PASSPHRASE' => 'passphrase for login',
-    'userCommandsPath' => '@app/modules/telegram/UserCommands'
+    'userCommandsPath' => '@app/commands/telegram/UserCommands'
 ];
