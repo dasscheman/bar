@@ -51,24 +51,11 @@ $config = [
             'class' => 'app\components\SetupDateTime',
         ],
         'db' => require(__DIR__ . '/db.php'),
-        /*
-        'urlManager' => [
-            'enablePrettyUrl' => true,
-            'showScriptName' => false,
-            'rules' => [
-            ],
-        ],
-        */
-
-//        'authManager' => [
-//            'class' => 'dektrium\rbac\RbacWebModule',
-//
-//            'defaultRoles' => ['guest', 'user'],
-//        ],
         'view' => [
             'theme' => [
                 'pathMap' => [
-                    '@dektrium/user/views' => '@app/views/user'
+                    '@dektrium/user/views' => '@app/views/user',
+                    '@onmotion/telegram/views' => '@app/views/telegram'
                 ],
             ],
         ],
@@ -77,10 +64,6 @@ $config = [
         ],
         'i18n' => [
             'translations' => [
-//                'app' => [
-//                    'class' => 'yii\i18n\PhpMessageSource',
-//                    'basePath' => '@app/messages',
-//                ],
                 'kvgrid' => [
                     'class' => 'yii\i18n\PhpMessageSource',
                     'basePath' => '@app/messages',

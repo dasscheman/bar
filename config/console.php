@@ -12,7 +12,6 @@ $config = [
         'telegram'
     ],
     'controllerNamespace' => 'app\commands',
-//    'controllerNamespace' => 'console\controllers',
     'components' => [
         'cache' => [
             'class' => 'yii\caching\FileCache',
@@ -40,24 +39,13 @@ $config = [
         'urlManager' => [
             'class' => 'yii\web\UrlManager',
             'scriptUrl' => 'http://localhost/Bar/'
-    ]
+        ]
     ],
-//    'authManager' => [
-//        'class' => 'dektrium\rbac\RbacConsoleModule',
-//        'defaultRoles' => ['guest', 'user'],
-//    ],
     'modules' => [
         'rbac' => 'dektrium\rbac\RbacConsoleModule',
         'telegram' => require(__DIR__ . '/telegram.php')
     ],
     'params' => $params,
-    /*
-    'controllerMap' => [
-        'fixture' => [ // Fixture generation command line.
-            'class' => 'yii\faker\FixtureController',
-        ],
-    ],
-    */
 ];
 
 if (YII_ENV_DEV) {

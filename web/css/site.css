@@ -150,3 +150,28 @@ a.desc:after {
     padding-left: 190px;
     padding-right: 190px;
 }
+
+.telegram-button
+#tlgrm-init-btn {
+    top: 57px;  
+    display: inline-block;
+    bottom: unset;
+    position: fixed;
+    right: 10px;
+}
+
+.telegram-button
+#tlgrm-chat {
+    width: 300px;
+    height: 450px;
+    background: #fff;
+    display: inline-block;
+    border-radius: 5px;
+    top: 57px;  
+    bottom: unset;
+    position: fixed;
+    right: 10px;
+    border: none;
+    box-shadow: 1px 10px 8px #bbb;
+    z-index: 2;
+}

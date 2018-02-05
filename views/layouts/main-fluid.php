@@ -83,12 +83,12 @@ AppAsset::register($this);
     </div>
 </div>
 
+<?php  echo \onmotion\telegram\Telegram::widget(); ?>
 <footer class="footer">
     <div class="container">
         <p class="pull-left">&copy; BisonBar <?= date('Y') ?></p>
 
         <p class="pull-right"><?= Yii::powered() ?></p>
-        <?php echo \onmotion\telegram\Telegram::widget(); ?>
     </div>
 </footer>
 

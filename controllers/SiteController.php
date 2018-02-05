@@ -259,4 +259,19 @@ class SiteController extends Controller
             return $this->render('error', ['exception' => $exception]);
         }
     }
+//
+//    /**
+//     * Lists all BetalingType models.
+//     * @return mixed
+//     */
+//    public function actionCheck()
+//    {
+//        if(null !== Yii::$app->request->post('test') ){
+//            $test = "Ajax Worked!";
+//        }else{
+//            $test = "Ajax failed";
+//        }
+//
+//        return \yii\helpers\Json::encode($test);
+//    }
 }
