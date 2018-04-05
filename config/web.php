@@ -71,7 +71,7 @@ $config = [
             ],
         ],
     ],
-    'modules' => [
+    'modules  ' => [
         'user' => [
             'class' => 'dektrium\user\Module',
             'modelMap' => [
