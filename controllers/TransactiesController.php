@@ -39,12 +39,12 @@ class TransactiesController extends Controller
                 'only' => ['index', 'view', 'create', 'create-declaraties', 'update', 'delete'],
                 'rules' => [
                     [
-                        'allow' => TRUE,
+                        'allow' => true,
                         'actions' => ['index', 'delete', 'create', 'create-declaraties', 'update', 'view'],
                         'roles' =>  ['admin', 'beheerder'],
                     ],
                     [
-                        'allow' => FALSE,  // deny all users
+                        'allow' => false,  // deny all users
                         'roles'=> ['*'],
                     ],
                 ],
@@ -59,6 +59,7 @@ class TransactiesController extends Controller
     public function actionIndex()
     {
         $searchModel = new TransactiesSearch();
+
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
         $this->layout = 'main-fluid';
@@ -91,6 +92,10 @@ class TransactiesController extends Controller
 
         $this->layout = 'main-fluid';
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
+            if (isset(Yii::$app->request->post('Transacties')['all_related_transactions'])) {
+                Transacties::addRelatedTransactions($model->transacties_id, Yii::$app->request->post('Transacties')['all_related_transactions']);
+            }
+
             return $this->redirect(['view', 'id' => $model->transacties_id]);
         } else {
             $model->datum = date("Y-m-d");
@@ -111,9 +116,9 @@ class TransactiesController extends Controller
         $modelBonnen = new Bonnen();
 
         $this->layout = 'main-fluid';
-        if ($modelTransacties->load(Yii::$app->request->post())){
+        if ($modelTransacties->load(Yii::$app->request->post())) {
             $image = UploadedFile::getInstance($modelBonnen, 'image_temp');
-            if(!empty($image)) {
+            if (!empty($image)) {
                 $modelBonnen->load(Yii::$app->request->post());
                 // store the source file name
                 $modelBonnen->image = date('Y-m-d H:i:s') . '-' . $image->name;
@@ -123,7 +128,7 @@ class TransactiesController extends Controller
                 $modelBonnen->bedrag = $modelTransacties->bedrag;
 
                 $path = Yii::$app->params['bonnen_path'] . $modelBonnen->image;
-                if($modelBonnen->save()){
+                if ($modelBonnen->save()) {
                     $image->saveAs($path);
                 } else {
                     foreach ($modelBonnen->errors as $key => $error) {
@@ -158,10 +163,14 @@ class TransactiesController extends Controller
     {
         $modelTransacties = $this->findModel($id);
         $modelBonnen = $modelTransacties->bon;
-
+        $modelTransacties->setAllRelatedTransactions();
         if ($modelTransacties->load(Yii::$app->request->post())) {
-            $image = UploadedFile::getInstance($modelBonnen, 'image_temp');
-            if(!empty($image)) {
+            $image = null;
+
+            if ($modelBonnen !== null) {
+                $image = UploadedFile::getInstance($modelBonnen, 'image_temp');
+            }
+            if (!empty($image)) {
                 // store the source file name
                 $modelBonnen->image = date('Y-m-d H:i:s') . '-' . $image->name ;
                 $modelBonnen->omschrijving = $modelTransacties->omschrijving;
@@ -170,7 +179,7 @@ class TransactiesController extends Controller
                 $modelBonnen->bedrag = $modelTransacties->bedrag;
 
                 $path = Yii::$app->params['bonnen_path'] . $modelBonnen->image;
-                if($modelBonnen->save()){
+                if ($modelBonnen->save()) {
                     $image->saveAs($path);
                 } else {
                     foreach ($modelBonnen->errors as $key => $error) {
@@ -180,9 +189,12 @@ class TransactiesController extends Controller
                 $modelTransacties->bon_id = $modelBonnen->bon_id;
             }
             if ($modelTransacties->save()) {
+                if (isset(Yii::$app->request->post('Transacties')['all_related_transactions'])) {
+                    Transacties::addRelatedTransactions($modelTransacties->transacties_id, Yii::$app->request->post('Transacties')['all_related_transactions']);
+                }
                 return $this->redirect(['view', 'id' => $modelTransacties->transacties_id]);
             } else {
-                foreach ($modelBonnen->errors as $key => $error) {
+                foreach ($modelTransacties->errors as $key => $error) {
                     Yii::$app->session->setFlash('warning', Yii::t('app', 'Fout met opslaan: ' . $key . ':' . $error[0]));
                 }
             }
@@ -205,39 +217,39 @@ class TransactiesController extends Controller
         $model = $this->findModel($id);
         $factuur = $model->getFactuur()->one();
 
-        if(empty($factuur)) {
-            if(!$model->delete()){
-                 Yii::$app->session->setFlash('warning', Yii::t('app', 'Je kunt deze transactie niet verwijderen.'));
+        if (empty($factuur)) {
+            if (!$model->delete()) {
+                Yii::$app->session->setFlash('warning', Yii::t('app', 'Je kunt deze transactie niet verwijderen.'));
             }
             return $this->redirect(['index']);
         }
 
         $dbTransaction = Yii::$app->db->beginTransaction();
         try {
-            foreach($factuur->getTransacties()->all() as $transactie) {
+            foreach ($factuur->getTransacties()->all() as $transactie) {
                 if ($model->transacties_id == $transactie->transacties_id) {
                     // Deze gaan we sowieso verwijderen, ik weet niet of het
                     // goed gaat als dit record dan eerst gewijzigd wordt.
                     continue;
                 }
                 $transactie->status = Transacties::STATUS_tercontrole;
-                $transactie->factuur_id = NULL;
-                if(!$transactie->save()) {
+                $transactie->factuur_id = null;
+                if (!$transactie->save()) {
                     $dbTransaction->rollBack();
-                    return FALSE;
+                    return false;
                 }
             }
-            foreach($factuur->getTurvens()->all() as $turf) {
+            foreach ($factuur->getTurvens()->all() as $turf) {
                 $turf->status = Turven::STATUS_tercontrole;
-                $turf->factuur_id = NULL;
-                if(!$turf->save()) {
+                $turf->factuur_id = null;
+                if (!$turf->save()) {
                     $dbTransaction->rollBack();
-                    return FALSE;
+                    return false;
                 }
             }
-            if(!$factuur->delete() || $model->delete()){
+            if (!$factuur->delete() || $model->delete()) {
                 $dbTransaction->rollBack();
-                return FALSE;
+                return false;
             }
             $dbTransaction->commit();
         } catch (\Exception $e) {
@@ -256,6 +268,7 @@ class TransactiesController extends Controller
     protected function findModel($id)
     {
         if (($model = Transacties::findOne($id)) !== null) {
+            $model->setAllRelatedTransactions();
             return $model;
         } else {
             throw new NotFoundHttpException('The requested page does not exist.');

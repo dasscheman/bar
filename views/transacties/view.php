@@ -52,20 +52,20 @@ use yii\widgets\DetailView;
                             'transacties_id',
                             'transacties_user_id' => [
                                 'attribute' => 'transacties_user_id',
-                                'value' => function($model){
+                                'value' => function ($model) {
                                     return $model->getTransactiesUser()->one()->username;
                                 },
                             ],
                             'omschrijving',
                             'bedrag' => [
                                 'attribute' => 'bedrag',
-                                'value' => function($model){
+                                'value' => function ($model) {
                                     return number_format($model->bedrag, 2, ',', ' ') . ' €';
                                 }
                             ],
                             'type_id' => [
                                 'attribute' => 'type_id',
-                                'value' => function($model){
+                                'value' => function ($model) {
                                     return $model->type->omschrijving;
                                 },
                             ],
@@ -73,27 +73,44 @@ use yii\widgets\DetailView;
                                 'attribute'=>'bon_id',
                                 'format' => 'raw',
                                 'value'=>function ($model) {
-                                     return Html::a($model->bon_id, ['bonnen/view', 'id' => $model->bon_id]);
+                                    return Html::a($model->bon_id, ['bonnen/view', 'id' => $model->bon_id]);
                                 },
                             ],
                             'status' => [
                                 'attribute' => 'status',
-                                'value' => function($model){
+                                'value' => function ($model) {
                                     return $model->getStatusText();
                                 },
                             ],
+                            'all_related_transactions' => [
+                                'attribute' => 'all_related_transactions',
+                                'format'=>'raw',
+                                'value' => function ($model) {
+                                    $ids = '';
+                                    $count = 0;
+                                    foreach ($model->all_related_transactions as $related_transaction) {
+                                        $count++;
+                                        $ids .= Html::a($related_transaction, ['transacties/view', 'id' => $related_transaction]);
+                                        if ($count < count($model->all_related_transactions)) {
+                                            $ids .= ', ';
+                                        }
+                                    }
+                                    return $ids;
+                                },
+                            ],
+
                             'created_at',
                             'created_by' => [
                                 'attribute' => 'created_by',
-                                'value' => function($model){
+                                'value' => function ($model) {
                                     return $model->getCreatedBy()->one()->username;
                                 },
                             ],
                             'updated_at',
                             'updated_by' => [
                                 'attribute' => 'updated_by',
-                                'value' => function($model){
-                                    return $model->getupdatedBy()->one()->username;
+                                'value' => function ($model) {
+                                    return empty($model->getupdatedBy()->one())? '':$model->getupdatedBy()->one()->username;
                                 },
                             ],
                         ],
