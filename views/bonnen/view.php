@@ -15,7 +15,7 @@ use yii\widgets\DetailView;
     <div class="col-md-12">
         <div class="panel panel-default">
             <div class="panel-heading">
-                <?= Html::encode('Transactie details') ?>
+                <?= Html::encode('Bon details') ?>
             </div>
             <div class="panel-body">
                 <?php
@@ -53,33 +53,33 @@ use yii\widgets\DetailView;
                             'image',
                             'type' => [
                                 'attribute' => 'type',
-                                'value' => function($model){
+                                'value' => function ($model) {
                                     return $model->getTypeText();
                                 },
                             ],
                             'datum' => [
                                 'attribute' => 'datum',
-                                'value' => function($model){
+                                'value' => function ($model) {
                                     return empty($model->datum)?'':Yii::$app->setupdatetime->displayFormat($model->datum, 'php:d-M-Y');
                                 },
                             ],
                             'bedrag' => [
                                 'attribute' => 'bedrag',
-                                'value' => function($model){
+                                'value' => function ($model) {
                                     return number_format($model->bedrag, 2, ',', ' ') . ' €';
                                 }
                             ],
                             'created_at',
                             'created_by' => [
                                 'attribute' => 'created_by',
-                                'value' => function($model){
+                                'value' => function ($model) {
                                     return $model->getCreatedBy()->one()->username;
                                 },
                             ],
                             'updated_at',
                             'updated_by' => [
                                 'attribute' => 'updated_by',
-                                'value' => function($model){
+                                'value' => function ($model) {
                                     return $model->getupdatedBy()->one()->username;
                                 },
                             ],

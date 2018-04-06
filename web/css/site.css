@@ -132,8 +132,14 @@ a.desc:after {
 }
 .container-fluid{
     padding-top: 70px;
-    padding-right: 100px;
-    padding-left: 100px;
+    padding-right: 5%;
+    padding-left: 5%;
+}
+
+.view {
+    margin-left: 29%;
+    margin-right: 29%;
+    width: 50%;
 }
 
 .assortiment-form,
@@ -147,6 +153,6 @@ a.desc:after {
 .transacties-form,
 .turflijst-form,
 .turven-form {
-    padding-left: 190px;
-    padding-right: 190px;
+    padding-left: 29%;
+    padding-right: 29%;
 }

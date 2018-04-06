@@ -73,8 +73,9 @@ class Transacties extends BarActiveRecord
     public function attributeLabels()
     {
         return [
-            'transacties_id' => 'Transacties ID',
+            'transacties_id' => 'ID',
             'transacties_user_id' => 'Transactie voor',
+            'all_related_transactions' => 'Gelinkte trans.',
             'factuur_id' => Yii::t('app', 'Factuur ID'),
             'omschrijving' => 'Omschrijving',
             'bedrag' => 'Bedrag',

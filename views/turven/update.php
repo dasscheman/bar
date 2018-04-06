@@ -19,7 +19,6 @@
  */
 
 use yii\helpers\Html;
-use yii\widgets\DetailView;
 
 /* @var $this yii\web\View */
 /* @var $model app\models\Assortiment */
@@ -29,7 +28,7 @@ use yii\widgets\DetailView;
     <div class="col-md-12">
         <div class="panel panel-default">
             <div class="panel-heading">
-                <?= Html::encode($this->title) ?>
+                <?= Html::encode('Turven bijwerken') ?>
             </div>
             <div class="panel-body">
 

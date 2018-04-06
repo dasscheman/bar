@@ -20,32 +20,31 @@ use yii\widgets\DetailView;
             <div class="panel-body">
                 <?php
                 echo $this->render('/_alert');
-                echo $this->render('/_menu');
-                echo Html::a(
-                    Yii::t('app', 'Bewerken'),
-                    [ 'update', 'id' => $model->transacties_id ],
-                    [ 'class' => 'btn btn-success' ]
-                );
-                echo Html::a(
-                    Yii::t('app', 'Delete'),
-                    [ 'delete', 'id' => $model->transacties_id ],
-                    [ 'class' => 'btn btn-danger', 'data-method'=>'post' ]
-                );
-
-                if (!empty($model->bon_id)) {
-                    echo Html::a(
-                        Yii::t('app', 'Download bon'),
-                        ['/bonnen/download', 'id' => $model->bon_id],
-                        [
-                            'title' => 'Download de bon',
-                            'class'=>'btn btn-primary',
-                            'target'=>'_blank',
-                        ]
-                    );
-                }
-                ?>
-                <table class="table">
+                echo $this->render('/_menu');?>
+                <div class="view">
                     <?php
+                    echo Html::a(
+                        Yii::t('app', 'Bewerken'),
+                        [ 'update', 'id' => $model->transacties_id ],
+                        [ 'class' => 'btn btn-success' ]
+                    );
+                    echo Html::a(
+                        Yii::t('app', 'Delete'),
+                        [ 'delete', 'id' => $model->transacties_id ],
+                        [ 'class' => 'btn btn-danger', 'data-method'=>'post' ]
+                    );
+
+                    if (!empty($model->bon_id)) {
+                        echo Html::a(
+                            Yii::t('app', 'Download bon'),
+                            ['/bonnen/download', 'id' => $model->bon_id],
+                            [
+                                'title' => 'Download de bon',
+                                'class'=>'btn btn-primary',
+                                'target'=>'_blank',
+                            ]
+                        );
+                    }
                     echo DetailView::widget([
                         'model' => $model,
                         'attributes' => [
@@ -115,7 +114,7 @@ use yii\widgets\DetailView;
                             ],
                         ],
                     ]) ?>
-                </table>
+                </div>
             </div>
         </div>
     </div>

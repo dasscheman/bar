@@ -15,7 +15,6 @@ use app\models\Turven;
 use kartik\mpdf\Pdf;
 use app\models\Transacties;
 
-
 /**
  * FactuurController implements the CRUD actions for Factuur model.
  */
@@ -42,12 +41,12 @@ class FactuurController extends Controller
                 'only' => ['index', 'view', 'create', 'update', 'delete'],
                 'rules' => [
                     [
-                        'allow' => TRUE,
+                        'allow' => true,
                         'actions' => ['index', 'delete', 'create', 'update', 'view'],
                         'roles' =>  ['admin', 'beheerder'],
                     ],
                     [
-                        'allow' => FALSE,  // deny all users
+                        'allow' => false,  // deny all users
                         'roles'=> ['*'],
                     ],
                 ],
@@ -78,6 +77,7 @@ class FactuurController extends Controller
      */
     public function actionView($id)
     {
+        $this->layout = 'main-fluid';
         return $this->render('view', [
             'model' => $this->findModel($id),
         ]);
@@ -94,7 +94,7 @@ class FactuurController extends Controller
             ->where('ISNULL(blocked_at)')
             ->all();
 
-        if(empty($users)) {
+        if (empty($users)) {
             Yii::$app->session->setFlash('warning', Yii::t('app', 'Er zijn geen gebruikers die een mail gestuurd kan worden.'));
             return $this->redirect(['index']);
         }
@@ -116,7 +116,8 @@ class FactuurController extends Controller
             $vorig_openstaand =  $user->getSumOldBijTransactiesUser() - $user->getSumOldTurvenUsers() - $user->getSumOldAfTransactiesUser();
             $nieuw_openstaand = $vorig_openstaand - $sum_new_turven + $sum_new_bij_transacties - $sum_new_af_transacties;
 
-            $content = $this->renderPartial('factuur_template',
+            $content = $this->renderPartial(
+                'factuur_template',
                 [
                     'user' => $user,
                     'new_bij_transacties' => $new_bij_transacties,
@@ -127,7 +128,8 @@ class FactuurController extends Controller
                     'sum_new_turven' => $sum_new_turven,
                     'vorig_openstaand' => $vorig_openstaand,
                     'nieuw_openstaand' => $nieuw_openstaand
-                ]);
+                ]
+            );
 
             // setup kartik\mpdf\Pdf component
             $pdf = new Pdf([
@@ -165,14 +167,12 @@ class FactuurController extends Controller
                 return $this->redirect(['index']);
             }
 
-            if(!$factuur->updateAfterCreateFactuur($user, $new_bij_transacties, $new_af_transacties, $new_turven))
-            {
+            if (!$factuur->updateAfterCreateFactuur($user, $new_bij_transacties, $new_af_transacties, $new_turven)) {
                 Yii::$app->session->setFlash('warning', Yii::t('app', 'Pdf is gegenereerd, maar record kunnen niet geopdate worden.'));
                 return $this->redirect(['index']);
             }
         }
         return $this->redirect(['index']);
-
     }
 
     public function actionDownload($id)
@@ -217,26 +217,25 @@ class FactuurController extends Controller
         $filename = Yii::getAlias('@webroot') . '/uploads/facture/' . $factuur->pdf;
         $dbTransaction = Yii::$app->db->beginTransaction();
         try {
-
-            foreach($factuur->getTransacties()->all() as $transactie) {
+            foreach ($factuur->getTransacties()->all() as $transactie) {
                 $transactie->status = Transacties::STATUS_gecontroleerd;
-                $transactie->factuur_id = NULL;
-                if(!$transactie->save()) {
+                $transactie->factuur_id = null;
+                if (!$transactie->save()) {
                     $dbTransaction->rollBack();
-                    return FALSE;
+                    return false;
                 }
             }
-            foreach($factuur->getTurvens()->all() as $turf) {
+            foreach ($factuur->getTurvens()->all() as $turf) {
                 $turf->status = Turven::STATUS_gecontroleerd;
-                $turf->factuur_id = NULL;
-                if(!$turf->save()) {
+                $turf->factuur_id = null;
+                if (!$turf->save()) {
                     $dbTransaction->rollBack();
-                    return FALSE;
+                    return false;
                 }
             }
-            if(!$factuur->delete()){
+            if (!$factuur->delete()) {
                 $dbTransaction->rollBack();
-                return FALSE;
+                return false;
             }
             $dbTransaction->commit();
             unlink($filename);

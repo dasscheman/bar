@@ -45,7 +45,10 @@ $toolbar = false;
                     'filterModel'  => $searchModel,
                     'layout'       => "{items}\n{pager}",
                     'columns' => [
-                        'transacties_id',
+                        'transacties_id' => [
+                            'attribute' => 'transacties_id',
+                            'headerOptions' => ['style' => 'width:4%']
+                        ],
                         'displayname' => [
                             'attribute' => 'displayname',
                             'value' => function ($model) {
@@ -59,7 +62,10 @@ $toolbar = false;
                             },
                         ],
                         'omschrijving',
-                        'bedrag',
+                        'bedrag' => [
+                            'attribute' => 'bedrag',
+                            'headerOptions' => ['style' => 'width:6 %']
+                        ],
                         'type_id' => [
                             'attribute' => 'type_id',
                             'filter'=> ArrayHelper::map(BetalingType::find()->asArray()->all(), 'type_id', 'omschrijving'),
@@ -76,6 +82,7 @@ $toolbar = false;
                         ],
                         [
                             'attribute'=>'all_related_transactions',
+                            'headerOptions' => ['style' => 'width:2%'],
                             'format' => 'raw',
                             'value'=>function ($model) {
                                 $ids = '';
@@ -112,7 +119,7 @@ $toolbar = false;
                             'class' => 'yii\grid\ActionColumn',
                             'header'=>'Actions',
                             'template' => '{update} {view} {delete}',
-                            'headerOptions' => ['style' => 'width:16%'],
+                            'headerOptions' => ['style' => 'width:8%'],
                         ],
                     ],
 
