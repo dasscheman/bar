@@ -161,15 +161,11 @@ class Mollie extends Transacties
         ];
             
         if (YII_ENV === 'prod') {
-            $this->parameters = [
-                "redirectUrl"  => "https://bar.debison.nl/index.php?r=mollie/return-betaling&transacties_id={$model->transacties_id}",
-                "webhookUrl"   => "https://bar.debison.nl/index.php?r=mollie/webhook"
-            ];
+            $this->parameters['redirectUrl'] = "https://bar.debison.nl/index.php?r=mollie/return-betaling&transacties_id={$model->transacties_id}";
+            $this->parameters['webhookUrl'] = "https://bar.debison.nl/index.php?r=mollie/webhook";
         } else {
-            $this->parameters = [
-                "redirectUrl"  => "https://popupbar.biologenkantoor.nl/index.php?r=mollie/return-betaling&transacties_id={$this->transacties_id}",
-                "webhookUrl"   => "https://popupbar.biologenkantoor.nl/index.php?r=mollie/webhook"
-            ];
+            $this->parameters['redirectUrl'] = "https://popupbar.biologenkantoor.nl/index.php?r=mollie/return-betaling&transacties_id={$this->transacties_id}";
+            $this->parameters['webhookUrl'] = "https://popupbar.biologenkantoor.nl/index.php?r=mollie/webhook";
         }
     }
     
