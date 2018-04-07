@@ -8,24 +8,28 @@ use app\models\Factuur;
 use app\models\Turven;
 use app\models\Transacties;
 use app\models\Mollie;
+use app\models\User;
 
 /**
  * Test controller
  */
-class CronController extends Controller {
-
-    public function actionIndex() {
+class CronController extends Controller
+{
+    public function actionIndex()
+    {
         echo "cron service runnning";
     }
 
-    public function actionFrequent() {
+    public function actionFrequent()
+    {
     }
 
-    public function actionHour() {
-
+    public function actionHour()
+    {
     }
 
-    public function actionDay() {
+    public function actionDay()
+    {
         // called every two minutes
         // */2 * * * * ~/sites/www/yii2/yii cron/day
 
@@ -58,8 +62,7 @@ class CronController extends Controller {
         echo "\n\n";
     }
 
-    public function actionMonth() {
-
+    public function actionMonth()
+    {
     }
-
 }

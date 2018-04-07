@@ -25,7 +25,6 @@ use kartik\money\MaskMoney;
         'enableAjaxValidation'   => false,
         'id'   => 'bonnen-form',
         'options'=> ['enctype'=>'multipart/form-data'],
-//        'action' => ['bonnen/create'],// important
     ]);
 
     echo $form->field($model, 'omschrijving')->textarea();
@@ -45,7 +44,8 @@ use kartik\money\MaskMoney;
         ],
     ]);
     echo $form->field($model, 'image_temp')->fileInput();
-    
+    echo Html::encode('Huidige bon: ' . $model->image);
+
     echo $form->field($model, 'datum')->widget(DatePicker::className(), [
         'model' => $model,
         'attribute' => 'datum',

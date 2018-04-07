@@ -1,6 +1,7 @@
 <?php
 
 namespace app\models;
+
 use yii\helpers\ArrayHelper;
 
 use dektrium\user\models\User as BaseUser;
@@ -55,10 +56,9 @@ use dektrium\user\models\User as BaseUser;
 class User extends BaseUser
 {
     public $balans;
-    
-     /**
-     * @inheritdoc
-     */
+    /**
+    * @inheritdoc
+    */
     public static function tableName()
     {
         return 'user';
@@ -100,6 +100,13 @@ class User extends BaseUser
             'updated_at' => 'Updated At',
             'flags' => 'Flags',
             'last_login_at' => 'Last Login At',
+            'sumNewBijTransactiesUser' => 'New betaling bij',
+            'sumNewAfTransactiesUser' => 'New betaling af',
+            'sumOldBijTransactiesUser' => 'Oud betaling bij',
+            'sumOldAfTransactiesUser' => 'Oud betaling af',
+            'sumNewTurvenUsers' => 'New turven',
+            'sumOldTurvenUsers' => 'Oud turven',
+            'openstaand' => 'Openstaand bedrag',
         ];
     }
 
@@ -120,107 +127,107 @@ class User extends BaseUser
     }
 
     public function getBetalingTypes()
-     {
-         return $this->hasMany(BetalingType::className(), ['created_by' => 'id']);
-     }
-     /**
-      * @return \yii\db\ActiveQuery
-      */
-     public function getBetalingTypes0()
-     {
-         return $this->hasMany(BetalingType::className(), ['updated_by' => 'id']);
-     }
-     /**
-      * @return \yii\db\ActiveQuery
-      */
-     public function getBonnens()
-     {
-         return $this->hasMany(Bonnen::className(), ['created_by' => 'id']);
-     }
-     /**
-      * @return \yii\db\ActiveQuery
-      */
-     public function getBonnens0()
-     {
-         return $this->hasMany(Bonnen::className(), ['updated_by' => 'id']);
-     }
-     /**
-      * @return \yii\db\ActiveQuery
-      */
-     public function getFavorietens()
-     {
-         return $this->hasMany(Favorieten::className(), ['created_by' => 'id']);
-     }
-     /**
-      * @return \yii\db\ActiveQuery
-      */
-     public function getFavorietens0()
-     {
-         return $this->hasMany(Favorieten::className(), ['selected_user_id' => 'id']);
-     }
-     /**
-      * @return \yii\db\ActiveQuery
-      */
-     public function getFavorietens1()
-     {
-         return $this->hasMany(Favorieten::className(), ['updated_by' => 'id']);
-     }
-     /**
-      * @return \yii\db\ActiveQuery
-      */
-     public function getFavorietenLijstens()
-     {
-         return $this->hasMany(FavorietenLijsten::className(), ['created_by' => 'id']);
-     }
-     /**
-      * @return \yii\db\ActiveQuery
-      */
-     public function getFavorietenLijstens0()
-     {
-         return $this->hasMany(FavorietenLijsten::className(), ['updated_by' => 'id']);
-     }
-     /**
-      * @return \yii\db\ActiveQuery
-      */
-     public function getFavorietenLijstens1()
-     {
-         return $this->hasMany(FavorietenLijsten::className(), ['user_id' => 'id']);
-     }
-     /**
-      * @return \yii\db\ActiveQuery
-      */
-     public function getInkoops()
-     {
-         return $this->hasMany(Inkoop::className(), ['created_by' => 'id']);
-     }
-     /**
-      * @return \yii\db\ActiveQuery
-      */
-     public function getInkoops0()
-     {
-         return $this->hasMany(Inkoop::className(), ['updated_by' => 'id']);
-     }
-     /**
-      * @return \yii\db\ActiveQuery
-      */
-     public function getInkoops1()
-     {
-         return $this->hasMany(Inkoop::className(), ['inkoper_user_id' => 'id']);
-     }
-     /**
-      * @return \yii\db\ActiveQuery
-      */
-     public function getPrijslijsts()
-     {
-         return $this->hasMany(Prijslijst::className(), ['created_by' => 'id']);
-     }
-     /**
-      * @return \yii\db\ActiveQuery
-      */
-     public function getPrijslijsts0()
-     {
-         return $this->hasMany(Prijslijst::className(), ['updated_by' => 'id']);
-     }
+    {
+        return $this->hasMany(BetalingType::className(), ['created_by' => 'id']);
+    }
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getBetalingTypes0()
+    {
+        return $this->hasMany(BetalingType::className(), ['updated_by' => 'id']);
+    }
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getBonnens()
+    {
+        return $this->hasMany(Bonnen::className(), ['created_by' => 'id']);
+    }
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getBonnens0()
+    {
+        return $this->hasMany(Bonnen::className(), ['updated_by' => 'id']);
+    }
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getFavorietens()
+    {
+        return $this->hasMany(Favorieten::className(), ['created_by' => 'id']);
+    }
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getFavorietens0()
+    {
+        return $this->hasMany(Favorieten::className(), ['selected_user_id' => 'id']);
+    }
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getFavorietens1()
+    {
+        return $this->hasMany(Favorieten::className(), ['updated_by' => 'id']);
+    }
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getFavorietenLijstens()
+    {
+        return $this->hasMany(FavorietenLijsten::className(), ['created_by' => 'id']);
+    }
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getFavorietenLijstens0()
+    {
+        return $this->hasMany(FavorietenLijsten::className(), ['updated_by' => 'id']);
+    }
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getFavorietenLijstens1()
+    {
+        return $this->hasMany(FavorietenLijsten::className(), ['user_id' => 'id']);
+    }
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getInkoops()
+    {
+        return $this->hasMany(Inkoop::className(), ['created_by' => 'id']);
+    }
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getInkoops0()
+    {
+        return $this->hasMany(Inkoop::className(), ['updated_by' => 'id']);
+    }
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getInkoops1()
+    {
+        return $this->hasMany(Inkoop::className(), ['inkoper_user_id' => 'id']);
+    }
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getPrijslijsts()
+    {
+        return $this->hasMany(Prijslijst::className(), ['created_by' => 'id']);
+    }
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getPrijslijsts0()
+    {
+        return $this->hasMany(Prijslijst::className(), ['updated_by' => 'id']);
+    }
 
     /**
      * @return \yii\db\ActiveQuery
@@ -297,7 +304,7 @@ class User extends BaseUser
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getInvalidTransactionsNotInvoiced ()
+    public function getInvalidTransactionsNotInvoiced()
     {
         $status = [
             Transacties::STATUS_ingevoerd,
@@ -436,10 +443,10 @@ class User extends BaseUser
         $this->balans = $vorig_openstaand - $this->sumNewTurvenUsers + $this->sumNewBijTransactiesUser - $this->sumNewAfTransactiesUser;
         return $this->balans;
     }
-    
+
     /**
-     * @return \yii\db\ActiveQuery
-     */
+      * @return \yii\db\ActiveQuery
+      */
     public function getTurvens0()
     {
         return $this->hasMany(Turven::className(), ['created_by' => 'id']);
@@ -473,37 +480,37 @@ class User extends BaseUser
         return new UserQuery(get_called_class());
     }
 
-   /**
-    * @return \yii\db\ActiveQuery
-    */
-   public function getFactuurs0()
-   {
-       return $this->hasMany(Factuur::className(), ['updated_by' => 'id']);
-   }
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getFactuurs0()
+    {
+        return $this->hasMany(Factuur::className(), ['updated_by' => 'id']);
+    }
 
-   /**
-    * @return \yii\db\ActiveQuery
-    */
-   public function getPrijzens()
-   {
-       return $this->hasMany(Prijzen::className(), ['created_by' => 'id']);
-   }
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getPrijzens()
+    {
+        return $this->hasMany(Prijzen::className(), ['created_by' => 'id']);
+    }
 
-   /**
-    * @return \yii\db\ActiveQuery
-    */
-   public function getPrijzens0()
-   {
-       return $this->hasMany(Prijzen::className(), ['updated_by' => 'id']);
-   }
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getPrijzens0()
+    {
+        return $this->hasMany(Prijzen::className(), ['updated_by' => 'id']);
+    }
 
-   /**
-    * @return \yii\db\ActiveQuery
-    */
-   public function getSocialAccounts()
-   {
-       return $this->hasMany(SocialAccount::className(), ['user_id' => 'id']);
-   }
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getSocialAccounts()
+    {
+        return $this->hasMany(SocialAccount::className(), ['user_id' => 'id']);
+    }
 
     /**
      * Finds user by username
@@ -511,7 +518,8 @@ class User extends BaseUser
      * @param  string      $username
      * @return static|null
      */
-    public static function findByUsername($username) {
+    public static function findByUsername($username)
+    {
         return static::findOne(['username' => $username]);
     }
 
@@ -521,7 +529,8 @@ class User extends BaseUser
      * @param  string      $username
      * @return static|null
      */
-    public static function findByPayKey($key) {
+    public static function findByPayKey($key)
+    {
         return static::findOne(['pay_key' => $key]);
     }
 
@@ -530,7 +539,8 @@ class User extends BaseUser
      *
      * @param string $password
      */
-    public function hashPassword($password) {
+    public function hashPassword($password)
+    {
         return md5($password);
     }
         
@@ -540,7 +550,8 @@ class User extends BaseUser
      * @param  string  $password password to validate
      * @return boolean if password provided is valid for current user
      */
-    public function validatePassword($password) {
+    public function validatePassword($password)
+    {
         return $this->password === $this->hashPassword($password);
     }
 
@@ -550,7 +561,8 @@ class User extends BaseUser
      * @param int $id Assortiment id.
      * @return string Name of assortiment.
      */
-    public function getUserDisplayName($id) {
+    public function getUserDisplayName($id)
+    {
         if (($model = self::findOne($id)) !== null) {
             $name = $model->profile->voornaam;
             if (isset($model->profile->tussenvoegsel)) {
@@ -560,7 +572,29 @@ class User extends BaseUser
             return $name;
         }
 
-        return FALSE;
+        return false;
     }
+    
+    /**
+     * Controleer limieten
+     *
+     * @param int $id user id.
+     * @return bolean.
+     */
+    public function limitenControleren($id)
+    {
+        $user = User::findOne($id);
+        // Zet de default limiet
+        $limiet = -20;
 
+        if ($user->profile->limit_hard !== null) {
+            $limiet = $user->profile->limit_hard;
+        }
+
+        if ($user->Openstaand < $limiet) {
+            return false;
+        }
+
+        return true;
+    }
 }

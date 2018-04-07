@@ -40,17 +40,17 @@ class FavorietenLijstenController extends Controller
                 'only' => ['index', 'view', 'create', 'update', 'delete', 'favorieten-aanpassen'],
                 'rules' => [
                     [
-                        'allow' => TRUE,
+                        'allow' => true,
                         'actions' => ['index', 'delete', 'create', 'update', 'view'],
                         'roles' =>  ['admin', 'beheerder'],
                     ],
                     [
-                        'allow' => TRUE,
+                        'allow' => true,
                         'actions' => ['favorieten-aanpassen'],
                         'roles' =>  ['gebruiker'],
                     ],
                     [
-                        'allow' => FALSE,  // deny all users
+                        'allow' => false,  // deny all users
                         'roles'=> ['*'],
                     ],
                 ],
@@ -94,6 +94,7 @@ class FavorietenLijstenController extends Controller
     public function actionCreate()
     {
         $model = new FavorietenLijsten();
+        $this->layout = 'main-fluid';
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
             $users_temp = Yii::$app->request->post('FavorietenLijsten')['users_temp'];
             foreach ($users_temp as $user) {
@@ -169,7 +170,7 @@ class FavorietenLijstenController extends Controller
             }
             $users_temp = Yii::$app->request->get('users');
 
-            if(!empty($users_temp)) {
+            if (!empty($users_temp)) {
                 foreach ($users_temp as $user) {
                     $modelFavorieten = new Favorieten;
                     $modelFavorieten->lijst_id = $model->favorieten_lijsten_id;
@@ -179,14 +180,14 @@ class FavorietenLijstenController extends Controller
             }
             return $this->redirect(['/turven/barinvoer', '#' => 'w1-tab2']);
         } else {
-            if(Yii::$app->request->get('users') === NULL) {
+            if (Yii::$app->request->get('users') === null) {
                 $selected_users = Favorieten::find()
                     ->where(['lijst_id' => $id])
                     ->asArray()
                     ->select('selected_user_id')
                     ->all();
 
-                if(!empty($selected_users)) {
+                if (!empty($selected_users)) {
                     $model->users_temp = ArrayHelper::getColumn($selected_users, 'selected_user_id');
                 } else {
                     $model->users_temp = [];
@@ -195,13 +196,13 @@ class FavorietenLijstenController extends Controller
                 $model->users_temp = Yii::$app->request->get('users');
             }
 
-            if(Yii::$app->request->get('remove') !== NULL) {
+            if (Yii::$app->request->get('remove') !== null) {
                 if (($key = array_search(Yii::$app->request->get('remove'), $model->users_temp)) !== false) {
                     unset($model->users_temp[$key]);
                 }
             }
 
-            if(Yii::$app->request->get('add') !== NULL) {
+            if (Yii::$app->request->get('add') !== null) {
                 $model->users_temp[] = Yii::$app->request->get('add');
             }
 

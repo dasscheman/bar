@@ -58,6 +58,9 @@ class SetupDateTime {
         if ($type === 'datetime') {
               $fmt = 'php:d-m-Y H:i:s';
         }
+        elseif ($type === 'datetime2') {
+              $fmt = 'php:d-m-Y H:i';
+        }
         elseif ($type === 'time') {
               $fmt = self::TIME_FORMAT;
         }

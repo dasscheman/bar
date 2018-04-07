@@ -2,8 +2,8 @@
 
 /* @var $this yii\web\View */
 
-use yii\helpers\Html;
 use dosamigos\highcharts\HighCharts;
+use yii\helpers\Html;
 
 $this->title = 'Overzichten';
 ?>
@@ -12,8 +12,8 @@ $this->title = 'Overzichten';
     <?php
     foreach ($assortimentItems as $item) {
         echo Html::a(
-            $item->name,
-            [ '/site/grafieken', 'assortiment_id' => $item->assortiment_id ],
+            $item->merk,
+            [ '/site/grafieken', 'merk' => $item->merk ],
             [ 'class' => 'btn-lg btn-info namen' ]
         );
     } ?>
@@ -23,6 +23,11 @@ $this->title = 'Overzichten';
             'clientOptions' => [
                 'chart' => [
                         'type' => 'column'
+                ],
+                'plotOptions' => [
+                    'column' => [
+                        'stacking' => 'normal'
+                    ]
                 ],
                 'title' => [
                      'text' => 'Totaal overzicht'
@@ -35,10 +40,7 @@ $this->title = 'Overzichten';
                         'text' => 'Euro'
                     ]
                 ],
-                'series' => [
-                    ['name' => 'Inkomsten', 'data' => array_values($inkomsten)],
-                    ['name' => 'Uitgaven', 'data' => array_values($uitgaven)]
-                ]
+                'series' => $series
             ]
         ]);
 

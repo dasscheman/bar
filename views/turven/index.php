@@ -6,6 +6,7 @@
 use kartik\grid\GridView;
 use yii\helpers\Html;
 use yii\widgets\Pjax;
+use app\models\Turven;
 
 /**
  * @var \yii\web\View $this
@@ -48,28 +49,17 @@ $toolbar = FALSE;
                                 return $model->getConsumerUser()->one()->username;
                             },
                         ],
-//                        'turven_id',
                         [
-                            'attribute'=>'turflijst_id',
+                            'attribute'=>'assortiment_name',
                             'format' => 'raw',
                             'value'=>function ($model) {
-                                if(!empty($model->turflijst->volgnummer)) {
-                                    return Html::a('Turfijst ' . $model->turflijst->volgnummer, ['turflijst/view', 'id' => $model->turflijst_id]);
-                                }
-                                return '';
+                                 return Html::a($model->assortiment->name, ['assortiment/view', 'id' => $model->assortiment_id]);
                              },
                         ],
-                        [
-                            'attribute'=>'assortiment_id',
-                            'format' => 'raw',
-                            'value'=>function ($model) {
-                                 return Html::a($model->getAssortiment()->one()->name, ['assortiment/view', 'id' => $model->assortiment_id]);
-                             },
-                         ],
                         'datum' => [
                             'attribute' => 'datum',
                             'value' => function($model){
-                                return empty($model->datum)?'':Yii::$app->setupdatetime->displayFormat($model->datum, 'php:d-M-Y');
+                                return empty($model->datum)?'':Yii::$app->setupdatetime->displayFormat($model->datum, 'datetime2', TRUE);
                             },
                         ],
                         [
@@ -83,12 +73,14 @@ $toolbar = FALSE;
                         'totaal_prijs',
                         'type' => [
                             'attribute' => 'type',
+                            'filter'=> Turven::getTypeOptions(),
                             'value' => function($model){
                                 return $model->getTypeText();
                             },
                         ],
                         'status' => [
                             'attribute' => 'status',
+                            'filter'=> Turven::getStatusOptions(),
                             'value' => function($model){
                                 return $model->getStatusText();
                             },
@@ -99,15 +91,12 @@ $toolbar = FALSE;
                             'value'=>function ($model) {
                                 return empty($model->factuur_id)?'':Html::a('Factuur ' . $model->factuur_id, ['factuur/view', 'id' => $model->factuur_id]);
                              },
-                         ],
-//                            'created_at',
-//                            'created_by',
-//                            'created_at',
-//                            'created_by',
+                        ],
                         [
                             'class' => 'yii\grid\ActionColumn',
+                            'header'=>'Actions',
                             'template' => '{update} {view} {delete}',
-                            'headerOptions' => ['style' => 'width:20%'],
+                            'headerOptions' => ['style' => 'width:10%'],
                         ],
                     ],
 

@@ -35,12 +35,17 @@ class InkoopController extends Controller
                     'class' => AccessRule::className(),
                 ],
                 // We will override the default rule config with the new AccessRule class
-                'only' => ['index', 'index-actueel', 'view', 'create', 'update', 'verbruikt', 'afgeschreven', 'delete'],
+                'only' => ['index', 'index-actueel', 'nieuw-geopend', 'overzicht-actueel', 'view', 'create', 'update', 'verbruikt', 'afgeschreven', 'delete'],
                 'rules' => [
                     [
                         'allow' =>  true,
                         'actions' => ['index', 'index-actueel', 'delete', 'create', 'update', 'verbruikt', 'afgeschreven', 'view'],
                         'roles' =>  ['admin', 'beheerder'],
+                    ],
+                    [
+                        'allow' => TRUE,
+                        'actions' => ['overzicht-actueel', 'nieuw-geopend'],
+                        'roles' =>  ['gebruiker'],
                     ],
                     [
                         'allow' => FALSE,  // deny all users
@@ -78,6 +83,24 @@ class InkoopController extends Controller
 
         $this->layout = 'main-fluid';
         return $this->render('index-actueel', [
+            'searchModel' => $searchModel,
+            'dataProvider' => $dataProvider,
+        ]);
+    }
+
+
+    /**
+     * Lists all Inkoop models.
+     * @return mixed
+     */
+    public function actionOverzichtActueel()
+    {
+        $searchModel = new InkoopSearch();
+        $dataProvider = $searchModel->searchActueelOverview(Yii::$app->request->queryParams);
+
+        Yii::$app->session->setFlash('warning', Yii::t('app', 'Als je een nieuwe fles of fust open maakt dan kun je dat hier invoeren door het item aan te klikken. '
+                . 'Dit is niet nodig voor items die per stuk verkocht worden, zoals flesjes bier.'));
+        return $this->render('overzicht-actueel', [
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
         ]);
@@ -211,6 +234,26 @@ class InkoopController extends Controller
         $dataProvider = $searchModel->searchActueel(Yii::$app->request->queryParams);
 
         return $this->render('index-actueel', [
+            'searchModel' => $searchModel,
+            'dataProvider' => $dataProvider,
+        ]);
+    }
+
+    /**
+     * Updates an existing Inkoop model.
+     * If update is successful, the browser will be redirected to the 'view' page.
+     * @param integer $id
+     * @return mixed
+     */
+    public function actionNieuwGeopend($assortiment_id, $omschrijving)
+    {
+        Inkoop::voorraadBijWerken($assortiment_id, 1, Inkoop::STATUS_verkocht, $omschrijving);
+        
+        $searchModel = new InkoopSearch();
+        $dataProvider = $searchModel->searchActueelOverview(Yii::$app->request->queryParams);
+
+        Yii::$app->session->setFlash('success', Yii::t('app', 'Item is uit de voorraad gehaald.'));
+        return $this->render('overzicht-actueel', [
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
         ]);

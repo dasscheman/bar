@@ -43,7 +43,7 @@ class BonnenController extends Controller
                         'roles' =>  ['admin', 'beheerder'],
                     ],
                     [
-                        'allow' => FALSE,  // deny all users
+                        'allow' => false,  // deny all users
                         'roles'=> ['*'],
                     ],
                 ],
@@ -74,6 +74,7 @@ class BonnenController extends Controller
      */
     public function actionView($id)
     {
+        $this->layout = 'main-fluid';
         return $this->render('view', [
             'model' => $this->findModel($id),
         ]);
@@ -96,7 +97,7 @@ class BonnenController extends Controller
             // store the source file name
             $model->image = date('Y-m-d H:i:s') . '-' . $image->name;
             $path = Yii::$app->params['bonnen_path'] . $model->image;
-            if($model->save()){
+            if ($model->save()) {
                 $image->saveAs($path);
                 return $this->redirect(['view', 'id' => $model->bon_id]);
             } else {
@@ -104,7 +105,7 @@ class BonnenController extends Controller
                     Yii::$app->session->setFlash('warning', Yii::t('app', 'Fout met opslaan: ' . $key . ':' . $error[0]));
                 }
             }
-        } 
+        }
         return $this->render('create', [
             'model' => $model,
         ]);

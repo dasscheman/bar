@@ -33,6 +33,7 @@ use yii\widgets\DetailView;
                         'model' => $model,
                         'attributes' => [
                             'inkoop_id',
+                            'omschrijving',
                             'assortiment_id',
                             'datum',
                             'volume',

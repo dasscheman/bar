@@ -12,6 +12,8 @@ use dektrium\user\models\Profile as BaseProfile;
  * @property string $name
  * @property string $public_email
  * @property string $gravatar_email
+ * @property string $limit_hard
+ * @property string $limit_ophogen
  * @property string $gravatar_id
  * @property string $location
  * @property string $website
@@ -45,7 +47,10 @@ class Profile extends BaseProfile
             [['user_id'], 'required'],
             [['user_id', 'functie', 'speltak'], 'integer'],
             [['bio'], 'string'],
-            [['geboorte_datum'], 'safe'],
+            [['limit_hard', 'limit_ophogen'], 'number'],
+            [['limit_hard'], 'default', 'value'=> '20'],
+            [['limit_ophogen'], 'default', 'value'=> '0'],
+            [['geboorte_datum', 'limit'], 'safe'],
             [['name', 'public_email', 'gravatar_email', 'location', 'website', 'voornaam', 'tussenvoegsel', 'achternaam'], 'string', 'max' => 255],
             [['gravatar_id'], 'string', 'max' => 32],
             [['timezone'], 'string', 'max' => 40],
@@ -61,7 +66,9 @@ class Profile extends BaseProfile
         return [
             'user_id' => 'User ID',
             'name' => 'Name',
-            'public_email' => 'Public Email',
+            'public_email' => 'Tweede email',
+            'limit_hard' => 'Harde limiet',
+            'limit_ophogen' => 'Autmatisch ophogen vanaf',
             'gravatar_email' => 'Gravatar Email',
             'gravatar_id' => 'Gravatar ID',
             'location' => 'Location',

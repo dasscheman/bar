@@ -19,6 +19,7 @@ use app\models\BarActiveRecord;
  * @property integer $created_by
  * @property string $updated_at
  * @property integer $updated_by
+ * @property integer $change_stock_auto
  *
  * @property User $createdBy
  * @property User $updatedBy
@@ -53,7 +54,7 @@ class Assortiment extends BarActiveRecord
     {
         return [
             [['name', 'alcohol', 'status', 'soort'], 'required'],
-            [['alcohol', 'status', 'created_by', 'updated_by'], 'integer'],
+            [['alcohol', 'status', 'created_by', 'updated_by', 'change_stock_auto'], 'integer'],
             [['volume'], 'number'],
             [['name', 'alcohol', 'status', 'created_at', 'updated_at'], 'safe'],
             [['name', 'merk', 'soort'], 'string', 'max' => 255],
@@ -79,6 +80,7 @@ class Assortiment extends BarActiveRecord
             'created_by' => 'Created By',
             'updated_at' => 'Updated At',
             'updated_by' => 'Updated By',
+            'change_stock_auto' => 'Pas voorraad automatisch aan',
         ];
     }
 

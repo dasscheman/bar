@@ -3,6 +3,7 @@
 use yii\helpers\Html;
 use kartik\grid\GridView;
 use yii\widgets\Pjax;
+use app\models\Inkoop;
 
 /* @var $this yii\web\View */
 /* @var $searchModel app\models\InkoopSearch */
@@ -36,14 +37,14 @@ $toolbar = FALSE;
                     'filterModel' => $searchModel,
                     'layout'       => "{items}\n{pager}",
                     'columns' => [
-//                        'inkoop_id',
+                        'omschrijving',
                         [
-                            'attribute'=>'assortiment_id',
+                            'attribute'=>'assortiment_name',
                             'format' => 'raw',
                             'value'=>function ($model) {
-                                 return Html::a($model->getAssortiment()->one()->name, ['assortiment/view', 'id' => $model->assortiment_id]);
+                                 return Html::a($model->assortiment->name, ['assortiment/view', 'id' => $model->assortiment_id]);
                              },
-                         ],
+                        ],
                         'datum' => [
                             'attribute' => 'datum',
                             'value' => function($model){
@@ -60,23 +61,21 @@ $toolbar = FALSE;
                         ],
                         'type' => [
                             'attribute' => 'type',
+                            'filter'=> Inkoop::getTypeOptions(),
                             'value' => function($model){
                                 return $model->getTypeText();
                             },
                         ],
                         'status' => [
                             'attribute' => 'status',
+                            'filter'=> Inkoop::getStatusOptions(),
                             'value' => function($model){
                                 return $model->getStatusText();
                             },
                         ],
-                        // 'created_at',
-                        // 'created_by',
-                        // 'updated_at',
-                        // 'updated_by',
-
                         [
                             'class' => 'yii\grid\ActionColumn',
+                            'header'=>'Actions',
                             'headerOptions' => ['style' => 'width:15%'],
                             'template' => '{update} {view} {delete}',
                         ],

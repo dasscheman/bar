@@ -22,6 +22,7 @@ use app\models\BarActiveRecord;
  * @property integer $created_by
  * @property string $updated_at
  * @property integer $updated_by
+ * @property string $omschrijving
  *
  * @property Assortiment $assortiment
  * @property Bonnen $bon
@@ -37,6 +38,8 @@ class Inkoop extends BarActiveRecord
     const STATUS_voorraad = 1;
     const STATUS_verkocht = 2;
     const STATUS_afgeschreven = 3;
+
+    public $totaal_aantal;
     /**
      * @inheritdoc
      */
@@ -51,9 +54,9 @@ class Inkoop extends BarActiveRecord
     public function rules()
     {
         return [
-            [['assortiment_id', 'datum', 'totaal_prijs', 'type', 'status'], 'required'],
+            [['omschrijving', 'assortiment_id', 'datum', 'totaal_prijs', 'type', 'status'], 'required'],
             [['assortiment_id', 'bon_id', 'aantal', 'type', 'status', 'created_by', 'updated_by'], 'integer'],
-            [['datum', 'created_at', 'updated_at'], 'safe'],
+            [['datum', 'created_at', 'updated_at', 'totaal_aantal'], 'safe'],
             [['volume', 'totaal_prijs'], 'number'],
             [['assortiment_id'], 'exist', 'skipOnError' => true, 'targetClass' => Assortiment::className(), 'targetAttribute' => ['assortiment_id' => 'assortiment_id']],
             [['bon_id'], 'exist', 'skipOnError' => true, 'targetClass' => Bonnen::className(), 'targetAttribute' => ['bon_id' => 'bon_id']],
@@ -72,7 +75,7 @@ class Inkoop extends BarActiveRecord
             'assortiment_id' => 'Assortiment ID',
             'bon_id' => 'Bon ID',
             'datum' => 'Datum',
-            'volume' => 'Volume per stuk',
+            'volume' => 'Volume per stuk (l)',
             'aantal' => 'Aantal',
             'totaal_prijs' => 'Prijs per stuk',
             'type' => 'Type',
@@ -81,6 +84,7 @@ class Inkoop extends BarActiveRecord
             'created_by' => 'Created By',
             'updated_at' => 'Updated At',
             'updated_by' => 'Updated By',
+            'omschrijving' => 'Omschrijving',
         ];
     }
 
@@ -152,7 +156,8 @@ class Inkoop extends BarActiveRecord
      * Retrieves a list of statussen
      * @return array an array of available statussen.
      */
-    public function getStatusOptions() {
+    public function getStatusOptions()
+    {
         return [
             self::STATUS_voorraad => Yii::t('app', 'Voorraad'),
             self::STATUS_verkocht => Yii::t('app', 'Verkocht'),
@@ -163,11 +168,51 @@ class Inkoop extends BarActiveRecord
     /**
      * @return string the status text display
      */
-    public function getStatusText() {
+    public function getStatusText()
+    {
         $statusOptions = $this->statusOptions;
         if (isset($statusOptions[$this->status])) {
             return $statusOptions[$this->status];
         }
         return "unknown status ({$this->status})";
     }
+
+    public function voorraadBijWerken($assortiment_id, $count, $status, $omschrijving = NULL)
+    {
+        if($omschrijving === NULL ) {
+            $voorraad = Inkoop::find()
+                ->where('status =:status')
+                ->andWhere('assortiment_id =:assortiment_id')
+                ->params([
+                    ':status' => self::STATUS_voorraad,
+                    ':assortiment_id' => $assortiment_id
+                ])
+                ->all();
+        } else {
+            $voorraad = Inkoop::find()
+                ->where('status =:status')
+                ->andWhere('assortiment_id =:assortiment_id')
+                ->andWhere('omschrijving =:omschrijving')
+                ->params([
+                    ':status' => self::STATUS_voorraad,
+                    ':assortiment_id' => $assortiment_id,
+                    ':omschrijving' => $omschrijving
+                ])
+                ->all();
+        }
+        $i = 0;
+        foreach ($voorraad as $item) {
+            if($i >= $count) {
+                break;
+            }
+            $item->status = $status;
+            $item->datum = date('Y-m-d H:i:s');
+            if(!$item->save()) {
+                foreach ($item->errors as $key => $error) {
+                    Yii::$app->session->setFlash('warning', Yii::t('app', 'Er is iets niet goed gegaan met het bijwerken van de voorraad:' . $error[0]));
+                }
+            }
+            $i++;
+        }
+     }
 }

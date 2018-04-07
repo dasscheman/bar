@@ -5,24 +5,22 @@ namespace app\models;
 use Yii;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
-use app\models\Transacties;
+use app\models\Kosten;
 
 /**
- * TransactiesSearch represents the model behind the search form about `app\models\Transacties`.
+ * KostenSearch represents the model behind the search form about `app\models\Kosten`.
  */
-class TransactiesSearch extends Transacties
+class KostenSearch extends Kosten
 {
-    public $displayname;
-    
     /**
      * @inheritdoc
      */
     public function rules()
     {
         return [
-            [['transacties_id', 'transacties_user_id', 'type_id', 'status', 'created_by', 'updated_by'], 'integer'],
-            [['omschrijving', 'created_at', 'updated_at', 'datum', 'displayname'], 'safe'],
-            [['bedrag'], 'number'],
+            [['kosten_id', 'bon_id', 'type', 'created_by', 'updated_by'], 'integer'],
+            [['omschrijving', 'datum', 'created_at', 'updated_at'], 'safe'],
+            [['prijs'], 'number'],
         ];
     }
 
@@ -44,20 +42,14 @@ class TransactiesSearch extends Transacties
      */
     public function search($params)
     {
-        $query = Transacties::find();
+        $query = Kosten::find();
 
         // add conditions that should always apply here
-        $query->joinWith(['transactiesUser.profile']);
+
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
-            'sort'=> ['defaultOrder' => ['updated_at'=>SORT_DESC]],
         ]);
 
-        $dataProvider->sort->attributes['displayname'] =
-        [
-            'asc' => ['profile.name' => SORT_ASC],
-            'desc' => ['profile.name' => SORT_DESC],
-        ];
         $this->load($params);
 
         if (!$this->validate()) {
@@ -68,19 +60,18 @@ class TransactiesSearch extends Transacties
 
         // grid filtering conditions
         $query->andFilterWhere([
-            'transacties_id' => $this->transacties_id,
-            'bedrag' => $this->bedrag,
-            'type_id' => $this->type_id,
-            'status' => $this->status,
+            'kosten_id' => $this->kosten_id,
+            'bon_id' => $this->bon_id,
+            'datum' => $this->datum,
+            'prijs' => $this->prijs,
+            'type' => $this->type,
             'created_at' => $this->created_at,
             'created_by' => $this->created_by,
             'updated_at' => $this->updated_at,
             'updated_by' => $this->updated_by,
         ]);
 
-        $query->andFilterWhere(['like', 'omschrijving', $this->omschrijving])
-              ->andFilterWhere(['like', 'datum', $this->datum])
-              ->andFilterWhere(['like', 'profile.name', $this->displayname]);
+        $query->andFilterWhere(['like', 'omschrijving', $this->omschrijving]);
 
         return $dataProvider;
     }

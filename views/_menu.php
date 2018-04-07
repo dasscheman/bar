@@ -16,12 +16,12 @@ echo Nav::widget([
             'label' => 'Voorraad',
             'items' => [
                 ['label' => 'Actueel', 'url' => ['/inkoop/index-actueel']],
-                ['label' => 'History', 'url' => ['/inkoop/index']],
+                ['label' => 'Alles', 'url' => ['/inkoop/index']],
             ],
         ],
         [
-            'label' => 'Bonnen',
-            'url' => ['/bonnen/index']
+            'label' => 'Kosten',
+            'url' => ['/kosten/index']
         ],
         [
             'label' => 'Assortiment',
@@ -40,20 +40,17 @@ echo Nav::widget([
             'url' => ['/factuur/index']
         ],
         [
-            'label' => 'Turflijst',
-            'url' => ['/turflijst/index']
-        ],
-        [
             'label' => 'Prijslijst',
             'url' => ['/prijslijst/index']
         ],
         [
-            'label' => 'Betaling typs',
-            'url' => ['/betaling-type/index']
-        ],
-        [
-            'label' => 'Favorieten',
-            'url' => ['/favorieten-lijsten/index']
+            'label' => 'Overige',
+            'items' => [
+                ['label' => 'Favorieten', 'url' => ['/favorieten-lijsten/index']],
+                ['label' => 'Betaling typs', 'url' => ['/betaling-type/index']],
+                ['label' => 'Turflijst', 'url' => ['/turflijst/index']],
+                ['label' => 'Bonnen','url' => ['/bonnen/index']],
+            ],
         ],
         [
             'label' => 'Toevoegen',
@@ -66,14 +63,11 @@ echo Nav::widget([
                 ['label' => 'Facturen genereren', 'url' => ['/factuur/create']],
                 ['label' => 'Turflijst Toevoegen', 'url' => ['/turflijst/create']],
                 ['label' => 'Voorraad toevoegen', 'url' => ['/inkoop/create']],
+                ['label' => 'Kosten toevoegen', 'url' => ['/kosten/create']],
                 ['label' => 'Prijslijst Toevoegen', 'url' => ['/prijslijst/create']],
                 ['label' => 'Betaling type maken', 'url' => ['/betaling-type/create']],
                 ['label' => 'Favorieten lijst maken', 'url' => ['/favorieten-lijsten/create']],
             ],
         ],
-//        [
-//            'label' => Yii::t('app', 'Facturen'),
-//            'url' => ['/factuur/index'],
-//        ],
     ],
 ]);

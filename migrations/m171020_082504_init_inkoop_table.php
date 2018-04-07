@@ -27,7 +27,7 @@ class m171020_082504_init_inkoop_table extends Migration
             'created_by'        => $this->integer(11),
             'updated_at'        => $this->dateTime(),
             'updated_by'        => $this->integer(11),
-         ],
+        ],
         'ENGINE=InnoDB');
 
         /**********************************************************************/

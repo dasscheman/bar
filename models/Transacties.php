@@ -4,26 +4,31 @@ namespace app\models;
 
 use Yii;
 use app\models\BarActiveRecord;
+use yii\helpers\ArrayHelper;
 
 /**
  * This is the model class for table "transacties".
  *
- * @property integer $transacties_id
- * @property integer $transacties_user_id
- * @property integer $bon_id
- * @property integer $factuur_id
+ * @property int $transacties_id
+ * @property int $transacties_user_id
+ * @property int $bon_id
+ * @property int $factuur_id
  * @property string $omschrijving
  * @property string $bedrag
- * @property integer $type_id
- * @property integer $status
+ * @property int $type_id
+ * @property int $status
  * @property string $datum
  * @property string $created_at
- * @property integer $created_by
+ * @property int $created_by
  * @property string $updated_at
- * @property integer $updated_by
+ * @property int $updated_by
  *
  * @property Inkoop[] $inkoops
  * @property Factuur $factuur
+ * @property RelatedTransacties[] $relatedTransacties
+ * @property RelatedTransacties[] $relatedTransacties0
+ * @property Transacties[] $parentTransacties
+ * @property Transacties[] $childTransacties
  * @property BetalingType $type
  * @property Bonnen $bon
  * @property User $createdBy
@@ -36,10 +41,11 @@ class Transacties extends BarActiveRecord
     const MOLLIE_STATUS_cancelled = 2;
     const MOLLIE_STATUS_expired = 3;
     const MOLLIE_STATUS_failed = 4;
-    const MOLLIE_STATUS_paid = 5;    
+    const MOLLIE_STATUS_paid = 5;
     const MOLLIE_STATUS_refunded = 6;
     const MOLLIE_STATUS_pending = 7;
     const MOLLIE_STATUS_paidout = 8;
+    public $all_related_transactions;
 
     /**
      * @inheritdoc
@@ -75,8 +81,9 @@ class Transacties extends BarActiveRecord
     public function attributeLabels()
     {
         return [
-            'transacties_id' => 'Transacties ID',
+            'transacties_id' => 'ID',
             'transacties_user_id' => 'Transactie voor',
+            'all_related_transactions' => 'Gelinkte trans.',
             'factuur_id' => Yii::t('app', 'Factuur ID'),
             'omschrijving' => 'Omschrijving',
             'bedrag' => 'Bedrag',
@@ -91,7 +98,35 @@ class Transacties extends BarActiveRecord
             'updated_by' => 'Updated By',
         ];
     }
- 
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getRelatedTransacties()
+    {
+        return $this->hasMany(RelatedTransacties::className(), ['child_transacties_id' => 'transacties_id']);
+    }
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getRelatedTransacties0()
+    {
+        return $this->hasMany(RelatedTransacties::className(), ['parent_transacties_id' => 'transacties_id']);
+    }
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getParentTransacties()
+    {
+        return $this->hasMany(Transacties::className(), ['transacties_id' => 'parent_transacties_id'])->viaTable('related_transacties', ['child_transacties_id' => 'transacties_id']);
+    }
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getChildTransacties()
+    {
+        return $this->hasMany(Transacties::className(), ['transacties_id' => 'child_transacties_id'])->viaTable('related_transacties', ['parent_transacties_id' => 'transacties_id']);
+    }
 
     /**
      * @return \yii\db\ActiveQuery
@@ -99,7 +134,7 @@ class Transacties extends BarActiveRecord
     public function getBon()
     {
         return $this->hasOne(Bonnen::className(), ['bon_id' => 'bon_id']);
-    } 
+    }
 
     /**
      * @return \yii\db\ActiveQuery
@@ -145,7 +180,8 @@ class Transacties extends BarActiveRecord
      * Retrieves a list of Mollie statussen
      * @return array an array of available statussen.
      */
-    public function getMollieStatusOptions() {
+    public function getMollieStatusOptions()
+    {
         return [
             self::MOLLIE_STATUS_open => 'open',
             self::MOLLIE_STATUS_cancelled => 'cancelled',
@@ -161,7 +197,8 @@ class Transacties extends BarActiveRecord
     /**
      * @return string the status text display
      */
-    public function getMollieStatusText() {
+    public function getMollieStatusText()
+    {
         $statusOptions = $this->mollieStatusOptions;
         if (isset($statusOptions[$this->mollie_status])) {
             return $statusOptions[$this->mollie_status];
@@ -171,12 +208,13 @@ class Transacties extends BarActiveRecord
     /**
      * @return string the status id
      */
-    public function getMollieStatusId($status) {
-        $id = array_search( $status,  $this->mollieStatusOptions);
+    public function getMollieStatusId($status)
+    {
+        $id = array_search($status, $this->mollieStatusOptions);
         if (isset($id)) {
             return $id;
         }
-        return FALSE;
+        return false;
     }
 
     public function controleerStatusTransacties()
@@ -186,8 +224,7 @@ class Transacties extends BarActiveRecord
             ->orWhere(['transacties.status' => Transacties::STATUS_tercontrole])
             ->orWhere(['transacties.status' => Transacties::STATUS_factuur_gegenereerd]);
 
-//        Yii::$app->mailer->htmlLayout('layouts/html');
-        if(!$transacties->exists()){
+        if (!$transacties->exists()) {
             return 0;
         }
 
@@ -201,7 +238,103 @@ class Transacties extends BarActiveRecord
         return $transacties->count();
     }
 
-    public function setRetrievedMollieStatus($mollie_status) {
+    public function setRetrievedMollieStatus($mollie_status)
+    {
         $this->mollie_status = $this->getMollieStatusId($mollie_status);
+    }
+
+    public function getTransactionOmschrijving()
+    {
+        return $this->omschrijving . ' - '
+            . $this->getType()->one()->omschrijving . ' ('
+            . $this->getTransactiesUser()->one()->getProfile()->one()->voornaam . ' '
+            . $this->getTransactiesUser()->one()->getProfile()->one()->achternaam . ')';
+    }
+
+    /**
+    * Retrieves a list of users
+    * @return array an of available relatedtransactions.'.
+    */
+//    public function getRelatedTransactionsIds()
+//    {
+//        $queryParentTransactions = RelatedTransacties::find()
+//            ->select('child_transacties_id')
+//            ->where('parent_transacties_id=:transacties_id')
+//            ->addParams([':transacties_id' => $this->transacties_id]);
+//
+//        $queryChildTransactions = RelatedTransacties::find()
+//            ->select('parent_transacties_id')
+//            ->where('child_transacties_id=:transacties_id')
+//            ->addParams([':transacties_id' => $this->transacties_id]);
+//
+//        $result = Transacties::find()
+//            ->select('transacties_id')
+//            ->where(['in', 'transacties.transacties_id', $queryParentTransactions])
+//            ->orwhere(['in', 'transacties.transacties_id', $queryChildTransactions])
+//            ->all();
+//
+//        return $result;
+//    }
+
+    /**
+    * Retrieves a list of users
+    * @return array an of available relatedtransactions.'.
+    */
+    public function setAllRelatedTransactions()
+    {
+        $queryParentTransactions = RelatedTransacties::find()
+            ->select('child_transacties_id')
+            ->where('parent_transacties_id=:transacties_id')
+            ->addParams([':transacties_id' => $this->transacties_id]);
+
+        $queryChildTransactions = RelatedTransacties::find()
+            ->select('parent_transacties_id')
+            ->where('child_transacties_id=:transacties_id')
+            ->addParams([':transacties_id' => $this->transacties_id]);
+
+        $result = Transacties::find()
+            ->select('transacties_id')
+            ->where(['in', 'transacties.transacties_id', $queryParentTransactions])
+            ->orwhere(['in', 'transacties.transacties_id', $queryChildTransactions])
+            ->all();
+
+        $this->all_related_transactions = ArrayHelper::getColumn($result, 'transacties_id');
+    }
+
+    /**
+    * Retrieves a list of users
+    * @return array an of available relatedtransactions.'.
+    */
+    public function getTransactionsArray()
+    {
+        $result = Transacties::find()
+            ->all();
+        $arrayRestuls = ArrayHelper::map($result, 'transacties_id', 'transactionOmschrijving');
+        return $arrayRestuls;
+    }
+    
+    public function addRelatedTransactions($transaction_id, $all_related_transactions= [])
+    {
+        $transactionsOld = RelatedTransacties::find()
+                ->where('parent_transacties_id =:transacties_id')
+                ->orWhere('child_transacties_id =:transacties_id')
+                ->params([':transacties_id' => $transaction_id])
+                ->all();
+        foreach ($transactionsOld as $transactionOld) {
+            $transactionOld->delete();
+        }
+
+        if (!$all_related_transactions) {
+            return true;
+        }
+        foreach ($all_related_transactions as $related_transaction) {
+            $transaction = new RelatedTransacties();
+            $transaction->parent_transacties_id = $transaction_id;
+            $transaction->child_transacties_id = $related_transaction;
+            $transaction->save();
+            foreach ($transaction->errors as $key => $error) {
+                Yii::$app->session->setFlash('warning', Yii::t('app', 'Fout met opslaan: ' . $key . ':' . $error[0]));
+            }
+        }
     }
 }

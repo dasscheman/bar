@@ -3,16 +3,17 @@
 namespace app\controllers;
 
 use Yii;
-use app\models\BetalingType;
-use app\models\BetalingTypeSearch;
+use app\models\Kosten;
+use app\models\KostenSearch;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
+use app\models\Bonnen;
 
 /**
- * BetalingTypeController implements the CRUD actions for BetalingType model.
+ * KostenController implements the CRUD actions for Kosten model.
  */
-class BetalingTypeController extends Controller
+class KostenController extends Controller
 {
     /**
      * @inheritdoc
@@ -30,12 +31,12 @@ class BetalingTypeController extends Controller
     }
 
     /**
-     * Lists all BetalingType models.
+     * Lists all Kosten models.
      * @return mixed
      */
     public function actionIndex()
     {
-        $searchModel = new BetalingTypeSearch();
+        $searchModel = new KostenSearch();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
         $this->layout = 'main-fluid';
@@ -46,7 +47,7 @@ class BetalingTypeController extends Controller
     }
 
     /**
-     * Displays a single BetalingType model.
+     * Displays a single Kosten model.
      * @param integer $id
      * @return mixed
      */
@@ -58,28 +59,32 @@ class BetalingTypeController extends Controller
     }
 
     /**
-     * Creates a new BetalingType model.
+     * Creates a new Kosten model.
      * If creation is successful, the browser will be redirected to the 'view' page.
      * @return mixed
      */
     public function actionCreate()
     {
-        $model = new BetalingType();
+        $model = new Kosten();
 
-        $model->state = $model::STATE_custom;
         $this->layout = 'main-fluid';
-
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->type_id]);
-        } else {
-            return $this->render('create', [
-                'model' => $model,
-            ]);
+        if ($model->load(Yii::$app->request->post())) {
+            $bon = Bonnen::findOne($model->bon_id);
+            $model->datum = $bon->datum;
+            if($model->save()) {
+                return $this->redirect(['index']);
+            }
+            foreach ($model->errors as $key => $error) {
+                Yii::$app->session->setFlash('warning', Yii::t('app', 'Fout met opslaan: ' . $key . ':' . $error[0]));
+            }
         }
+        return $this->render('create', [
+            'model' => $model,
+        ]);
     }
 
     /**
-     * Updates an existing BetalingType model.
+     * Updates an existing Kosten model.
      * If update is successful, the browser will be redirected to the 'view' page.
      * @param integer $id
      * @return mixed
@@ -88,12 +93,9 @@ class BetalingTypeController extends Controller
     {
         $model = $this->findModel($id);
 
-        if ($model->load(Yii::$app->request->post()) && $model->state !== $model::STATE_system && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->type_id]);
+        if ($model->load(Yii::$app->request->post()) && $model->save()) {
+            return $this->redirect(['view', 'id' => $model->kosten_id]);
         } else {
-            if ($model->state === $model::STATE_system) {
-                Yii::$app->session->setFlash('warning', 'Je kunt dit betalingstype niet aanpassen. Dit is een systeem type.');
-            }
             return $this->render('update', [
                 'model' => $model,
             ]);
@@ -101,32 +103,28 @@ class BetalingTypeController extends Controller
     }
 
     /**
-     * Deletes an existing BetalingType model.
+     * Deletes an existing Kosten model.
      * If deletion is successful, the browser will be redirected to the 'index' page.
      * @param integer $id
      * @return mixed
      */
     public function actionDelete($id)
     {
-        $model = $this->findModel($id);
-        if ($model->state === $model::STATE_system) {
-            Yii::$app->session->setFlash('warning', 'Je kunt dit betalingstype niet wissen. Dit is een systeem type.');
-        } else {
-            $model->delete();
-        }
+        $this->findModel($id)->delete();
+
         return $this->redirect(['index']);
     }
 
     /**
-     * Finds the BetalingType model based on its primary key value.
+     * Finds the Kosten model based on its primary key value.
      * If the model is not found, a 404 HTTP exception will be thrown.
      * @param integer $id
-     * @return BetalingType the loaded model
+     * @return Kosten the loaded model
      * @throws NotFoundHttpException if the model cannot be found
      */
     protected function findModel($id)
     {
-        if (($model = BetalingType::findOne($id)) !== null) {
+        if (($model = Kosten::findOne($id)) !== null) {
             return $model;
         } else {
             throw new NotFoundHttpException('The requested page does not exist.');

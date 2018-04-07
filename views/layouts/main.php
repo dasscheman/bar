@@ -40,6 +40,7 @@ AppAsset::register($this);
         'items' => [
             ['label' => 'Betalen', 'url' => ['/mollie/betaling']],
             ['label' => 'Overzicht', 'url' => ['/site/grafieken']],
+            ['label' => 'Voorraad', 'url' => ['/inkoop/overzicht-actueel']],
             ['label' => 'Beheerder',
                 'items' => [
                     [

@@ -66,7 +66,20 @@ use app\models\Assortiment;
     <div class="knoppen">
         <?php
         foreach ($models as $user) {
-            if(!in_array($user->id, $users)) {
+            if(!in_array($user->id, $users)) {  
+                if(!$user->limitenControleren($user->id)) {
+                    echo Html::a(
+                        $user->profile->name,
+                        [
+                            'rondje',
+                            'user_id' => $user->id,
+                            'users' => $users,
+                            'assortiment_id' => $assortiment_id],
+                        [ 'class' => 'btn-lg btn-danger namen' ]
+                    );
+                    // Na 1 maart 2018 continue
+                    continue;
+                }
                 echo Html::a(
                     $user->profile->name,
                     [

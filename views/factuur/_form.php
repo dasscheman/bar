@@ -23,7 +23,7 @@ use yii\helpers\Html;
     ]);
 
     echo $form->field($model, 'naam')->textarea();
-    echo $form->field($model, 'verzendatum')->textarea();
+    echo $form->field($model, 'verzend_datum')->textarea();
     echo $form->field($model, 'pdf')->textarea();
     echo Html::submitButton(Yii::t('rbac', 'Save'), ['class' => 'btn btn-success btn-block']);
 
