@@ -20,42 +20,40 @@ use yii\widgets\DetailView;
             <div class="panel-body">
                 <?php
                 echo $this->render('/_alert');
-                echo $this->render('/_menu');
-                echo Html::a(
-                    Yii::t('app', 'Bewerken'),
-                    [ 'update', 'id' => $model->factuur_id ],
-                    [ 'class' => 'btn btn-success' ]
-                );
-                echo Html::a(
-                    Yii::t('app', 'Delete'),
-                    [ 'delete', 'id' => $model->factuur_id ],
-                    [ 'class' => 'btn btn-danger', 'data-method'=>'post' ]
-                );
-                echo Html::a(
-                    Yii::t('app', 'Download factuur'),
-                    ['factuur/download', 'id' => $model->factuur_id],
-                    [
-                        'title' => Yii::t('app', 'Get pdf'),
-                        'class'=>'btn btn-primary',
-                        'target'=>'_blank',
-                    ]
-                ); ?>
-              
-                <table class="table">
-                    <?= DetailView::widget([
-                        'model' => $model,
-                        'attributes' => [
-                            'factuur_id',
-                            'naam',
-                            'verzend_datum',
-                            'pdf',
-                            'created_at',
-                            'created_by',
-                            'updated_at',
-                            'updated_by',
-                        ],
-                    ]) ?>
-                </table>
+                echo $this->render('/_menu'); ?>
+                <div class="view">
+                    <?php
+                    echo Html::a(
+                        Yii::t('app', 'Delete'),
+                        [ 'delete', 'id' => $model->factuur_id ],
+                        [ 'class' => 'btn btn-danger', 'data-method'=>'post' ]
+                    );
+                    echo Html::a(
+                        Yii::t('app', 'Download factuur'),
+                        ['factuur/download', 'id' => $model->factuur_id],
+                        [
+                            'title' => Yii::t('app', 'Get pdf'),
+                            'class'=>'btn btn-primary',
+                            'target'=>'_blank',
+                        ]
+                    ); ?>
+
+                    <table class="table">
+                        <?= DetailView::widget([
+                            'model' => $model,
+                            'attributes' => [
+                                'factuur_id',
+                                'naam',
+                                'verzend_datum',
+                                'pdf',
+                                'created_at',
+                                'created_by',
+                                'updated_at',
+                                'updated_by',
+                            ],
+                        ]) ?>
+                    </table>
+                </div>
             </div>
         </div>
     </div>

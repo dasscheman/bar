@@ -17,6 +17,8 @@ use app\models\User;
 use yii\helpers\ArrayHelper;
 use kartik\widgets\DatePicker;
 use app\models\BetalingType;
+use app\models\Transacties;
+
 ?>
 
 <div class="transacties-form">
@@ -47,6 +49,22 @@ use app\models\BetalingType;
             'placeholder' => Yii::t('app', 'Selecteer status betaling'),
             'id' => 'status'
         ],
+    ]);
+    
+    echo $form->field($modelTransacties, 'all_related_transactions')->widget(Select2::classname(), [
+        'name' => 'all_related_transactions',
+        'value' => $modelTransacties->all_related_transactions,
+        'id' => $modelTransacties->transacties_id,
+        'data' => $modelTransacties->getTransactionsArray(),
+        'options' => [
+            'placeholder' => 'Filter as you type ...',
+            'id' => $modelTransacties->transacties_id,
+            'class' => "form-control",
+            'multiple' => true,
+        ],
+        'pluginOptions' => [
+              'tags' => true,
+        ]
     ]);
 
     echo $form->field($modelTransacties, 'datum')->widget(DatePicker::className(), [

@@ -8,23 +8,23 @@ use yii\widgets\Pjax;
 /* @var $searchModel app\models\KostenSearch */
 /* @var $dataProvider yii\data\ActiveDataProvider */
 
-$bordered = FALSE;
-$striped = TRUE;
-$condensed = TRUE;
-$responsive = FALSE;
-$hover = TRUE;
-$pageSummary = FALSE;
-$heading = FALSE;
-$exportConfig = FALSE;
-$responsiveWrap = FALSE;
-$toolbar = FALSE;
+$bordered = false;
+$striped = true;
+$condensed = true;
+$responsive = false;
+$hover = true;
+$pageSummary = false;
+$heading = false;
+$exportConfig = false;
+$responsiveWrap = false;
+$toolbar = false;
 ?>
 
 <div class="row">
     <div class="col-md-12">
         <div class="panel panel-default">
             <div class="panel-heading">
-                <?= Html::encode('Voorraad history') ?>
+                <?= Html::encode('Algemene kosten voor bar') ?>
             </div>
             <div class="panel-body">
                 <?php echo $this->render('/_alert');
@@ -39,7 +39,7 @@ $toolbar = FALSE;
                             'attribute'=>'bon_id',
                             'format' => 'raw',
                             'value'=>function ($model) {
-                                 return Html::a($model->bon_id, ['bonnen/view', 'id' => $model->bon_id]);
+                                return Html::a($model->bon_id, ['bonnen/view', 'id' => $model->bon_id]);
                             },
                         ],
                         'omschrijving',

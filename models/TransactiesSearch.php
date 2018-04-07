@@ -13,6 +13,7 @@ use app\models\Transacties;
 class TransactiesSearch extends Transacties
 {
     public $displayname;
+    
     /**
      * @inheritdoc
      */

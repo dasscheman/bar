@@ -44,7 +44,8 @@ use kartik\money\MaskMoney;
         ],
     ]);
     echo $form->field($model, 'image_temp')->fileInput();
-    
+    echo Html::encode('Huidige bon: ' . $model->image);
+
     echo $form->field($model, 'datum')->widget(DatePicker::className(), [
         'model' => $model,
         'attribute' => 'datum',

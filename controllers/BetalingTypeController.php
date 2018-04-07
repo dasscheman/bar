@@ -66,6 +66,7 @@ class BetalingTypeController extends Controller
     {
         $model = new BetalingType();
 
+        $this->layout = 'main-fluid';
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
             return $this->redirect(['view', 'id' => $model->type_id]);
         } else {
