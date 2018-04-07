@@ -21,20 +21,25 @@ class MollieController extends TransactiesController
     public function behaviors()
     {
         $behaviors = parent::behaviors();
-        $behaviors['access']['only'][] = 'betaling';
-        $behaviors['access']['only'][] = 'webhook';
-        $behaviors['access']['only'][] = 'return-betaling';
-        $behaviors['access']['only'][] = 'automatisch-betaling-updaten';
+//        $behaviors['access']['only'][] = 'betaling';
+//        $behaviors['access']['only'][] = 'webhook';
+//        $behaviors['access']['only'][] = 'return-betaling';
+//        $behaviors['access']['only'][] = 'automatisch-betaling-updaten';
         $behaviors['access']['rules'][] =
             [
-                'allow' => TRUE,
+                'allow' => true,
                 'actions' => ['webhook', 'betaling', 'return-betaling', 'automatisch-betaling-updaten'],
                 'roles' =>  ['admin', 'beheerder', 'onlinebetalen'],
             ];
-        
+        $behaviors['access']['rules'][] =
+            [
+                'allow' => true,
+                'actions' => ['webhook'],
+                'roles' =>  ['?'],
+            ];
         return $behaviors;
     }
-
+   
     public function beforeAction($action)
     {
         if ($action->id === 'webhook') {
@@ -57,7 +62,7 @@ class MollieController extends TransactiesController
             $model->type_id = BetalingType::getIdealId();
             $model->datum = date('Y-m-d H:i:s');
             $model->status = Transacties::STATUS_ingevoerd;
-            if($model->save()) {
+            if ($model->save()) {
                 $model->setParameters();
                 if ($model->automatische_betaling) {
                     $model->createUser();
@@ -75,7 +80,7 @@ class MollieController extends TransactiesController
             }
         }
 
-        if(isset(Yii::$app->user->id)) {
+        if (isset(Yii::$app->user->id)) {
             $user = User::findOne(Yii::$app->user->id);
         }
 
@@ -97,8 +102,6 @@ class MollieController extends TransactiesController
     public function actionWebhook()
     {
         $mollie = new Mollie;
-
-
         /*
          * Retrieve the payment's current state.
          */
@@ -108,8 +111,7 @@ class MollieController extends TransactiesController
         if ($payment->id !== $model->mollie_id) {
             throw new NotFoundHttpException('The requested id does not correspond the database.');
         }
-        try
-        {
+        try {
             /*
              * Update the transactie in the database.
              */
@@ -117,72 +119,66 @@ class MollieController extends TransactiesController
                 case 'open':
                     $model->mollie_status = Transacties::MOLLIE_STATUS_open;
                     $model->status = Transacties::STATUS_ingevoerd;
-                    $model->factuur_id = NULL;
+                    $model->factuur_id = null;
                     break;
                 case 'cancelled':
                     $model->mollie_status = Transacties::MOLLIE_STATUS_cancelled;
                     $model->status = Transacties::STATUS_geannuleerd;
-                    $model->factuur_id = NULL;
+                    $model->factuur_id = null;
                     break;
                 case 'expired':
                     $model->mollie_status = Transacties::MOLLIE_STATUS_expired;
                     $model->status = Transacties::STATUS_ongeldig;
-                    $model->factuur_id = NULL;
+                    $model->factuur_id = null;
                     break;
                 case 'failed':
                     $model->mollie_status = Transacties::MOLLIE_STATUS_failed;
                     $model->status = Transacties::STATUS_ongeldig;
-                    $model->factuur_id = NULL;
+                    $model->factuur_id = null;
                     break;
                 case 'pending':
                     $model->mollie_status = Transacties::MOLLIE_STATUS_pending;
                     $model->status = Transacties::STATUS_ingevoerd;
-                    $model->factuur_id = NULL;
+                    $model->factuur_id = null;
                     break;
                 case 'paid':
                     $model->mollie_status = Transacties::MOLLIE_STATUS_paid;
                     $model->status = Transacties::STATUS_gecontroleerd;
-                    $model->factuur_id = NULL;
+                    $model->factuur_id = null;
                     break;
                 case 'refunded':
                     $model->mollie_status = Transacties::MOLLIE_STATUS_refunded;
                     $model->status = Transacties::STATUS_teruggestord;
-                    $model->factuur_id = NULL;
+                    $model->factuur_id = null;
                     break;
             }
             $model->save();
-            if ($payment->isPaid() === TRUE)
-            {
-
+            if ($payment->isPaid() === true) {
                 $user = User::findOne($model->transacties_user_id);
                 $message = Yii::$app->mailer->compose('mail_ontvangen_betaling', [
                         'user' => $user,
                     ])
                     ->setFrom('bar@debison.nl')
                     ->setTo($user->email)
-                    ->setBcc('daan@biologenkantoor.nl')
                     ->setSubject('Online betaling Bison bar');
-                if(!empty($user->profile->public_email)) {
+                if (!empty($user->profile->public_email)) {
                     $message->setCc($user->profile->public_email);
                 }
                 $message->send();
-            } elseif ($payment->isOpen() === FALSE) {
+            } elseif ($payment->isOpen() === false) {
                 $user = User::findOne($model->transacties_user_id);
                 $message = Yii::$app->mailer->compose('mail_mislukte_betaling', [
                         'user' => $user,
                     ])
                     ->setFrom('bar@debison.nl')
                     ->setTo($user->email)
-                    ->setBcc('daan@biologenkantoor.nl')
                     ->setSubject('Online betaling Bison bar');
-                if(!empty($user->profile->public_email)) {
+                if (!empty($user->profile->public_email)) {
                     $message->setCc($user->profile->public_email);
                 }
                 $message->send();
             }
-        }
-        catch (Mollie_API_Exception $e)
-        {
+        } catch (Mollie_API_Exception $e) {
             echo "API call failed: " . htmlspecialchars($e->getMessage());
         }
     }
@@ -193,7 +189,7 @@ class MollieController extends TransactiesController
         // en de status gezet is.
         sleep(3);
         $transactie = Transacties::findOne(Yii::$app->request->get('transacties_id'));
-        if(isset($transactie->mollie_status)) {
+        if (isset($transactie->mollie_status)) {
             switch ($transactie->mollie_status) {
                 case Transacties::MOLLIE_STATUS_open:
                     Yii::$app->session->setFlash('warning', 'Je betaling wordt verwerkt.');
@@ -220,7 +216,7 @@ class MollieController extends TransactiesController
             Yii::$app->session->setFlash('warning', 'Ongeldige transactie, neem contact op met de beheerder.');
         }
         if (!isset(Yii::$app->user->id)) {
-             Yii::$app->session->setFlash('primary', 'Log in om je overzicht te bekijken.');
+            Yii::$app->session->setFlash('primary', 'Log in om je overzicht te bekijken.');
         }
         return $this->render('/user/overzicht', ['model' => User::findOne(Yii::$app->user->id)]);
     }
@@ -230,16 +226,16 @@ class MollieController extends TransactiesController
         $user = new User;
 
         if ($user->load(Yii::$app->request->post())) {
-            if(Yii::$app->request->get('actie') === 'annuleren') {
-                $user->automatische_betaling = FALSE;
+            if (Yii::$app->request->get('actie') === 'annuleren') {
+                $user->automatische_betaling = false;
                 $user->mollie_customer_id = '';
-                $user->mollie_bedrag = NULL;
+                $user->mollie_bedrag = null;
             }
             if ($user->save()) {
-                if(Yii::$app->request->get('actie') === 'annuleren') {
+                if (Yii::$app->request->get('actie') === 'annuleren') {
                     Yii::$app->session->setFlash('success', 'Automatisch ophogen is stop gezet.');
                 }
-                if(Yii::$app->request->get('actie') === 'annuleren') {
+                if (Yii::$app->request->get('actie') === 'annuleren') {
                     Yii::$app->session->setFlash('success', 'Wijzeging in bedrag is opgeslagen.');
                 }
             } else {
@@ -252,7 +248,7 @@ class MollieController extends TransactiesController
             }
             return $this->render('/user/overzicht', ['model' => User::findOne(Yii::$app->user->id)]);
         }
-        if(isset(Yii::$app->user->id)) {
+        if (isset(Yii::$app->user->id)) {
             $model = User::findOne(Yii::$app->user->id);
         }
 
@@ -267,6 +263,5 @@ class MollieController extends TransactiesController
             'model' => $model,
             'actie' => 'update'
         ]);
-
     }
 }

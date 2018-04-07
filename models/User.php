@@ -9,19 +9,23 @@ use dektrium\user\models\User as BaseUser;
 /**
  * This is the model class for table "user".
  *
- * @property integer $id
+ * @property int $id
  * @property string $username
  * @property string $email
  * @property string $password_hash
  * @property string $auth_key
- * @property integer $confirmed_at
+ * @property int $confirmed_at
  * @property string $unconfirmed_email
- * @property integer $blocked_at
+ * @property int $blocked_at
  * @property string $registration_ip
- * @property integer $created_at
- * @property integer $updated_at
- * @property integer $flags
- * @property integer $last_login_at
+ * @property int $created_at
+ * @property int $updated_at
+ * @property int $flags
+ * @property int $last_login_at
+ * @property string $pay_key
+ * @property int $automatische_betaling
+ * @property string $mollie_customer_id
+ * @property string $mollie_bedrag
  *
  * @property Assortiment[] $assortiments
  * @property Assortiment[] $assortiments0
@@ -29,6 +33,10 @@ use dektrium\user\models\User as BaseUser;
  * @property BetalingType[] $betalingTypes0
  * @property Bonnen[] $bonnens
  * @property Bonnen[] $bonnens0
+ * @property Bonnen[] $bonnens1
+ * @property Factuur[] $factuurs
+ * @property Factuur[] $factuurs0
+ * @property Factuur[] $factuurs1
  * @property Favorieten[] $favorietens
  * @property Favorieten[] $favorietens0
  * @property Favorieten[] $favorietens1
@@ -37,10 +45,14 @@ use dektrium\user\models\User as BaseUser;
  * @property FavorietenLijsten[] $favorietenLijstens1
  * @property Inkoop[] $inkoops
  * @property Inkoop[] $inkoops0
- * @property Inkoop[] $inkoops1
+ * @property Inkoop[] $inkoops
+ * @property Kosten[] $kostens
+ * @property Kosten[] $kostens0
  * @property Prijslijst[] $prijslijsts
  * @property Prijslijst[] $prijslijsts0
  * @property Profile $profile
+ * @property RelatedTransacties[] $relatedTransacties
+ * @property RelatedTransacties[] $relatedTransacties0
  * @property SocialAccount[] $socialAccounts
  * @property Token[] $tokens
  * @property Transacties[] $transacties
@@ -72,10 +84,12 @@ class User extends BaseUser
         return [
             [['username', 'email', 'password_hash', 'auth_key', 'created_at', 'updated_at'], 'required'],
             [['confirmed_at', 'blocked_at', 'created_at', 'updated_at', 'flags', 'last_login_at'], 'integer'],
-            [['username', 'email', 'unconfirmed_email'], 'string', 'max' => 255],
+            [['mollie_bedrag'], 'number'],
+            [['username', 'email', 'unconfirmed_email', 'pay_key', 'mollie_customer_id'], 'string', 'max' => 255],
             [['password_hash'], 'string', 'max' => 60],
             [['auth_key'], 'string', 'max' => 32],
             [['registration_ip'], 'string', 'max' => 45],
+            [['automatische_betaling'], 'string', 'max' => 1],
             [['username'], 'unique'],
             [['email'], 'unique'],
         ];
@@ -106,7 +120,11 @@ class User extends BaseUser
             'sumOldAfTransactiesUser' => 'Oud betaling af',
             'sumNewTurvenUsers' => 'New turven',
             'sumOldTurvenUsers' => 'Oud turven',
-            'openstaand' => 'Openstaand bedrag',
+            'balans' => 'Openstaand bedrag',
+            'pay_key' => 'Pay Key',
+            'automatische_betaling' => 'Automatische Betaling',
+            'mollie_customer_id' => 'Mollie Customer ID',
+            'mollie_bedrag' => 'Mollie Bedrag',
         ];
     }
 
@@ -151,6 +169,39 @@ class User extends BaseUser
     {
         return $this->hasMany(Bonnen::className(), ['updated_by' => 'id']);
     }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getBonnens1()
+    {
+        return $this->hasMany(Bonnen::className(), ['inkoper_user_id' => 'id']);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getFactuurs()
+    {
+        return $this->hasMany(Factuur::className(), ['created_by' => 'id']);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getFactuurs0()
+    {
+        return $this->hasMany(Factuur::className(), ['ontvanger' => 'id']);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getFactuurs1()
+    {
+        return $this->hasMany(Factuur::className(), ['updated_by' => 'id']);
+    }
+
     /**
      * @return \yii\db\ActiveQuery
      */
@@ -214,6 +265,22 @@ class User extends BaseUser
     {
         return $this->hasMany(Inkoop::className(), ['inkoper_user_id' => 'id']);
     }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getKostens()
+    {
+        return $this->hasMany(Kosten::className(), ['created_by' => 'id']);
+    }
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getKostens0()
+    {
+        return $this->hasMany(Kosten::className(), ['updated_by' => 'id']);
+    }
+    
     /**
      * @return \yii\db\ActiveQuery
      */
@@ -237,6 +304,22 @@ class User extends BaseUser
         return $this->hasOne(Profile::className(), ['user_id' => 'id']);
     }
 
+    /**
+    * @return \yii\db\ActiveQuery
+    */
+    public function getRelatedTransacties()
+    {
+        return $this->hasMany(RelatedTransacties::className(), ['updated_by' => 'id']);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getRelatedTransacties0()
+    {
+        return $this->hasMany(RelatedTransacties::className(), ['created_by' => 'id']);
+    }
+ 
     /**
      * @return \yii\db\ActiveQuery
      */
@@ -483,14 +566,6 @@ class User extends BaseUser
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getFactuurs0()
-    {
-        return $this->hasMany(Factuur::className(), ['updated_by' => 'id']);
-    }
-
-    /**
-     * @return \yii\db\ActiveQuery
-     */
     public function getPrijzens()
     {
         return $this->hasMany(Prijzen::className(), ['created_by' => 'id']);
@@ -590,8 +665,7 @@ class User extends BaseUser
         if ($user->profile->limit_hard !== null) {
             $limiet = $user->profile->limit_hard;
         }
-
-        if ($user->Openstaand < $limiet) {
+        if ($user->Balans < $limiet) {
             return false;
         }
 

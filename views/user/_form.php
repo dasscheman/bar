@@ -13,7 +13,7 @@ use yii\helpers\Html;
 <div class="knoppen">
     <?php
     foreach ($models as $user) {
-        if(!$user->limitenControleren($user->id)) {
+        if (!$user->limitenControleren($user->id)) {
             echo Html::a(
                 $user->profile->name,
                 [ 'barinvoer', 'user_id' => $user->id ],

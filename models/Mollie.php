@@ -19,12 +19,16 @@ class Mollie extends Transacties
     public $parameters;
     public $automatische_betaling;
 
-    function __construct()
+    public function __construct()
     {
         parent::__construct();
         $this->mollie = new Mollie_API_Client;
-        $this->mollie->setApiKey( Yii::$app->params['mollie']['test']);
 
+        if (YII_ENV === 'prod') {
+            $this->mollie->setApiKey(Yii::$app->params['mollie']['live']);
+        } else {
+            $this->mollie->setApiKey(Yii::$app->params['mollie']['test']);
+        }
     }
 
     public function scenarios()
@@ -57,34 +61,33 @@ class Mollie extends Transacties
         ];
     }
 
-    public function getIssuersOptions(){
+    public function getIssuersOptions()
+    {
         $issuers = $this->mollie->issuers->all();
         $list = [];
-		foreach ($issuers as $issuer)
-		{
-			if ($issuer->method == Mollie_API_Object_Method::IDEAL)
-			{
-				$list[] = $issuer;
-			}
-		}
+        foreach ($issuers as $issuer) {
+            if ($issuer->method == Mollie_API_Object_Method::IDEAL) {
+                $list[] = $issuer;
+            }
+        }
         return ArrayHelper::map($list, 'id', 'name');
     }
 
-    public function automatischOphogen() {
+    public function automatischOphogen()
+    {
         $mollie = new Mollie;
         $users = User::find()
             ->where('ISNULL(blocked_at)')
             ->andWhere('automatische_betaling = TRUE')
-            ->andWhere(['not', ['mollie_customer_id' => NULL]])
+            ->andWhere(['not', ['mollie_customer_id' => null]])
             ->all();
         $count = 0;
-        foreach ($users as $user)
-        {
-            // Wanneer een user een pending traansactie heeft, dan gaan we niet
+        foreach ($users as $user) {
+            // Wanneer een user een pending transactie heeft, dan gaan we niet
             // een nieuwe transactie opstarten.
-            if($user->getBalans() > 0 ||
-               !$mollie->checkUserMandates($user->mollie_customer_id ||
-               $mollie->pendingTransactionsExists($user->id)) ) {
+            if ($user->getBalans() > 0 ||
+                !$mollie->checkUserMandates($user->mollie_customer_id ||
+                $mollie->pendingTransactionsExists($user->id))) {
                 continue;
             }
             $mollie->transacties_user_id = $user->id;
@@ -95,8 +98,9 @@ class Mollie extends Transacties
             $mollie->datum = date("Y-m-d");
             if (!$mollie->save()) {
                 foreach ($mollie->errors as $key => $error) {
-                    Yii::$app->session->setFlash('warning', Yii::t('app', 'Fout met opslaan: ' . $key . ':' . $error[0]));
+                    echo 'Fout met opslaan: ' . $key . ':' . $error[0];
                 }
+                continue;
             }
 
             $mollie['parameters'] = [
@@ -115,24 +119,27 @@ class Mollie extends Transacties
         return $count;
     }
 
-    public function checkUserMandates($mollie_user_id){
+    public function checkUserMandates($mollie_user_id)
+    {
         $mandates = $this->mollie->customers_mandates->withParentId($mollie_user_id)->all();
         foreach ($mandates->data as $key => $mandate) {
-            if($mandate->status === 'valid') {
-                return TRUE;
+            if ($mandate->status === 'valid') {
+                return true;
             }
         }
-        return FALSE;
+        return false;
     }
 
-    public function pendingTransactionsExists($user_id){
+    public function pendingTransactionsExists($user_id)
+    {
         return Transacties::findOne()
             ->where(['transacties_user_id' => $user_id])
             ->andWhere(['mollie_status' => self::MOLLIE_STATUS_pending])
             ->exists();
     }
 
-    public function setParameters() {
+    public function setParameters()
+    {
         /*
          * Payment parameters:
          *   amount        Amount in EUROs. This example creates a € 27.50 payment.
@@ -147,25 +154,33 @@ class Mollie extends Transacties
             "amount"       => $this->bedrag,
             "method"       => Mollie_API_Object_Method::IDEAL,
             "description"  => $this->omschrijving,
-            "redirectUrl"  => "https://popupbar.biologenkantoor.nl/index.php?r=mollie/return-betaling&transacties_id={$this->transacties_id}",
-            "webhookUrl"   => "https://popupbar.biologenkantoor.nl/index.php?r=mollie/webhook",
-//                        "redirectUrl"  => "https://bar.debison.nl/index.php?r=mollie/return?transacties_id={$model->transacties_id}",
-//                        "webhookUrl"   => "https://bar.debison.nl/index.php?r=mollie/webhook",
             "metadata"     => [
                 "transacties_id" => $this->transacties_id,
             ],
-            "issuer"       => !empty($this->issuer) ? $this->issuer : NULL
+            "issuer"       => !empty($this->issuer) ? $this->issuer : null
         ];
+            
+        if (YII_ENV === 'prod') {
+            $this->parameters = [
+                "redirectUrl"  => "https://bar.debison.nl/index.php?r=mollie/return-betaling&transacties_id={$model->transacties_id}",
+                "webhookUrl"   => "https://bar.debison.nl/index.php?r=mollie/webhook"
+            ];
+        } else {
+            $this->parameters = [
+                "redirectUrl"  => "https://popupbar.biologenkantoor.nl/index.php?r=mollie/return-betaling&transacties_id={$this->transacties_id}",
+                "webhookUrl"   => "https://popupbar.biologenkantoor.nl/index.php?r=mollie/webhook"
+            ];
+        }
     }
     
-    public  function createUser() {
-        if(!isset($this->transacties_user_id)) {
+    public function createUser()
+    {
+        if (!isset($this->transacties_user_id)) {
             throw new NotFoundHttpException('Je bent niet ingelogt of de link uit je email is niet meer geldig.');
         }
 
         $user = User::findOne($this->transacties_user_id);
-        try
-        {
+        try {
             $customer = $this->mollie->customers->create([
                 "name"  => $user->username,
                 "email" => $user->email,
@@ -173,21 +188,18 @@ class Mollie extends Transacties
 
             $this->parameters['customerId'] = $customer->id;
             $this->parameters['recurringType'] = 'first';
-            $user->automatische_betaling = TRUE;
+            $user->automatische_betaling = true;
             $user->mollie_customer_id = $customer->id;
             $user->mollie_bedrag = $this->bedrag;
             $user->save();
-        }
-        catch (Mollie_API_Exception $e)
-        {
+        } catch (Mollie_API_Exception $e) {
             echo "API call failed: " . htmlspecialchars($e->getMessage());
         }
     }
 
     public function createPayment()
     {
-        try
-        {
+        try {
             $payment = $this->mollie->payments->create($this->parameters);
 
             /*
@@ -195,20 +207,17 @@ class Mollie extends Transacties
              */
             $this->setRetrievedMollieStatus($payment->status);
             $this->mollie_id = $payment->id;
-            if(!$this->save()) {
+            if (!$this->save()) {
                 foreach ($this->errors as $key => $error) {
-                    Yii::$app->session->setFlash('warning', Yii::t('app', 'Fout met opslaan: ' . $key . ':' . $error[0]));
+                    echo 'Fout met opslaan: ' . $key . ':' . $error[0];
                 }
-                return FALSE;
+                return false;
             }
             /*
              * Send the customer off to complete the payment.
              */
             return $payment->getPaymentUrl();
-
-        }
-        catch (Mollie_API_Exception $e)
-        {
+        } catch (Mollie_API_Exception $e) {
             echo "API call failed: " . htmlspecialchars($e->getMessage());
         }
     }

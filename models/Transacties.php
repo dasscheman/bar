@@ -22,9 +22,9 @@ use yii\helpers\ArrayHelper;
  * @property int $created_by
  * @property string $updated_at
  * @property int $updated_by
+ * @property int $mollie_status
+ * @property string $mollie_id
  *
- * @property Inkoop[] $inkoops
- * @property Factuur $factuur
  * @property RelatedTransacties[] $relatedTransacties
  * @property RelatedTransacties[] $relatedTransacties0
  * @property Transacties[] $parentTransacties
@@ -32,6 +32,7 @@ use yii\helpers\ArrayHelper;
  * @property BetalingType $type
  * @property Bonnen $bon
  * @property User $createdBy
+ * @property Factuur $factuur
  * @property User $updatedBy
  * @property User $transactiesUser
  */
@@ -61,11 +62,11 @@ class Transacties extends BarActiveRecord
     public function rules()
     {
         return [
-            [['transacties_user_id', 'omschrijving', 'bedrag', 'type_id', 'status', 'datum'], 'required'],
-            [['transacties_user_id', 'bon_id', 'factuur_id', 'type_id', 'status', 'mollie_status', 'created_by', 'updated_by'], 'integer'],
+            [['transacties_user_id', 'bedrag', 'type_id', 'status', 'datum'], 'required'],
+            [['transacties_user_id', 'bon_id', 'factuur_id', 'type_id', 'status', 'created_by', 'updated_by', 'mollie_status'], 'integer'],
             [['bedrag'], 'number'],
             [['datum', 'created_at', 'updated_at'], 'safe'],
-            [['omschrijving'], 'string', 'max' => 255],
+            [['omschrijving', 'mollie_id'], 'string', 'max' => 255],
             [['factuur_id'], 'exist', 'skipOnError' => true, 'targetClass' => Factuur::className(), 'targetAttribute' => ['factuur_id' => 'factuur_id']],
             [['type_id'], 'exist', 'skipOnError' => true, 'targetClass' => BetalingType::className(), 'targetAttribute' => ['type_id' => 'type_id']],
             [['bon_id'], 'exist', 'skipOnError' => true, 'targetClass' => Bonnen::className(), 'targetAttribute' => ['bon_id' => 'bon_id']],
@@ -90,12 +91,13 @@ class Transacties extends BarActiveRecord
             'type_id' => 'Type ID',
             'bon_id' => 'Bon ID',
             'status' => 'Status',
-            'mollie_status' => 'Status',
             'datum' => 'Datum',
             'created_at' => 'Created At',
             'created_by' => 'Created By',
             'updated_at' => 'Updated At',
             'updated_by' => 'Updated By',
+            'mollie_status' => 'Mollie Status',
+            'mollie_id' => 'Mollie ID',
         ];
     }
 

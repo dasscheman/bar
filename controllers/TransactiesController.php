@@ -29,7 +29,7 @@ class TransactiesController extends Controller
                 'class' => VerbFilter::className(),
                     'actions' => [
                         'webhook' => ['POST', 'GET'],
-                    'delete' => ['POST'],
+                        'delete' => ['POST'],
                 ],
             ],
             'access' => [
@@ -38,7 +38,7 @@ class TransactiesController extends Controller
                     'class' => AccessRule::className(),
                 ],
                 // We will override the default rule config with the new AccessRule class
-                'only' => ['index', 'view', 'create', 'create-declaraties', 'update', 'delete'],
+//                'only' => ['index', 'view', 'create', 'create-declaraties', 'update', 'delete'],
                 'rules' => [
                     [
                         'allow' => true,
