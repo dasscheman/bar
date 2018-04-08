@@ -8,6 +8,7 @@ use app\controllers\TransactiesController;
 use app\models\Mollie;
 use app\models\BetalingType;
 use app\models\User;
+use app\models\Factuur;
 use yii\web\NotFoundHttpException;
 
 /**
