@@ -9,6 +9,7 @@ use app\models\Assortiment;
 use app\models\AssortimentSearch;
 use app\models\Turven;
 use app\models\TurvenSearch;
+use app\models\Transacties;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
@@ -309,8 +310,13 @@ class TurvenController extends Controller
         $factuur = $model->getFactuur()->one();
 
         if (empty($factuur)) {
-            if (!$model->delete()) {
-                Yii::$app->session->setFlash('warning', Yii::t('app', 'Je kunt deze turf niet verwijderen.'));
+            $model->deleted_at = Yii::$app->setupdatetime->storeFormat(time(), 'datetime');
+            if (!$model->save()) {
+                foreach ($model->errors as $key => $error) {
+                    Yii::$app->session->setFlash('warning', Yii::t('app', 'Fout met opslaan: ' . $key . ':' . $error[0]));
+                }
+
+                return $this->redirect(['index']);
             }
             return $this->redirect(['index']);
         }
@@ -321,8 +327,11 @@ class TurvenController extends Controller
                 $transactie->status = Transacties::STATUS_herberekend;
                 $transactie->factuur_id = null;
                 if (!$transactie->save()) {
+                    foreach ($transactie->errors as $key => $error) {
+                        Yii::$app->session->setFlash('warning', Yii::t('app', 'Fout met opslaan: ' . $key . ':' . $error[0]));
+                    }
                     $dbTransaction->rollBack();
-                    return false;
+                    return $this->redirect(['index']);
                 }
             }
             foreach ($factuur->getTurvens()->all() as $turf) {
@@ -334,17 +343,35 @@ class TurvenController extends Controller
                 $turf->status = Turven::STATUS_herberekend;
                 $turf->factuur_id = null;
                 if (!$turf->save()) {
+                    foreach ($turf->errors as $key => $error) {
+                        Yii::$app->session->setFlash('warning', Yii::t('app', 'Fout met opslaan: ' . $key . ':' . $error[0]));
+                    }
                     $dbTransaction->rollBack();
-                    return false;
+                    return $this->redirect(['index']);
                 }
             }
-            if (!$factuur->delete() || $model->delete()) {
+
+            $factuur->deleted_at = Yii::$app->setupdatetime->storeFormat(time(), 'datetime');
+            if (!$factuur->save()) {
+                foreach ($factuur->errors as $key => $error) {
+                    Yii::$app->session->setFlash('warning', Yii::t('app', 'Fout met opslaan: ' . $key . ':' . $error[0]));
+                }
+
                 $dbTransaction->rollBack();
-                return false;
+                return $this->redirect(['index']);
+            }
+            $model->deleted_at = Yii::$app->setupdatetime->storeFormat(time(), 'datetime');
+            if (!$model->save()) {
+                foreach ($model->errors as $key => $error) {
+                    Yii::$app->session->setFlash('warning', Yii::t('app', 'Fout met opslaan: ' . $key . ':' . $error[0]));
+                }
+
+                $dbTransaction->rollBack();
+                return $this->redirect(['index']);
             }
             $dbTransaction->commit();
         } catch (\Exception $e) {
-            Yii::$app->session->setFlash('warning', Yii::t('app', 'Je kunt deze turven niet verwijderen.'));
+            Yii::$app->session->setFlash('warning', Yii::t('app', 'Je kunt deze turven niet verwijderen: ') . $e);
         }
         return $this->redirect(['index']);
     }

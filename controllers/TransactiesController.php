@@ -240,7 +240,9 @@ class TransactiesController extends Controller
                         return $this->redirect(['index']);
                     }
                 }
-                if (!$model->delete()) {
+
+                $model->deleted_at = Yii::$app->setupdatetime->storeFormat(time(), 'datetime');
+                if (!$model->save()) {
                     $dbTransaction->rollBack();
                     foreach ($model->errors as $key => $error) {
                         Yii::$app->session->setFlash('warning', Yii::t('app', 'Fout met opslaan: ' . $key . ':' . $error[0]));
@@ -299,14 +301,17 @@ class TransactiesController extends Controller
                 }
             }
 
-            if (!$factuur->delete()) {
+            $factuur->deleted_at = Yii::$app->setupdatetime->storeFormat(time(), 'datetime');
+            if (!$factuur->save()) {
                 $dbTransaction->rollBack();
                 foreach ($factuur->errors as $key => $error) {
                     Yii::$app->session->setFlash('warning', Yii::t('app', 'Fout met opslaan: ' . $key . ':' . $error[0]));
                 }
                 return $this->redirect(['index']);
             }
-            if (!$model->delete()) {
+
+            $model->deleted_at = Yii::$app->setupdatetime->storeFormat(time(), 'datetime');
+            if (!$model->save()) {
                 $dbTransaction->rollBack();
                 foreach ($model->errors as $key => $error) {
                     Yii::$app->session->setFlash('warning', Yii::t('app', 'Fout met opslaan: ' . $key . ':' . $error[0]));

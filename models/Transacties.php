@@ -24,6 +24,7 @@ use yii\helpers\ArrayHelper;
  * @property int $updated_by
  * @property int $mollie_status
  * @property string $mollie_id
+ * @property string $deleted_at
  *
  * @property RelatedTransacties[] $relatedTransacties
  * @property RelatedTransacties[] $relatedTransacties0
@@ -65,7 +66,7 @@ class Transacties extends BarActiveRecord
             [['transacties_user_id', 'bedrag', 'type_id', 'status', 'datum'], 'required'],
             [['transacties_user_id', 'bon_id', 'factuur_id', 'type_id', 'status', 'created_by', 'updated_by', 'mollie_status'], 'integer'],
             [['bedrag'], 'number'],
-            [['datum', 'created_at', 'updated_at'], 'safe'],
+            [['datum', 'created_at', 'updated_at', 'deleted_at'], 'safe'],
             [['omschrijving', 'mollie_id'], 'string', 'max' => 255],
             [['factuur_id'], 'exist', 'skipOnError' => true, 'targetClass' => Factuur::className(), 'targetAttribute' => ['factuur_id' => 'factuur_id']],
             [['type_id'], 'exist', 'skipOnError' => true, 'targetClass' => BetalingType::className(), 'targetAttribute' => ['type_id' => 'type_id']],
@@ -98,6 +99,7 @@ class Transacties extends BarActiveRecord
             'updated_by' => 'Updated By',
             'mollie_status' => 'Mollie Status',
             'mollie_id' => 'Mollie ID',
+            'deleted_at' => 'Deleted At',
         ];
     }
 

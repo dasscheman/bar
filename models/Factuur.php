@@ -17,6 +17,7 @@ use app\models\BarActiveRecord;
  * @property integer $created_by
  * @property string $updated_at
  * @property integer $updated_by
+ * @property string $deleted_at
  *
  * @property User $createdBy
  * @property User $ontvanger
@@ -41,7 +42,7 @@ class Factuur extends BarActiveRecord
     {
         return [
             [['naam', 'pdf'], 'required'],
-            [['verzend_datum', 'created_at', 'updated_at'], 'safe'],
+            [['verzend_datum', 'created_at', 'updated_at', 'deleted_at'], 'safe'],
             [['ontvanger', 'created_by', 'updated_by'], 'integer'],
             [['naam', 'pdf'], 'string', 'max' => 255],
             [['ontvanger'], 'exist', 'skipOnError' => true, 'targetClass' => User::className(), 'targetAttribute' => ['ontvanger' => 'id']],
@@ -64,6 +65,7 @@ class Factuur extends BarActiveRecord
             'created_by' => 'Created By',
             'updated_at' => 'Updated At',
             'updated_by' => 'Updated By',
+            'deleted_at' => 'Deleted At',
         ];
     }
 
@@ -299,8 +301,8 @@ class Factuur extends BarActiveRecord
                     return false;
                 }
             }
-
-            if (!$model->delete()) {
+            $model->deleted_at = Yii::$app->setupdatetime->storeFormat(time(), 'datetime');
+            if (!$model->save()) {
                 $dbTransaction->rollBack();
                 foreach ($factuur->errors as $key => $error) {
                     Yii::$app->session->setFlash('warning', Yii::t('app', 'Fout met opslaan: ' . $key . ':' . $error[0]));

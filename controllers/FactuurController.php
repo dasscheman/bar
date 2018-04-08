@@ -226,26 +226,35 @@ class FactuurController extends Controller
                 $transactie->status = Transacties::STATUS_herberekend;
                 $transactie->factuur_id = null;
                 if (!$transactie->save()) {
+                    foreach ($transactie->errors as $key => $error) {
+                        Yii::$app->session->setFlash('warning', Yii::t('app', 'Fout met opslaan: ' . $key . ':' . $error[0]));
+                    }
                     $dbTransaction->rollBack();
-                    return false;
+                    return $this->redirect(['index']);
                 }
             }
             foreach ($factuur->getTurvens()->all() as $turf) {
                 $turf->status = Turven::STATUS_herberekend;
                 $turf->factuur_id = null;
                 if (!$turf->save()) {
+                    foreach ($turf->errors as $key => $error) {
+                        Yii::$app->session->setFlash('warning', Yii::t('app', 'Fout met opslaan: ' . $key . ':' . $error[0]));
+                    }
                     $dbTransaction->rollBack();
-                    return false;
+                    return $this->redirect(['index']);
                 }
             }
-            if (!$factuur->delete()) {
+            $factuur->deleted_at = Yii::$app->setupdatetime->storeFormat(time(), 'datetime');
+            if (!$factuur->save()) {
+                foreach ($factuur->errors as $key => $error) {
+                    Yii::$app->session->setFlash('warning', Yii::t('app', 'Fout met opslaan: ' . $key . ':' . $error[0]));
+                }
                 $dbTransaction->rollBack();
-                return false;
+                return $this->redirect(['index']);
             }
             $dbTransaction->commit();
-            unlink($filename);
         } catch (\Exception $e) {
-            Yii::$app->session->setFlash('warning', Yii::t('app', 'Je kunt deze factuur niet verwijderen.'));
+            Yii::$app->session->setFlash('info', Yii::t('app', 'Je kunt deze factuur niet verwijderen: ' .  $e));
         }
         return $this->redirect(['index']);
     }

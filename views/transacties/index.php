@@ -82,7 +82,7 @@ $toolbar = false;
                         ],
                         'mollie_status' => [
                             'attribute' => 'mollie_status',
-                            'value' => function($model){
+                            'value' => function ($model) {
                                 return $model->getMollieStatusText();
                             },
                         ],
@@ -121,11 +121,20 @@ $toolbar = false;
                                 return empty($model->factuur_id)?'':Html::a('Factuur ' . $model->factuur_id, ['factuur/view', 'id' => $model->factuur_id]);
                             },
                          ],
+                        'deleted_at',
                         [
                             'class' => 'yii\grid\ActionColumn',
                             'header'=>'Actions',
                             'template' => '{update} {view} {delete}',
                             'headerOptions' => ['style' => 'width:8%'],
+                            'visibleButtons' => [
+                                'delete' => function ($model, $key, $index) {
+                                    if ($model->deleted_at === null) {
+                                        return true;
+                                    }
+                                    return false;
+                                },
+                            ],
                         ],
                     ],
 

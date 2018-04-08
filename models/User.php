@@ -363,6 +363,7 @@ class User extends BaseUser
         return $this->hasMany(Transacties::className(), ['transacties_user_id' => 'id'])
             ->where('transacties.status =:status_gecontroleerd OR transacties.status =:status_herberekend')
             ->andWhere(['in', 'transacties.type_id', $ids])
+            ->andWhere('ISNULL(deleted_at)')
             ->params([
                 ':status_gecontroleerd' =>Transacties::STATUS_gecontroleerd,
                 ':status_herberekend' =>Transacties::STATUS_herberekend
@@ -380,6 +381,7 @@ class User extends BaseUser
         return $this->hasMany(Transacties::className(), ['transacties_user_id' => 'id'])
             ->where('transacties.status =:status_gecontroleerd OR transacties.status =:status_herberekend')
             ->andWhere(['in', 'transacties.type_id', $ids])
+            ->andWhere('ISNULL(deleted_at)')
             ->params([
                 ':status_gecontroleerd' =>Transacties::STATUS_gecontroleerd,
                 ':status_herberekend' =>Transacties::STATUS_herberekend
@@ -400,6 +402,7 @@ class User extends BaseUser
         ];
         return $this->hasMany(Transacties::className(), ['transacties_user_id' => 'id'])
             ->Where(['in', 'transacties.status', $status])
+            ->andWhere('ISNULL(deleted_at)')
             ->andWhere('ISNULL(factuur_id)');
     }
 
@@ -414,6 +417,7 @@ class User extends BaseUser
         return $this->hasMany(Transacties::className(), ['transacties_user_id' => 'id'])
             ->where('transacties.status =:status_gecontroleerd OR transacties.status =:status_herberekend')
             ->andWhere(['in', 'transacties.type_id', $ids])
+            ->andWhere('ISNULL(deleted_at)')
             ->params([
                 ':status_gecontroleerd' =>Transacties::STATUS_gecontroleerd,
                 ':status_herberekend' =>Transacties::STATUS_herberekend
@@ -432,6 +436,7 @@ class User extends BaseUser
         return $this->hasMany(Transacties::className(), ['transacties_user_id' => 'id'])
             ->where('transacties.status =:status_gecontroleerd OR transacties.status =:status_herberekend')
             ->andWhere(['in', 'transacties.type_id', $ids])
+            ->andWhere('ISNULL(deleted_at)')
             ->params([
                 ':status_gecontroleerd' =>Transacties::STATUS_gecontroleerd,
                 ':status_herberekend' =>Transacties::STATUS_herberekend
@@ -450,6 +455,7 @@ class User extends BaseUser
         return $this->hasMany(Transacties::className(), ['transacties_user_id' => 'id'])
             ->where(['>=', 'transacties.status',  Transacties::STATUS_factuur_gegenereerd])
             ->andWhere(['in', 'transacties.type_id', $ids])
+            ->andWhere('ISNULL(deleted_at)')
             ->sum('bedrag');
     }
 
@@ -464,6 +470,7 @@ class User extends BaseUser
         return $this->hasMany(Transacties::className(), ['transacties_user_id' => 'id'])
             ->where(['>=', 'transacties.status', Transacties::STATUS_factuur_gegenereerd])
             ->andWhere(['in', 'transacties.type_id', $ids])
+            ->andWhere('ISNULL(deleted_at)')
             ->sum('bedrag');
     }
 
@@ -498,6 +505,7 @@ class User extends BaseUser
     {
         return $this->hasMany(Turven::className(), ['consumer_user_id' => 'id'])
             ->where('turven.status =:status_gecontroleerd OR turven.status =:status_herberekend')
+            ->andWhere('ISNULL(deleted_at)')
             ->params([
                 ':status_gecontroleerd' =>Turven::STATUS_gecontroleerd,
                 ':status_herberekend' =>Turven::STATUS_herberekend
@@ -512,6 +520,7 @@ class User extends BaseUser
     {
         return $this->hasMany(Turven::className(), ['consumer_user_id' => 'id'])
             ->where('turven.status =:status_gecontroleerd OR turven.status =:status_herberekend')
+            ->andWhere('ISNULL(deleted_at)')
             ->params([
                 ':status_gecontroleerd' =>Turven::STATUS_gecontroleerd,
                 ':status_herberekend' =>Turven::STATUS_herberekend
@@ -526,6 +535,7 @@ class User extends BaseUser
     {
         return $this->hasMany(Turven::className(), ['consumer_user_id' => 'id'])
             ->where(['>=', 'turven.status',  Transacties::STATUS_factuur_gegenereerd])
+            ->andWhere('ISNULL(deleted_at)')
             ->sum('totaal_prijs');
     }
 
