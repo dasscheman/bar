@@ -278,7 +278,7 @@ class Factuur extends BarActiveRecord
         $dbTransaction = Yii::$app->db->beginTransaction();
         try {
             foreach ($model->getTransacties()->all() as $transactie) {
-                $transactie->status = Transacties::STATUS_tercontrole;
+                $transactie->status = Transacties::STATUS_herberekend;
                 $transactie->factuur_id = null;
                 if (!$transactie->save()) {
                     $dbTransaction->rollBack();
@@ -289,7 +289,7 @@ class Factuur extends BarActiveRecord
                 }
             }
             foreach ($model->getTurvens()->all() as $turf) {
-                $turf->status = Turven::STATUS_tercontrole;
+                $turf->status = Turven::STATUS_herberekend;
                 $turf->factuur_id = null;
                 if (!$turf->save()) {
                     $dbTransaction->rollBack();

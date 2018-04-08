@@ -361,10 +361,11 @@ class User extends BaseUser
         $ids = ArrayHelper::getColumn($test, 'type_id');
 
         return $this->hasMany(Transacties::className(), ['transacties_user_id' => 'id'])
-            ->where('transacties.status =:status')
+            ->where('transacties.status =:status_gecontroleerd OR transacties.status =:status_herberekend')
             ->andWhere(['in', 'transacties.type_id', $ids])
             ->params([
-                ':status' =>Transacties::STATUS_gecontroleerd
+                ':status_gecontroleerd' =>Transacties::STATUS_gecontroleerd,
+                ':status_herberekend' =>Transacties::STATUS_herberekend
             ]);
     }
 
@@ -377,10 +378,11 @@ class User extends BaseUser
         $ids = ArrayHelper::getColumn($test, 'type_id');
 
         return $this->hasMany(Transacties::className(), ['transacties_user_id' => 'id'])
-            ->where('transacties.status =:status')
+            ->where('transacties.status =:status_gecontroleerd OR transacties.status =:status_herberekend')
             ->andWhere(['in', 'transacties.type_id', $ids])
             ->params([
-                ':status' =>Transacties::STATUS_gecontroleerd
+                ':status_gecontroleerd' =>Transacties::STATUS_gecontroleerd,
+                ':status_herberekend' =>Transacties::STATUS_herberekend
             ]);
     }
 
@@ -410,10 +412,11 @@ class User extends BaseUser
         $ids = ArrayHelper::getColumn($test, 'type_id');
 
         return $this->hasMany(Transacties::className(), ['transacties_user_id' => 'id'])
-            ->where('transacties.status =:status')
+            ->where('transacties.status =:status_gecontroleerd OR transacties.status =:status_herberekend')
             ->andWhere(['in', 'transacties.type_id', $ids])
             ->params([
-                ':status' =>Transacties::STATUS_gecontroleerd
+                ':status_gecontroleerd' =>Transacties::STATUS_gecontroleerd,
+                ':status_herberekend' =>Transacties::STATUS_herberekend
             ])
             ->sum('bedrag');
     }
@@ -427,10 +430,11 @@ class User extends BaseUser
         $ids = ArrayHelper::getColumn($test, 'type_id');
 
         return $this->hasMany(Transacties::className(), ['transacties_user_id' => 'id'])
-            ->where('transacties.status =:status')
+            ->where('transacties.status =:status_gecontroleerd OR transacties.status =:status_herberekend')
             ->andWhere(['in', 'transacties.type_id', $ids])
             ->params([
-                ':status' =>Transacties::STATUS_gecontroleerd
+                ':status_gecontroleerd' =>Transacties::STATUS_gecontroleerd,
+                ':status_herberekend' =>Transacties::STATUS_herberekend
             ])
             ->sum('bedrag');
     }
@@ -493,7 +497,11 @@ class User extends BaseUser
     public function getNewTurvenUsers()
     {
         return $this->hasMany(Turven::className(), ['consumer_user_id' => 'id'])
-            ->where(['turven.status' => Turven::STATUS_gecontroleerd])
+            ->where('turven.status =:status_gecontroleerd OR turven.status =:status_herberekend')
+            ->params([
+                ':status_gecontroleerd' =>Turven::STATUS_gecontroleerd,
+                ':status_herberekend' =>Turven::STATUS_herberekend
+            ])
             ->orderBy(['datum'=>SORT_DESC]);
     }
 
@@ -503,7 +511,11 @@ class User extends BaseUser
     public function getSumNewTurvenUsers()
     {
         return $this->hasMany(Turven::className(), ['consumer_user_id' => 'id'])
-            ->where(['turven.status' => Turven::STATUS_gecontroleerd])
+            ->where('turven.status =:status_gecontroleerd OR turven.status =:status_herberekend')
+            ->params([
+                ':status_gecontroleerd' =>Turven::STATUS_gecontroleerd,
+                ':status_herberekend' =>Turven::STATUS_herberekend
+            ])
             ->sum('totaal_prijs');
     }
 

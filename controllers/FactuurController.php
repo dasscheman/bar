@@ -223,7 +223,7 @@ class FactuurController extends Controller
         $dbTransaction = Yii::$app->db->beginTransaction();
         try {
             foreach ($factuur->getTransacties()->all() as $transactie) {
-                $transactie->status = Transacties::STATUS_gecontroleerd;
+                $transactie->status = Transacties::STATUS_herberekend;
                 $transactie->factuur_id = null;
                 if (!$transactie->save()) {
                     $dbTransaction->rollBack();
@@ -231,7 +231,7 @@ class FactuurController extends Controller
                 }
             }
             foreach ($factuur->getTurvens()->all() as $turf) {
-                $turf->status = Turven::STATUS_gecontroleerd;
+                $turf->status = Turven::STATUS_herberekend;
                 $turf->factuur_id = null;
                 if (!$turf->save()) {
                     $dbTransaction->rollBack();

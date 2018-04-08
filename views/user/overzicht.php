@@ -8,6 +8,8 @@ use yii\helpers\Html;
 use kartik\detail\DetailView;
 use yii\helpers\Url;
 use app\models\User;
+use app\models\Turven;
+use app\models\Transacties;
 
 /* @var $this yii\web\View */
 /* @var $model app\models\Turven */
@@ -17,7 +19,8 @@ use app\models\User;
         <table class="table">
             <?php
             echo $this->render('/_alert');
-            if(!isset($model)) { ?>
+            if (!isset($model)) {
+                ?>
                 </table></div></div>
                 <?php
                 return;
@@ -51,11 +54,11 @@ use app\models\User;
                     ]
                 ];
                 foreach ($turven as $turf) {
-
                     $attributes[] = [
                         'columns' => [
                             [
-                                'label' =>$turf->aantal . ' ' . $turf->assortiment->name,
+                                'label' =>$turf->aantal . ' ' . $turf->assortiment->name
+                                . ($turf->status === Turven::STATUS_herberekend?' (herberkening)':''),
                                 'value' =>  empty($turf->datum)? 'Turflijjst: ' . $turf->turflijst->volgnummer: Yii::$app->setupdatetime->displayFormat($turf->datum, 'datetime'),
                                 'displayOnly'=>true,
                                 'valueColOptions'=>['style'=>'width:20%'],
@@ -94,7 +97,7 @@ use app\models\User;
         //            'groupOptions'=>['class'=>'text-center']
             ];
 
-            if(!empty($model->newAfTransactiesUser)) {
+            if (!empty($model->newAfTransactiesUser)) {
                 $attributes[] = [
                     'columns' => [
                         [
@@ -118,7 +121,8 @@ use app\models\User;
                         'columns' => [
                             [
                                 'label' => $transactieaf->omschrijving,
-                                'value' =>$transactieaf->type->omschrijving,
+                                'value' =>$transactieaf->type->omschrijving
+                                . ($transactieaf->status === Transacties::STATUS_herberekend?' (herberkening)':''),
                                 'displayOnly'=>true,
                                 'valueColOptions'=>['style'=>'width:20%'],
                                 'labelColOptions'=>['style'=>'width:20%']
@@ -156,12 +160,12 @@ use app\models\User;
         //            'groupOptions'=>['class'=>'text-center']
             ];
 
-            if(!empty($model->newBijTransactiesUser)) {
+            if (!empty($model->newBijTransactiesUser)) {
                 $attributes[] = [
                     'columns' => [
                         [
                             'label' => 'Omschrijving',
-                            'value' => 'Tansactie omschrijving',
+                            'value' => 'Transactie omschrijving',
                             'displayOnly'=>true,
                             'valueColOptions'=>['style'=>'width:20%'],
                             'labelColOptions'=>['style'=>'width:20%']
@@ -176,11 +180,11 @@ use app\models\User;
                     ]
                 ];
                 foreach ($model->newBijTransactiesUser as $transactiebij) {
-
                     $attributes[] = [
                         'columns' => [
                             [
-                                'label' => $transactiebij->omschrijving,
+                                'label' => $transactiebij->omschrijving
+                                . ($transactiebij->status === Transacties::STATUS_herberekend?' (herberkening)':''),
                                 'value' =>$transactiebij->type->omschrijving,
                                 'displayOnly'=>true,
                                 'valueColOptions'=>['style'=>'width:20%'],
@@ -213,7 +217,7 @@ use app\models\User;
                 'groupOptions'=>['class'=>'text-right']
             ];
 
-            if(!empty($model->invalidTransactionsNotInvoiced)) {
+            if (!empty($model->invalidTransactionsNotInvoiced)) {
                 $attributes[] = [
                     'group'=>true,
                     'label'=>'Transactie die (nog) niet mee berekend zijn',
@@ -247,7 +251,6 @@ use app\models\User;
                     ]
                 ];
                 foreach ($model->invalidTransactionsNotInvoiced as $transactieInvalid) {
-
                     $attributes[] = [
                         'columns' => [
                             [
@@ -297,11 +300,11 @@ use app\models\User;
                 'model' => $model,
                 'attributes' => $attributes,
                 'mode' => 'view',
-                'bordered' => TRUE,
-                'striped' => TRUE,
-                'condensed' => TRUE,
-                'responsive' => TRUE,
-                'hover' => TRUE,
+                'bordered' => true,
+                'striped' => true,
+                'condensed' => true,
+                'responsive' => true,
+                'hover' => true,
                 'hAlign' => 'middle',
                 'vAlign' => 'middle',
                 'fadeDelay'=> 700,

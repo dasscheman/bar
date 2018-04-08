@@ -262,7 +262,7 @@ class TransactiesController extends Controller
                     // goed gaat als dit record dan eerst gewijzigd wordt.
                     continue;
                 }
-                $transactie->status = Transacties::STATUS_tercontrole;
+                $transactie->status = Transacties::STATUS_herberekend;
                 $transactie->factuur_id = null;
                 if (!$transactie->save()) {
                     $dbTransaction->rollBack();
@@ -273,7 +273,7 @@ class TransactiesController extends Controller
                 }
             }
             foreach ($factuur->getTurvens()->all() as $turf) {
-                $turf->status = Turven::STATUS_tercontrole;
+                $turf->status = Turven::STATUS_herberekend;
                 $turf->factuur_id = null;
                 if (!$turf->save()) {
                     $dbTransaction->rollBack();
@@ -295,7 +295,6 @@ class TransactiesController extends Controller
                     foreach ($relatedModel->errors as $key => $error) {
                         Yii::$app->session->setFlash('warning', Yii::t('app', 'Fout met opslaan: ' . $key . ':' . $error[0]));
                     }
-                    dd($relatedModel->errors);
                     return $this->redirect(['index']);
                 }
             }
