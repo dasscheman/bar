@@ -38,10 +38,10 @@ AppAsset::register($this);
     echo Nav::widget([
         'options' => ['class' => 'navbar-nav navbar-right'],
         'items' => [
-            ['label' => 'Betalen', 'url' => ['/mollie/betaling']],
-            ['label' => 'Overzicht', 'url' => ['/site/grafieken']],
-            ['label' => 'Voorraad', 'url' => ['/inkoop/overzicht-actueel']],
-            ['label' => 'Beheerder',
+            Yii::$app->user->can('onlinebetalen') ? ['label' => 'Betalen', 'url' => ['/mollie/betaling']]:'',
+            Yii::$app->user->can('gebruiker') ? ['label' => 'Overzicht', 'url' => ['/site/grafieken']]:'',
+            Yii::$app->user->can('beheerder') ? ['label' => 'Voorraad', 'url' => ['/inkoop/overzicht-actueel']]:'',
+            Yii::$app->user->can('beheerder') ? ['label' => 'Beheerder',
                 'items' => [
                     [
                         'label' => 'Overzicht gebruikers',
@@ -56,7 +56,7 @@ AppAsset::register($this);
 //                        'url'=>['/turven/index'],
 //                    ],
                 ]
-            ],
+            ]:'',
 //            ['label' => 'About', 'url' => ['/site/about']],
 //            ['label' => 'Contact', 'url' => ['/site/contact']],
             Yii::$app->user->isGuest ? (

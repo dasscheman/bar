@@ -103,6 +103,7 @@ class MollieController extends TransactiesController
             throw new NotFoundHttpException('Je bent niet ingelogt of de link uit je email is niet meer geldig.');
         }
 
+        $this->layout = 'main-fluid';
         $model->transacties_user_id = $user->id;
         return $this->render('create', [
             'model' => $model,
