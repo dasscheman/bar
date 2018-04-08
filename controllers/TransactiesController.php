@@ -269,7 +269,6 @@ class TransactiesController extends Controller
                     foreach ($transactie->errors as $key => $error) {
                         Yii::$app->session->setFlash('warning', Yii::t('app', 'Fout met opslaan: ' . $key . ':' . $error[0]));
                     }
-                    dd($transactie->errors);
                     return $this->redirect(['index']);
                 }
             }
@@ -281,7 +280,6 @@ class TransactiesController extends Controller
                     foreach ($turf->errors as $key => $error) {
                         Yii::$app->session->setFlash('warning', Yii::t('app', 'Fout met opslaan: ' . $key . ':' . $error[0]));
                     }
-                    dd($turf->errors);
                     return $this->redirect(['index']);
                 }
             }
@@ -293,7 +291,6 @@ class TransactiesController extends Controller
                         ->all();
             foreach ($relatedModels as $relatedModel) {
                 if (!$relatedModel->delete()) {
-                    dd($relatedModels);
                     $dbTransaction->rollBack();
                     foreach ($relatedModel->errors as $key => $error) {
                         Yii::$app->session->setFlash('warning', Yii::t('app', 'Fout met opslaan: ' . $key . ':' . $error[0]));

@@ -13,10 +13,24 @@ use yii\helpers\Url;
 		Hallo <?php echo  $user->profile->voornaam; ?>,<br><br>
 
         <br>
+        Je tegoed is onder de 0 euro gekomen en er is een automatisch incasso gestart.
+        Binnen enkele dagen ontvang je een email als de incassobetaling is uitgevoerd.
+
         <br>
-        Je betaling is in goede orde ontvangen en verwerkt.
-        <br><br>
+        Ben je het niet eens met deze incasso, neem dan contact met mij op en dan regelen we het.
+        <br>
+        Je kunt natuurlijk ook bij je bank een incasson binnen 8 weken storneren, maar dan worden er kosten in rekening gebracht bij de bisonbar.
+        Dus doe dat liever niet.
+
+        <br>
+        <br>
+        Wil je toekomstige incasso aanpassen, dan kun je dat hier doen:
+        
+        <?php echo Html::a(' Automatisch ophogen wijzigen', ['/mollie/automatisch-betaling-updaten', 'pay_key' => $user->pay_key]); ?>
+
+        <br>
         Transactie gegevens:
+
         <table>
           <tr>
             <td>Transactie id</td>
@@ -34,12 +48,12 @@ use yii\helpers\Url;
             <td>Betalingstype</td>
             <td><?php echo  $transactie->type->Omschrijving; ?></td>
           </tr>
-
+          
           <tr>
             <td>Status</td>
             <td><?php echo  $transactie->getStatusText(); ?></td>
           </tr>
-
+          
           <tr>
             <td>Datum</td>
             <td><?php echo  $transactie->datum; ?></td>
@@ -51,6 +65,7 @@ use yii\helpers\Url;
           </tr>
         </table>
         <br>
+        <br>
 		Als je vragen hebt kun je mailen naar bar@debison.nl
         <br>
         <br>
@@ -59,16 +74,5 @@ use yii\helpers\Url;
 		Daan Asscheman<br>
         <br>
         <br>
-        <br>
-        <?php
-        if ($user->automatische_betaling) {
-            ?>
-            Je maakt gebruik van automatisch ophogen, je tegoed wordt automatisch ogehoogd met <?php number_format($user->mollie_bedrag, 2, ',', ' ') ?> €
-            <br>
-            Hier kun je automatisch ophogen stop zetten of de hoogte van het bedrag wijzigen:
-            <?php echo Html::a(' Automatisch ophogen wijzigen', ['/mollie/automatisch-betaling-updaten', 'pay_key' => $user->pay_key]);
-        } else {
-            ?> Je maakt geen gebruik van automatisch ophogen. <?php
-        } ?>
 <!-- 	</body>
 </html>-->

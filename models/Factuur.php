@@ -113,7 +113,7 @@ class Factuur extends BarActiveRecord
         $data = Factuur::find()
             ->orderBy(['factuur_id' => SORT_DESC])
             ->one();
-        if(isset($data->factuur_id)) {
+        if (isset($data->factuur_id)) {
             $newID = $data->factuur_id + 1;
         } else {
             $newID = 1;
@@ -126,12 +126,13 @@ class Factuur extends BarActiveRecord
         }
     }
 
-    public function checkNewFactuurId($id) {
+    public function checkNewFactuurId($id)
+    {
         if (Factuur::find()->where(['factuur_id' => $id])->exists()) {
-            return FALSE;
+            return false;
         }
 
-        return TRUE;
+        return true;
     }
 
     public function setNewFactuurName($username)
@@ -146,9 +147,9 @@ class Factuur extends BarActiveRecord
 
         $dbTransaction = Yii::$app->db->beginTransaction();
         try {
-            if(!$this->save()) {
+            if (!$this->save()) {
                 $dbTransaction->rollBack();
-                return FALSE;
+                return false;
             }
             foreach ($new_bij_transacties as $new_bij_transactie) {
                 if (empty($new_bij_transactie)) {
@@ -156,9 +157,9 @@ class Factuur extends BarActiveRecord
                 }
                 $new_bij_transactie->status = Transacties::STATUS_factuur_gegenereerd;
                 $new_bij_transactie->factuur_id = $this->factuur_id;
-                if(!$new_bij_transactie->save()) {
+                if (!$new_bij_transactie->save()) {
                     $dbTransaction->rollBack();
-                    return FALSE;
+                    return false;
                 }
             }
             foreach ($new_af_transacties as $new_af_transactie) {
@@ -167,9 +168,9 @@ class Factuur extends BarActiveRecord
                 }
                 $new_af_transactie->status = Transacties::STATUS_factuur_gegenereerd;
                 $new_af_transactie->factuur_id = $this->factuur_id;
-                if(!$new_af_transactie->save()) {
+                if (!$new_af_transactie->save()) {
                     $dbTransaction->rollBack();
-                    return FALSE;
+                    return false;
                 }
             }
             foreach ($new_turven as $turf) {
@@ -178,20 +179,20 @@ class Factuur extends BarActiveRecord
                 }
                 $turf->status = Turven::STATUS_factuur_gegenereerd;
                 $turf->factuur_id = $this->factuur_id;
-                if(!$turf->save()) {
+                if (!$turf->save()) {
                     $dbTransaction->rollBack();
-                    return FALSE;
+                    return false;
                 }
             }
 
             $dbTransaction->commit();
-            return TRUE;
+            return true;
         } catch (Exception $e) {
             Yii::error($e->getMessage());
         }
 
         $dbTransaction->rollBack();
-        return FALSE;
+        return false;
     }
 
     public function verzendFacturen()
@@ -200,7 +201,7 @@ class Factuur extends BarActiveRecord
         $facturen = Factuur::find()->where('ISNULL(verzend_datum)')->all();
 
         foreach ($facturen as $factuur) {
-            if($aantal > 50) {
+            if ($aantal > 50) {
                 return $aantal;
             }
             $user = User::findOne($factuur->ontvanger);
@@ -213,10 +214,10 @@ class Factuur extends BarActiveRecord
                 ->setTo($user->email)
                 ->setSubject('Nota Bison bar')
                 ->attach(Yii::$app->basePath . '/web/uploads/facture/' . $factuur->pdf);
-            if(!empty($user->profile->public_email)) {
+            if (!empty($user->profile->public_email)) {
                 $message->setCc($user->profile->public_email);
             }
-            if(!$message->send()) {             
+            if (!$message->send()) {
                 continue;
             }
             $aantal++;
@@ -239,9 +240,9 @@ class Factuur extends BarActiveRecord
                     break;
                 }
                 $transactie->status = Transacties::STATUS_factuur_verzonden;
-                if(!$transactie->save()) {
+                if (!$transactie->save()) {
                     $dbTransaction->rollBack();
-                    return FALSE;
+                    return false;
                 }
             }
 
@@ -250,20 +251,69 @@ class Factuur extends BarActiveRecord
                     break;
                 }
                 $turf->status = Turven::STATUS_factuur_verzonden;
-                if(!$turf->save()) {
+                if (!$turf->save()) {
                     $dbTransaction->rollBack();
-                    return FALSE;
+                    return false;
                 }
             }
 
-            if(!$this->save()) {
+            if (!$this->save()) {
                 $dbTransaction->rollBack();
-                return FALSE;
+                return false;
             }
             $dbTransaction->commit();
-            return TRUE;
+            return true;
         } catch (Exception $e) {
             Yii::error($e->getMessage());
         }
+    }
+    
+    /*
+     * Delete factuur based on id.
+     * this is mostly used when a transaction is changed which is allready invoiced.
+     */
+    public function deleteFactuur($id)
+    {
+        $model = Factuur::findOne($id);
+        $dbTransaction = Yii::$app->db->beginTransaction();
+        try {
+            foreach ($model->getTransacties()->all() as $transactie) {
+                $transactie->status = Transacties::STATUS_tercontrole;
+                $transactie->factuur_id = null;
+                if (!$transactie->save()) {
+                    $dbTransaction->rollBack();
+                    foreach ($transactie->errors as $key => $error) {
+                        Yii::$app->session->setFlash('warning', Yii::t('app', 'Fout met opslaan: ' . $key . ':' . $error[0]));
+                    }
+                    return false;
+                }
+            }
+            foreach ($model->getTurvens()->all() as $turf) {
+                $turf->status = Turven::STATUS_tercontrole;
+                $turf->factuur_id = null;
+                if (!$turf->save()) {
+                    $dbTransaction->rollBack();
+                    foreach ($turf->errors as $key => $error) {
+                        Yii::$app->session->setFlash('warning', Yii::t('app', 'Fout met opslaan: ' . $key . ':' . $error[0]));
+                    }
+                    return false;
+                }
+            }
+
+            if (!$model->delete()) {
+                $dbTransaction->rollBack();
+                foreach ($factuur->errors as $key => $error) {
+                    Yii::$app->session->setFlash('warning', Yii::t('app', 'Fout met opslaan: ' . $key . ':' . $error[0]));
+                }
+                return false;
+            }
+            $dbTransaction->commit();
+        } catch (\Exception $e) {
+            Yii::$app->session->setFlash('warning', Yii::t('app', 'Je kunt deze transactie niet verwijderen: ' . $e));
+        }
+
+
+
+        return true;
     }
 }

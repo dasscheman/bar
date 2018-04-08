@@ -112,8 +112,20 @@ class Mollie extends Transacties
                     "transacties_id" => $mollie->transacties_id,
                 ],
             ];
-            $mollie->createPayment();
-
+            $payment= $mollie->createPayment();
+            if ($payment) {
+                $message = Yii::$app->mailer->compose('mail_incasso_notificatie', [
+                        'user' => $user,
+                        'transactie' => $mollie,
+                    ])
+                    ->setFrom('bar@debison.nl')
+                    ->setTo($user->email)
+                    ->setSubject('Incasso betaling Bison bar');
+                if (!empty($user->profile->public_email)) {
+                    $message->setCc($user->profile->public_email);
+                }
+                $message->send();
+            }
             $count++;
         }
         return $count;
@@ -187,7 +199,9 @@ class Mollie extends Transacties
             $user->automatische_betaling = true;
             $user->mollie_customer_id = $customer->id;
             $user->mollie_bedrag = $this->bedrag;
-            $user->save();
+            if ($user->save()) {
+                return true;
+            }
         } catch (Mollie_API_Exception $e) {
             echo "API call failed: " . htmlspecialchars($e->getMessage());
         }

@@ -64,8 +64,19 @@ class MollieController extends TransactiesController
             $model->status = Transacties::STATUS_ingevoerd;
             if ($model->save()) {
                 $model->setParameters();
-                if ($model->automatische_betaling) {
-                    $model->createUser();
+                if ($model->automatische_betaling && $model->createUser()) {
+                    $user = User::findOne($model->transacties_user_id);
+                    $message = Yii::$app->mailer->compose('mail_incasso_betaling_aangemaakt', [
+                        'user' => $user,
+                        'transactie' => $model,
+                    ])
+                    ->setFrom('bar@debison.nl')
+                    ->setTo($user->email)
+                    ->setSubject('Incasso betaling Bison bar');
+                    if (!empty($user->profile->public_email)) {
+                        $message->setCc($user->profile->public_email);
+                    }
+                    $message->send();
                 }
 
                 $payment = $model->createPayment();
@@ -112,6 +123,8 @@ class MollieController extends TransactiesController
             throw new NotFoundHttpException('The requested id does not correspond the database.');
         }
         try {
+            // Bewaar een eventuele factuur id.
+            $old_factuur = $model->factuur_id;
             /*
              * Update the transactie in the database.
              */
@@ -153,10 +166,14 @@ class MollieController extends TransactiesController
                     break;
             }
             $model->save();
+            if ($old_factuur !== null) {
+                Factuur::deleteFactuur($old_factuur);
+            }
             if ($payment->isPaid() === true) {
                 $user = User::findOne($model->transacties_user_id);
                 $message = Yii::$app->mailer->compose('mail_ontvangen_betaling', [
                         'user' => $user,
+                        'transactie' => $model,
                     ])
                     ->setFrom('bar@debison.nl')
                     ->setTo($user->email)
@@ -169,10 +186,11 @@ class MollieController extends TransactiesController
                 $user = User::findOne($model->transacties_user_id);
                 $message = Yii::$app->mailer->compose('mail_mislukte_betaling', [
                         'user' => $user,
+                        'transactie' => $model,
                     ])
                     ->setFrom('bar@debison.nl')
                     ->setTo($user->email)
-                    ->setSubject('Online betaling Bison bar');
+                    ->setSubject('Fout bij online betaling Bison bar');
                 if (!empty($user->profile->public_email)) {
                     $message->setCc($user->profile->public_email);
                 }
@@ -234,9 +252,29 @@ class MollieController extends TransactiesController
             if ($user->save()) {
                 if (Yii::$app->request->get('actie') === 'annuleren') {
                     Yii::$app->session->setFlash('success', 'Automatisch ophogen is stop gezet.');
+                    $message = Yii::$app->mailer->compose('mail_incasso_betaling_gestopt', [
+                            'user' => $user,
+                        ])
+                        ->setFrom('bar@debison.nl')
+                        ->setTo($user->email)
+                        ->setSubject('Annulering incasso Bison bar');
+                    if (!empty($user->profile->public_email)) {
+                        $message->setCc($user->profile->public_email);
+                    }
+                    $message->send();
                 }
-                if (Yii::$app->request->get('actie') === 'annuleren') {
-                    Yii::$app->session->setFlash('success', 'Wijzeging in bedrag is opgeslagen.');
+                if (Yii::$app->request->get('actie') !== 'annuleren') {
+                    Yii::$app->session->setFlash('success', 'Wijziging in bedrag is opgeslagen.');
+                    $message = Yii::$app->mailer->compose('mail_incasso_betaling_gewijzigd', [
+                            'user' => $user,
+                        ])
+                        ->setFrom('bar@debison.nl')
+                        ->setTo($user->email)
+                        ->setSubject('Wijziging betaling Bison bar');
+                    if (!empty($user->profile->public_email)) {
+                        $message->setCc($user->profile->public_email);
+                    }
+                    $message->send();
                 }
             } else {
                 foreach ($modelBonnen->errors as $key => $error) {

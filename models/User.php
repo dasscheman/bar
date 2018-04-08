@@ -599,9 +599,9 @@ class User extends BaseUser
     }
 
     /**
-     * Finds user by username
+     * Finds user by PayKey
      *
-     * @param  string      $username
+     * @param  string      $key
      * @return static|null
      */
     public static function findByPayKey($key)

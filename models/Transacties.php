@@ -257,31 +257,6 @@ class Transacties extends BarActiveRecord
     * Retrieves a list of users
     * @return array an of available relatedtransactions.'.
     */
-//    public function getRelatedTransactionsIds()
-//    {
-//        $queryParentTransactions = RelatedTransacties::find()
-//            ->select('child_transacties_id')
-//            ->where('parent_transacties_id=:transacties_id')
-//            ->addParams([':transacties_id' => $this->transacties_id]);
-//
-//        $queryChildTransactions = RelatedTransacties::find()
-//            ->select('parent_transacties_id')
-//            ->where('child_transacties_id=:transacties_id')
-//            ->addParams([':transacties_id' => $this->transacties_id]);
-//
-//        $result = Transacties::find()
-//            ->select('transacties_id')
-//            ->where(['in', 'transacties.transacties_id', $queryParentTransactions])
-//            ->orwhere(['in', 'transacties.transacties_id', $queryChildTransactions])
-//            ->all();
-//
-//        return $result;
-//    }
-
-    /**
-    * Retrieves a list of users
-    * @return array an of available relatedtransactions.'.
-    */
     public function setAllRelatedTransactions()
     {
         $queryParentTransactions = RelatedTransacties::find()
