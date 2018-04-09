@@ -46,7 +46,7 @@ use yii\helpers\Url;
           </tr>
           <tr>
             <td>Betalingstype</td>
-            <td><?php echo  $transactie->type->Omschrijving; ?></td>
+            <td><?php echo  $transactie->type->omschrijving; ?></td>
           </tr>
           
           <tr>
