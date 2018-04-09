@@ -72,4 +72,23 @@ abstract class BarActiveRecord extends ActiveRecord
         }
         return "Onbekende status ({$this->status})";
     }
+
+    /**
+     * Used to send een email with errors to admin.
+     * Use this only for critical processe, for example the mollie webhook.
+     */
+    public function sendErrorReport($errors = null)
+    {
+        if ($errors === null) {
+            $errors = $this->errors;
+        }
+        $message = Yii::$app->mailer->compose('mail_critical_error', [
+                'errors' => $this->errors,
+                'model' => $this,
+            ])
+            ->setFrom('bar@debison.nl')
+            ->setTo('daan@biologenkantoor.nl')
+            ->setSubject('Critical Error Bison bar');
+        $message->send();
+    }
 }

@@ -284,9 +284,11 @@ class Factuur extends BarActiveRecord
                 $transactie->factuur_id = null;
                 if (!$transactie->save()) {
                     $dbTransaction->rollBack();
-                    foreach ($transactie->errors as $key => $error) {
-                        Yii::$app->session->setFlash('warning', Yii::t('app', 'Fout met opslaan: ' . $key . ':' . $error[0]));
-                    }
+
+                    $model->sendErrorReport();
+//                    foreach ($transactie->errors as $key => $error) {
+//                        Yii::$app->session->setFlash('warning', Yii::t('app', 'Fout met opslaan: ' . $key . ':' . $error[0]));
+//                    }
                     return false;
                 }
             }
@@ -295,23 +297,28 @@ class Factuur extends BarActiveRecord
                 $turf->factuur_id = null;
                 if (!$turf->save()) {
                     $dbTransaction->rollBack();
-                    foreach ($turf->errors as $key => $error) {
-                        Yii::$app->session->setFlash('warning', Yii::t('app', 'Fout met opslaan: ' . $key . ':' . $error[0]));
-                    }
+
+                    $model->sendErrorReport();
+//                    foreach ($turf->errors as $key => $error) {
+//                        Yii::$app->session->setFlash('warning', Yii::t('app', 'Fout met opslaan: ' . $key . ':' . $error[0]));
+//                    }
                     return false;
                 }
             }
             $model->deleted_at = Yii::$app->setupdatetime->storeFormat(time(), 'datetime');
             if (!$model->save()) {
                 $dbTransaction->rollBack();
-                foreach ($factuur->errors as $key => $error) {
-                    Yii::$app->session->setFlash('warning', Yii::t('app', 'Fout met opslaan: ' . $key . ':' . $error[0]));
-                }
+
+                $model->sendErrorReport();
+//                foreach ($factuur->errors as $key => $error) {
+//                    Yii::$app->session->setFlash('warning', Yii::t('app', 'Fout met opslaan: ' . $key . ':' . $error[0]));
+//                }
                 return false;
             }
             $dbTransaction->commit();
         } catch (\Exception $e) {
-            Yii::$app->session->setFlash('warning', Yii::t('app', 'Je kunt deze transactie niet verwijderen: ' . $e));
+            $model->sendErrorReport($e);
+//            Yii::$app->session->setFlash('warning', Yii::t('app', 'Je kunt deze transactie niet verwijderen: ' . $e));
         }
 
 

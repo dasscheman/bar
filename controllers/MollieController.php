@@ -126,7 +126,9 @@ class MollieController extends TransactiesController
         }
         try {
             // Bewaar een eventuele factuur id.
-            $old_factuur = $model->factuur_id;
+            if ($model->factuur_id !== null) {
+                $old_factuur = $model->factuur_id;
+            }
             /*
              * Update the transactie in the database.
              */
@@ -174,7 +176,9 @@ class MollieController extends TransactiesController
                     $model->deleted_at = null;
                     break;
             }
-            $model->save();
+            if (!$model->save()) {
+                $model->sendErrorReport();
+            }
             if ($old_factuur !== null) {
                 Factuur::deleteFactuur($old_factuur);
             }
