@@ -23,7 +23,7 @@ use yii\helpers\Url;
         <table>
           <tr>
             <td>Transactie id</td>
-            <td><?php echo  $transactie->transactie_id; ?></td>
+            <td><?php echo  $transactie->transacties_id; ?></td>
           </tr>
           <tr>
             <td>Omschrijving</td>
