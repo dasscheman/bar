@@ -10,32 +10,32 @@ use yii\helpers\Url;
 <!--<html>
 	<head></head>
 	<body>-->
-		Hallo <?php echo  $user->profile->voornaam; ?>,<br><br>
+		Hallo,<br><br>
 
         <br>
         Er is een critical error onstaan.
         <br>
         <br>
         <br>
+        Model:
         <table>
         <?php
-            foreach (model as $key => $item) {
+            foreach ($model as $key => $item) {
                 ?>
                 <tr>
-                  <td>Mollie status</td>
                   <td><?php echo  $key; ?></td>
                   <td><?php echo  $item; ?></td>
                 </tr><?php
             }?>
         </table>
 
+        Errors:
         <table>
 
             <?php
             foreach ($errors as $key => $error) {
                 ?>
                 <tr>
-                  <td>Mollie status</td>
                   <td><?php echo  $key; ?></td>
                   <td><?php echo  $error; ?></td>
                 </tr><?php

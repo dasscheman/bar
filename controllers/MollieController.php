@@ -115,6 +115,7 @@ class MollieController extends TransactiesController
     public function actionWebhook()
     {
         $mollie = new Mollie;
+        $old_factuur = null;
         /*
          * Retrieve the payment's current state.
          */
