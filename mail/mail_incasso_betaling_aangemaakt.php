@@ -20,7 +20,12 @@ use yii\helpers\Url;
         <br>
         Hier kun je automatisch ophogen stop zetten of de hoogte van het bedrag wijzigen:
         <?php
-            $link = Url::to(['/mollie/betaling', 'pay_key' => $user->pay_key], 'https');
+
+        if (YII_ENV === 'prod') {
+            $link = "https://bar.debison.nl/index.php?r=mollie/betaling&pay_key={$user->pay_key}";
+        } else {
+            $link = "https://popupbar.biologenkantoor.nl/index.php?r=mollie/betaling&pay_key={$user->pay_key}";
+        }
             echo Html::a(' Automatisch ophogen wijzigen', $link); ?>
         <br>
         <br>

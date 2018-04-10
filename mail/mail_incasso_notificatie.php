@@ -27,7 +27,11 @@ use yii\helpers\Url;
         Wil je toekomstige incasso aanpassen, dan kun je dat hier doen:
         
         <?php
-            $link = Url::to(['/mollie/betaling', 'pay_key' => $user->pay_key], 'https');
+        if (YII_ENV === 'prod') {
+            $link = "https://bar.debison.nl/index.php?r=mollie/betaling&pay_key={$user->pay_key}";
+        } else {
+            $link = "https://popupbar.biologenkantoor.nl/index.php?r=mollie/betaling&pay_key={$user->pay_key}";
+        }
             echo Html::a(' Automatisch ophogen wijzigen', $link); ?>
 
         <br>
