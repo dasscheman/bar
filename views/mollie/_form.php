@@ -35,6 +35,7 @@ use app\models\User;
             100 => '100 euro'
         ],
         'options'   => [
+        'value' => 15,
             'placeholder' => Yii::t('app', 'Selecteer de hoogte van het tegoed dat je wilt kopen'),
             'id' => 'turflijst_id',
         ],

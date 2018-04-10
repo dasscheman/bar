@@ -26,6 +26,7 @@ use yii\helpers\Url;
         'enableAjaxValidation'   => false,
         'type' => ActiveForm::TYPE_HORIZONTAL,
     ]);
+    
     echo $form->field($model, 'mollie_bedrag')->widget(Select2::className(), [
         'data' => [
             10 => '10 euro',
@@ -37,6 +38,7 @@ use yii\helpers\Url;
         ],
         'value' => $model->mollie_bedrag,
         'options'   => [
+            'value' => (int) $model->mollie_bedrag,
             'placeholder' => Yii::t('app', 'Selecteer de hoogte van het tegoed dat je wilt kopen'),
             'id' => 'mollie_bedrag',
         ],

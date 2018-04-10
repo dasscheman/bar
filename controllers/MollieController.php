@@ -38,17 +38,17 @@ class MollieController extends Controller
                     'class' => AccessRule::className(),
                 ],
                 // We will override the default rule config with the new AccessRule class
-                'only' => ['return-betaling', 'betaling', 'automatisch-betaling-annuleren'],
+                'only' => ['webhook', 'automatisch-betaling-update', 'automatisch-betaling-annuleren', 'return-betaling', 'betaling'],
                 'rules' => [
                     [
                         'allow' => true,
-                'actions' => ['return-betaling', 'betaling'],
+                        'actions' => ['automatisch-betaling-update', 'automatisch-betaling-annuleren', 'return-betaling', 'betaling'],
                         'roles' =>  ['onlinebetalen'],
                     ],
                     [
                         'allow' => true,
-                        'actions' => ['webhook', 'automatisch-betaling-update', 'automatisch-betaling-annuleren'],
-                        'roles' =>  ['*'],
+                        'actions' => ['webhook', 'automatisch-betaling-update', 'automatisch-betaling-annuleren', 'return-betaling', 'betaling'],
+                        'roles' =>  ['?'],
                     ],
                 ],
             ],
@@ -73,7 +73,6 @@ class MollieController extends Controller
         $model = new Mollie;
         $model->scenario = 'betaling';
         if ($model->load(Yii::$app->request->post())) {
-            $model->transacties_user_id = Yii::$app->user->id;
             $model->type_id = BetalingType::getIdealId();
             $model->datum = date('Y-m-d H:i:s');
             $model->status = Transacties::STATUS_ingevoerd;
@@ -116,7 +115,7 @@ class MollieController extends Controller
         if (!isset($user)) {
             $user = User::findByPayKey(Yii::$app->request->get('pay_key'));
         }
-        
+
         if (!isset($user)) {
             throw new NotFoundHttpException('Je bent niet ingelogt of de link uit je email is niet meer geldig.');
         }
@@ -289,6 +288,11 @@ class MollieController extends Controller
             throw new NotFoundHttpException('Je bent niet ingelogt of de link uit je email is niet meer geldig.');
         }
 
+        if (!isset($user->automatische_betaling) ||
+            !$user->automatische_betaling) {
+            throw new NotFoundHttpException('Computer says no');
+        }
+
         if ($user->load(Yii::$app->request->post()) && $user->save()) {
             Yii::$app->session->setFlash('success', 'Wijziging in bedrag is opgeslagen.');
             $message = Yii::$app->mailer->compose('mail_incasso_betaling_gewijzigd', [
@@ -322,6 +326,12 @@ class MollieController extends Controller
         if (!isset($user)) {
             throw new NotFoundHttpException('Je bent niet ingelogt of de link uit je email is niet meer geldig.');
         }
+
+        if (!isset($user->automatische_betaling) ||
+            !$user->automatische_betaling) {
+            throw new NotFoundHttpException('Computer says no');
+        }
+        
         $user->automatische_betaling = false;
         $user->mollie_customer_id = '';
         $user->mollie_bedrag = null;
