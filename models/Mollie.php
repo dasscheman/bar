@@ -85,9 +85,9 @@ class Mollie extends Transacties
         foreach ($users as $user) {
             // Wanneer een user een pending transactie heeft, dan gaan we niet
             // een nieuwe transactie opstarten.
-            if ($user->getBalans() > 0 ||
-                !$mollie->checkUserMandates($user->mollie_customer_id ||
-                $mollie->pendingTransactionsExists($user->id))) {
+            if ($user->getBalans() > $user->getProfile()->one()->limit_ophogen ||
+                !$mollie->checkUserMandates($user->mollie_customer_id) ||
+                $mollie->pendingTransactionsExists($user->id)) {
                 continue;
             }
             $mollie->transacties_user_id = $user->id;
@@ -144,7 +144,7 @@ class Mollie extends Transacties
 
     public function pendingTransactionsExists($user_id)
     {
-        return Transacties::findOne()
+        return Transacties::find()
             ->where(['transacties_user_id' => $user_id])
             ->andWhere(['mollie_status' => self::MOLLIE_STATUS_pending])
             ->exists();
