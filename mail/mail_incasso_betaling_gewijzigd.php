@@ -14,12 +14,12 @@ use yii\helpers\Url;
 
         <br>
         Je hebt je automatisch incasso gewijzigd. Als je tegoed onder de 0 euro komt dan wordt er automatisch een incasso gestart
-        en je tegoed opgehoogd met <?php number_format($user->mollie_bedrag, 2, ',', ' ') ?> €
+        en je tegoed opgehoogd met <?php echo number_format($user->mollie_bedrag, 2, ',', ' ') ?> €
 
         <br>
         <br>
         Hier kun je automatisch ophogen stop zetten of de hoogte van het bedrag wijzigen:
-        <?php echo Html::a(' Automatisch ophogen wijzigen', ['/mollie/automatisch-betaling-updaten', 'pay_key' => $user->pay_key]); ?>
+        <?php echo Html::a(' Automatisch ophogen wijzigen', ['/mollie/automatisch-betaling-update', 'pay_key' => $user->pay_key]); ?>
         <br>
         <br>
         Worden er incasso's gedaan waar je het niet mee eens bent, neem dan contact met mij op en dan regelen we het.

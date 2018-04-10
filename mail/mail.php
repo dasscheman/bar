@@ -15,35 +15,26 @@ use yii\helpers\Url;
 		hierbij ontvangt je de factuur voor de Bison bar. In de bijlage zie je een gedetaileerd overzicht.
 
         <br>
-        Het is nu ook mogelijk om met Ideal te betalen:
-        <?php
-            echo Html::a(' Direct betalen met ideal', ['/mollie/betaling', 'pay_key' => $user->pay_key]) ?>
+        Vanaf 1 maart is het niet meeer mogelijk om meer dan 20 euro rood te staan. Sta je meer dan 20 euro rood,
+        dan word je automatisch van de turflijst gehaald en kun je niets meer turven.
+        <br> <br>
+        Als je niet meer op de lijst staat, dan kun je er weer opkomen door je rekening te betalen.
+        Dit kun je doen door geld over te maken naar het bekende bisonbar rekeningnummer (staat in de bijlage).
+        Maar hier zit een flinke vertragen in omdat ik die betalingen niet vaker dan 1 keer per maand bijwerk.
+        <br>
+        Je kunt nu ook betalen met ideal. Het grote voordeel voor jou is dat deze betaling direct verwerkt wordt in het turfsysteem.
+        Ook kun je automatisch ophogen instellen, dan wordt je rekening opgehoogd met een door jou vast gesteld bedrag als je rekening onder de 0 euro komt.
+        <br>
+        <br>
+        <b>Let op!</b> de ideal betalingen zitten nog wel in een pilot fase.
+        Dus als er dingen niet goed gaan, niet gaan zoals je verwacht had of onduidelijk zijn, laat het me vooral even weten.
+
         <br>
         <br>
 
-        De meeste mensen zullen wel gezien hebben dat er een nieuwe digitale turflijst hangt.
-        De er hangt nog wel een oude papieren turflijst, maar die dient alleen als back-up in het geval van technische storingen.
-        <br><br>
-        Met de nieuwe digitale turflijst is het ook mogelijk om in te loggen met het mail adres waarop je deze mail ontvangt.
-        Je kunt dan ook turven registreren vanaf je mobiel. Als je dit wilt, dan moet je mij dat even laten weten.
-        Bovenstaande is allemaal niet vereist en alleen voor de liefhebbers. Je krijgt sowieso maandelijks een rekening toegestuurd.
-        <br><br><br>
-        Met de nieuwe turflijst vind ik het ook een goed moment om de insteek van de turflijst iets te veranderen.
+        <?php echo Html::a(' Direct betalen met ideal', ['/mollie/betaling', 'pay_key' => $user->pay_key]) ?>
+  
         <br>
-        Tot nu toe turfde men op rekening en de rekening werd achteraf betaald.
-        Dat gaat eigenlijk bijna altijd goed, meeste mensen betalen maandelijks.
-        Maar soms niet, waardoor mensen soms een schuld opbouwen. En dat vindt ik onwenselijk.
-        Daar komt bij dat het voor mij lastig is om in te schatten wanneer een schuld voor iemand veel is.
-        Voor de een kan 50 euro geen probleem zijn, terwijl het voor de ander heel veel is.
-        <br>
-        Daarom wil ik een prepaid systeem gaan hanteren.
-        Dit houdt in dat je een tegoed moet hebben om drinken te kunnen turven in de Bison Bar,
-        en dat je maximaal 20 euro 'rood' kunt staan.
-        <br>
-        <br>
-        Komende periode is een overgansperiode je kunt nu nog meer dan 20 euro 'rood' staan,
-        maar op termijn zal dit prepaid systeem technisch ondersteund worden met oa Ideal betalingen.
-
         <br>
 		Als je vragen hebt kun je mailen naar bar@debison.nl
         <br>
@@ -56,12 +47,12 @@ use yii\helpers\Url;
         <br>
         <br>
         <?php
-        if($user->automatische_betaling) {
+        if ($user->automatische_betaling) {
             ?>
-            Je maakt gebruik van automatisch ophogen, je tegoed wordt automatisch ogehoogd met <?php number_format($user->mollie_bedrag, 2, ',', ' ') ?> €
+            Je maakt gebruik van automatisch ophogen, je tegoed wordt automatisch opgehoogd met <?php echo number_format($user->mollie_bedrag, 2, ',', ' ') ?> €
             <br>
             Hier kun je automatisch ophogen stop zetten of de hoogte van het bedrag wijzigen:
-            <?php echo Html::a(' Automatisch ophogen wijzigen', ['/mollie/automatisch-betaling-updaten', 'pay_key' => $user->pay_key]);
+            <?php echo Html::a(' Automatisch ophogen wijzigen', ['/mollie/automatisch-betaling-update', 'pay_key' => $user->pay_key]);
         } else {
             ?> Je maakt geen gebruik van automatisch ophogen. <?php
         } ?>

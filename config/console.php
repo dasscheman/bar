@@ -11,7 +11,6 @@ $config = [
         'app\components\Bootstrap',
     ],
     'controllerNamespace' => 'app\commands',
-//    'controllerNamespace' => 'console\controllers',
     'components' => [
         'cache' => [
             'class' => 'yii\caching\FileCache',
@@ -38,13 +37,9 @@ $config = [
         'db' => $db,
         'urlManager' => [
             'class' => 'yii\web\UrlManager',
-            'scriptUrl' => 'http:localhost/Bar/web'
+            'scriptUrl' => YII_ENV_DEV ? 'https://popupbar.biologenkantoor.nl' : 'https://bar.debison.nl',
         ]
     ],
-//    'authManager' => [
-//        'class' => 'dektrium\rbac\RbacConsoleModule',
-//        'defaultRoles' => ['guest', 'user'],
-//    ],
     'modules' => [
         'user' => [
             'class' => 'dektrium\user\Module',
@@ -59,13 +54,6 @@ $config = [
         'rbac' => 'dektrium\rbac\RbacConsoleModule'
     ],
     'params' => $params,
-    /*
-    'controllerMap' => [
-        'fixture' => [ // Fixture generation command line.
-            'class' => 'yii\faker\FixtureController',
-        ],
-    ],
-    */
 ];
 
 if (YII_ENV_DEV) {

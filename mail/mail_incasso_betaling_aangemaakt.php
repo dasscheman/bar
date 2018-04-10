@@ -19,7 +19,7 @@ use yii\helpers\Url;
         <br>
         <br>
         Hier kun je automatisch ophogen stop zetten of de hoogte van het bedrag wijzigen:
-        <?php echo Html::a(' Automatisch ophogen wijzigen', ['/mollie/automatisch-betaling-updaten', 'pay_key' => $user->pay_key]); ?>
+        <?php echo Html::a(' Automatisch ophogen wijzigen', ['/mollie/automatisch-betaling-update', 'pay_key' => $user->pay_key]); ?>
         <br>
         <br>
         Worden er incasso's gedaan waar je het niet mee eens bent, neem dan contact met mij op en dan regelen we het.
