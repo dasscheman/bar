@@ -22,9 +22,10 @@ use yii\helpers\ArrayHelper;
  * @property int $created_by
  * @property string $updated_at
  * @property int $updated_by
+ * @property int $mollie_status
+ * @property string $mollie_id
+ * @property string $deleted_at
  *
- * @property Inkoop[] $inkoops
- * @property Factuur $factuur
  * @property RelatedTransacties[] $relatedTransacties
  * @property RelatedTransacties[] $relatedTransacties0
  * @property Transacties[] $parentTransacties
@@ -32,11 +33,20 @@ use yii\helpers\ArrayHelper;
  * @property BetalingType $type
  * @property Bonnen $bon
  * @property User $createdBy
+ * @property Factuur $factuur
  * @property User $updatedBy
  * @property User $transactiesUser
  */
 class Transacties extends BarActiveRecord
 {
+    const MOLLIE_STATUS_open = 1;
+    const MOLLIE_STATUS_cancelled = 2;
+    const MOLLIE_STATUS_expired = 3;
+    const MOLLIE_STATUS_failed = 4;
+    const MOLLIE_STATUS_paid = 5;
+    const MOLLIE_STATUS_refunded = 6;
+    const MOLLIE_STATUS_pending = 7;
+    const MOLLIE_STATUS_paidout = 8;
     public $all_related_transactions;
 
     /**
@@ -54,10 +64,10 @@ class Transacties extends BarActiveRecord
     {
         return [
             [['transacties_user_id', 'bedrag', 'type_id', 'status', 'datum'], 'required'],
-            [['transacties_user_id', 'bon_id', 'factuur_id', 'type_id', 'status', 'created_by', 'updated_by'], 'integer'],
+            [['transacties_user_id', 'bon_id', 'factuur_id', 'type_id', 'status', 'created_by', 'updated_by', 'mollie_status'], 'integer'],
             [['bedrag'], 'number'],
-            [['datum', 'created_at', 'updated_at'], 'safe'],
-            [['omschrijving'], 'string', 'max' => 255],
+            [['datum', 'created_at', 'updated_at', 'deleted_at'], 'safe'],
+            [['omschrijving', 'mollie_id'], 'string', 'max' => 255],
             [['factuur_id'], 'exist', 'skipOnError' => true, 'targetClass' => Factuur::className(), 'targetAttribute' => ['factuur_id' => 'factuur_id']],
             [['type_id'], 'exist', 'skipOnError' => true, 'targetClass' => BetalingType::className(), 'targetAttribute' => ['type_id' => 'type_id']],
             [['bon_id'], 'exist', 'skipOnError' => true, 'targetClass' => Bonnen::className(), 'targetAttribute' => ['bon_id' => 'bon_id']],
@@ -87,6 +97,9 @@ class Transacties extends BarActiveRecord
             'created_by' => 'Created By',
             'updated_at' => 'Updated At',
             'updated_by' => 'Updated By',
+            'mollie_status' => 'Mollie Status',
+            'mollie_id' => 'Mollie ID',
+            'deleted_at' => 'Deleted At',
         ];
     }
 
@@ -167,6 +180,47 @@ class Transacties extends BarActiveRecord
         return $this->hasOne(User::className(), ['id' => 'transacties_user_id']);
     }
 
+    /**
+     * Retrieves a list of Mollie statussen
+     * @return array an array of available statussen.
+     */
+    public function getMollieStatusOptions()
+    {
+        return [
+            self::MOLLIE_STATUS_open => 'open',
+            self::MOLLIE_STATUS_cancelled => 'cancelled',
+            self::MOLLIE_STATUS_expired => 'expired',
+            self::MOLLIE_STATUS_failed => 'failed',
+            self::MOLLIE_STATUS_paid => 'paid',
+            self::MOLLIE_STATUS_refunded => 'refunded',
+            self::MOLLIE_STATUS_pending => 'pending',
+            self::MOLLIE_STATUS_paidout => 'paidout'
+        ];
+    }
+
+    /**
+     * @return string the status text display
+     */
+    public function getMollieStatusText()
+    {
+        $statusOptions = $this->mollieStatusOptions;
+        if (isset($statusOptions[$this->mollie_status])) {
+            return $statusOptions[$this->mollie_status];
+        }
+    }
+
+    /**
+     * @return string the status id
+     */
+    public function getMollieStatusId($status)
+    {
+        $id = array_search($status, $this->mollieStatusOptions);
+        if (isset($id)) {
+            return $id;
+        }
+        return false;
+    }
+
     public function controleerStatusTransacties()
     {
         $transacties = Transacties::find()
@@ -188,6 +242,11 @@ class Transacties extends BarActiveRecord
         return $transacties->count();
     }
 
+    public function setRetrievedMollieStatus($mollie_status)
+    {
+        $this->mollie_status = $this->getMollieStatusId($mollie_status);
+    }
+
     public function getTransactionOmschrijving()
     {
         return $this->omschrijving . ' - '
@@ -195,31 +254,6 @@ class Transacties extends BarActiveRecord
             . $this->getTransactiesUser()->one()->getProfile()->one()->voornaam . ' '
             . $this->getTransactiesUser()->one()->getProfile()->one()->achternaam . ')';
     }
-
-    /**
-    * Retrieves a list of users
-    * @return array an of available relatedtransactions.'.
-    */
-//    public function getRelatedTransactionsIds()
-//    {
-//        $queryParentTransactions = RelatedTransacties::find()
-//            ->select('child_transacties_id')
-//            ->where('parent_transacties_id=:transacties_id')
-//            ->addParams([':transacties_id' => $this->transacties_id]);
-//
-//        $queryChildTransactions = RelatedTransacties::find()
-//            ->select('parent_transacties_id')
-//            ->where('child_transacties_id=:transacties_id')
-//            ->addParams([':transacties_id' => $this->transacties_id]);
-//
-//        $result = Transacties::find()
-//            ->select('transacties_id')
-//            ->where(['in', 'transacties.transacties_id', $queryParentTransactions])
-//            ->orwhere(['in', 'transacties.transacties_id', $queryChildTransactions])
-//            ->all();
-//
-//        return $result;
-//    }
 
     /**
     * Retrieves a list of users

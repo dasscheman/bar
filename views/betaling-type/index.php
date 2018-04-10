@@ -41,17 +41,28 @@ $toolbar = FALSE;
                     'dataProvider' => $dataProvider,
                     'filterModel' => $searchModel,
                     'columns' => [
-                        ['class' => 'yii\grid\SerialColumn'],
-
-                        'type_id',
                         'omschrijving',
-                        'bijaf',
+                        'bijaf' => [
+                            'attribute' => 'bijaf',
+                            'value' => function($model){
+                                return $model->getBijafText();
+                            },
+                            'headerOptions' => ['style' => 'width:5%'],
+                        ],
+                        'state' => [
+                            'attribute' => 'state',
+                            'value' => function($model){
+                                return $model->getStateText();
+                            },
+                        ],
                         'created_at',
                         'created_by',
                         // 'updated_at',
                         // 'updated_by',
 
-                        ['class' => 'yii\grid\ActionColumn'],
+                        [
+                            'class' => 'yii\grid\ActionColumn',
+                            'headerOptions' => ['style' => 'width:20%'],],
                     ],
                 ]);
                 Pjax::end();?>

@@ -14,16 +14,16 @@ use yii\widgets\Pjax;
  * @var \app\models\Factuur $searchModel
  */
 
-$bordered = FALSE;
-$striped = TRUE;
-$condensed = TRUE;
-$responsive = FALSE;
-$hover = TRUE;
-$pageSummary = FALSE;
-$heading = FALSE;
-$exportConfig = FALSE;
-$responsiveWrap = FALSE;
-$toolbar = FALSE;
+$bordered = false;
+$striped = true;
+$condensed = true;
+$responsive = false;
+$hover = true;
+$pageSummary = false;
+$heading = false;
+$exportConfig = false;
+$responsiveWrap = false;
+$toolbar = false;
 ?>
 
 <div class="row">
@@ -46,7 +46,7 @@ $toolbar = FALSE;
                         'factuur_id',
                         'ontvanger' => [
                             'attribute' => 'ontvanger',
-                            'value' => function($model){
+                            'value' => function ($model) {
                                 return $model->getOntvanger()->one()->username;
                             },
                         ],
@@ -54,6 +54,7 @@ $toolbar = FALSE;
                         'verzend_datum' => [
                             'attribute' => 'verzend_datum',
                         ],
+                        'deleted_at',
                         [
                             'class' => 'yii\grid\ActionColumn',
                             'header'=>'Actions',
@@ -73,6 +74,14 @@ $toolbar = FALSE;
                                             'data-pjax' => "0"
                                         ]
                                     );
+                                },
+                            ],
+                            'visibleButtons' => [
+                                'delete' => function ($model, $key, $index) {
+                                    if ($model->deleted_at === null) {
+                                        return true;
+                                    }
+                                    return false;
                                 },
                             ],
                         ]

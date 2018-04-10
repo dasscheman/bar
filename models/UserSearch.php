@@ -52,9 +52,9 @@ class UserSearch extends User
      *
      * @return ActiveDataProvider
      */
-    public function search($params, $lijst_id = NULL)
+    public function search($params, $lijst_id = null)
     {
-        if ($lijst_id === NULL) {
+        if ($lijst_id === null) {
             $query = User::find()
                     ->where('ISNULL(blocked_at)');
         } else {
@@ -95,7 +95,7 @@ class UserSearch extends User
         // grid filtering conditions
         $query->andFilterWhere([
             'id' => $this->id,
-            'openstaand' => $this->openstaand,
+            'balans' => $this->balans,
             'sumNewBijTransactiesUser' => $this->sumNewBijTransactiesUser,
             'sumNewAfTransactiesUser' => $this->sumNewAfTransactiesUser,
             'sumOldBijTransactiesUser' => $this->sumOldBijTransactiesUser,

@@ -9,6 +9,7 @@ use app\models\Assortiment;
 use app\models\AssortimentSearch;
 use app\models\Turven;
 use app\models\TurvenSearch;
+use app\models\Transacties;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
@@ -42,17 +43,17 @@ class TurvenController extends Controller
                 'only' => ['index', 'view', 'create', 'update', 'delete', 'barinvoer', 'rondje'],
                 'rules' => [
                     [
-                        'allow' => TRUE,
+                        'allow' => true,
                         'actions' => ['index', 'delete', 'create', 'update', 'view'],
                         'roles' =>  ['admin', 'beheerder'],
                     ],
                     [
-                        'allow' => TRUE,
+                        'allow' => true,
                         'actions' => ['barinvoer', 'rondje'],
                         'roles' =>  ['gebruiker'],
                     ],
                     [
-                        'allow' => FALSE,  // deny all users
+                        'allow' => false,  // deny all users
                         'roles'=> ['*'],
                     ],
                 ],
@@ -86,13 +87,13 @@ class TurvenController extends Controller
 
         $assortSearchModel = new AssortimentSearch();
         $assortDataProvider = $assortSearchModel->searchAvailable(Yii::$app->request->queryParams);
-        if(Yii::$app->request->get('user_id') !== NULL) {
+        if (Yii::$app->request->get('user_id') !== null) {
             $user_id = Yii::$app->request->get('user_id');
-            if(Yii::$app->request->get('count') !== NULL) {
+            if (Yii::$app->request->get('count') !== null) {
                 $count = Yii::$app->request->get('count');
             }
 
-            if(Yii::$app->request->get('assortiment_id') !== NULL) {
+            if (Yii::$app->request->get('assortiment_id') !== null) {
                 $assortiment_id = Yii::$app->request->get('assortiment_id');
                 if (isset($count[$assortiment_id])) {
                     $count[$assortiment_id]++;
@@ -101,9 +102,9 @@ class TurvenController extends Controller
                 }
             }
 
-            if(Yii::$app->request->get('actie') === 'opslaan' &&
-                $count !== NULL &&
-                Turven::saveBarInvoer($user_id, $count)){
+            if (Yii::$app->request->get('actie') === 'opslaan' &&
+                $count !== null &&
+                Turven::saveBarInvoer($user_id, $count)) {
                 $message = 'Volgende turven zijn toegevoegd bij ' . User::getUserDisplayName($user_id) . ': ';
                 $i = 0;
                 foreach ($count as $assort_id => $aantal) {
@@ -117,13 +118,13 @@ class TurvenController extends Controller
                 Yii::$app->session->setFlash('warning', $message);
                 $count = [];
                 $tab = '';
-                if(!empty(Yii::$app->request->get('tab'))) {
+                if (!empty(Yii::$app->request->get('tab'))) {
                     $tab = 'w2-tab2';
                 }
                 return $this->redirect(['barinvoer', '#' => $tab]);
             }
 
-            if(!User::limitenControleren($user_id)) {
+            if (!User::limitenControleren($user_id)) {
                 Yii::$app->session->setFlash('warning', Yii::t('app', 'Wat errug, betalen pannenkoek! Vanaf 1 maart kun je niet meer turven als je meer dan 20 euro in het rood staat.'));
             }
             return $this->render('bar-invoer', [
@@ -152,13 +153,13 @@ class TurvenController extends Controller
         $userDataProvider = $userSearchModel->search(Yii::$app->request->queryParams);
         $assortiment_id = Yii::$app->request->get('assortiment_id');
 
-        if(Yii::$app->request->get('users') === NULL) {
+        if (Yii::$app->request->get('users') === null) {
             $users = [];
         } else {
             $users = Yii::$app->request->get('users');
         }
 
-        if(Yii::$app->request->get('actie') === 'opslaan' &&
+        if (Yii::$app->request->get('actie') === 'opslaan' &&
             Turven::saveRondje($users, $assortiment_id)) {
             $message = 'Eén ' . Assortiment::getAssortimentName($assortiment_id) . ' voor: ';
             $i = 0;
@@ -179,11 +180,11 @@ class TurvenController extends Controller
         }
 
 
-        if(Yii::$app->request->get('user_id') !== NULL) {
+        if (Yii::$app->request->get('user_id') !== null) {
             $users[] = Yii::$app->request->get('user_id');
         }
 
-        if(Yii::$app->request->get('remove') !== NULL) {
+        if (Yii::$app->request->get('remove') !== null) {
             if (($key = array_search(Yii::$app->request->get('remove'), $users)) !== false) {
                 unset($users[$key]);
             }
@@ -202,6 +203,7 @@ class TurvenController extends Controller
      */
     public function actionView($id)
     {
+        $this->layout = 'main-fluid';
         return $this->render('view', [
             'model' => $this->findModel($id),
         ]);
@@ -215,7 +217,7 @@ class TurvenController extends Controller
     public function actionCreate()
     {
         $models = [new Turven()];
-        for($i = 1; $i < 5; $i++) {
+        for ($i = 1; $i < 5; $i++) {
             $models[] = new Turven();
         }
 
@@ -225,25 +227,25 @@ class TurvenController extends Controller
             $dbTransaction = Yii::$app->db->beginTransaction();
             try {
                 foreach ($models as $model) {
-                    if(empty($model->assortiment_id)) {
+                    if (empty($model->assortiment_id)) {
                         continue;
                     }
 
-                    if($count > 0) {
+                    if ($count > 0) {
                         $model->datum = $models[0]->datum;
                         $model->turflijst_id = $models[0]->turflijst_id;
                         $model->consumer_user_id = $models[0]->consumer_user_id;
                         $model->status = $models[0]->status;
                     }
 
-                    if(empty($model->datum)) {
+                    if (empty($model->datum)) {
                         $prijslijst = Prijslijst::determinePrijslijstTurflijstIdBased($model->assortiment_id, $model->turflijst_id);
-                    } else if(empty($model->turflijst_id)) {
+                    } elseif (empty($model->turflijst_id)) {
                         $prijslijst = Prijslijst::determinePrijslijstDateBased($model->assortiment_id, $model->datum);
                     }
 
-                    if(!$prijslijst) {
-                        if(empty($model->turflijst_id)) {
+                    if (!$prijslijst) {
+                        if (empty($model->turflijst_id)) {
                             Yii::$app->session->setFlash('warning', Yii::t('app', 'Er is geen geldige turflijst voor ' . $model->getAssortiment()->one()->name));
                         } else {
                             Yii::$app->session->setFlash('warning', Yii::t('app', 'Er is geen geldige prijs voor ' . $model->getAssortiment()->one()->name));
@@ -258,7 +260,7 @@ class TurvenController extends Controller
                     $model->type = Turven::TYPE_turflijst;
                     $model->status = Turven::STATUS_gecontroleerd;
 
-                    if(!$model->save()) {
+                    if (!$model->save()) {
                         $dbTransaction->rollBack();
                         foreach ($model->errors as $key => $error) {
                             Yii::$app->session->setFlash('warning', Yii::t('app', 'Kan turven niet opslaan:' . $error[0]));
@@ -307,44 +309,69 @@ class TurvenController extends Controller
         $model = $this->findModel($id);
         $factuur = $model->getFactuur()->one();
 
-        if(empty($factuur)) {
-            if(!$model->delete()){
-                 Yii::$app->session->setFlash('warning', Yii::t('app', 'Je kunt deze transactie niet verwijderen.'));
+        if (empty($factuur)) {
+            $model->deleted_at = Yii::$app->setupdatetime->storeFormat(time(), 'datetime');
+            if (!$model->save()) {
+                foreach ($model->errors as $key => $error) {
+                    Yii::$app->session->setFlash('warning', Yii::t('app', 'Fout met opslaan: ' . $key . ':' . $error[0]));
+                }
+
+                return $this->redirect(['index']);
             }
             return $this->redirect(['index']);
         }
 
         $dbTransaction = Yii::$app->db->beginTransaction();
         try {
-
-            foreach($factuur->getTransacties()->all() as $transactie) {
-                $transactie->status = Transacties::STATUS_tercontrole;
-                $transactie->factuur_id = NULL;
-                if(!$transactie->save()) {
+            foreach ($factuur->getTransacties()->all() as $transactie) {
+                $transactie->status = Transacties::STATUS_herberekend;
+                $transactie->factuur_id = null;
+                if (!$transactie->save()) {
+                    foreach ($transactie->errors as $key => $error) {
+                        Yii::$app->session->setFlash('warning', Yii::t('app', 'Fout met opslaan: ' . $key . ':' . $error[0]));
+                    }
                     $dbTransaction->rollBack();
-                    return FALSE;
+                    return $this->redirect(['index']);
                 }
             }
-            foreach($factuur->getTurvens()->all() as $turf) {
+            foreach ($factuur->getTurvens()->all() as $turf) {
                 if ($model->turven_id == $turf->turven_id) {
                     // Deze gaan we sowieso verwijderen, ik weet niet of het
                     // goed gaat als dit record dan eerst gewijzigd wordt.
                     continue;
                 }
-                $turf->status = Turven::STATUS_tercontrole;
-                $turf->factuur_id = NULL;
-                if(!$turf->save()) {
+                $turf->status = Turven::STATUS_herberekend;
+                $turf->factuur_id = null;
+                if (!$turf->save()) {
+                    foreach ($turf->errors as $key => $error) {
+                        Yii::$app->session->setFlash('warning', Yii::t('app', 'Fout met opslaan: ' . $key . ':' . $error[0]));
+                    }
                     $dbTransaction->rollBack();
-                    return FALSE;
+                    return $this->redirect(['index']);
                 }
             }
-            if(!$factuur->delete() || $model->delete()){
+
+            $factuur->deleted_at = Yii::$app->setupdatetime->storeFormat(time(), 'datetime');
+            if (!$factuur->save()) {
+                foreach ($factuur->errors as $key => $error) {
+                    Yii::$app->session->setFlash('warning', Yii::t('app', 'Fout met opslaan: ' . $key . ':' . $error[0]));
+                }
+
                 $dbTransaction->rollBack();
-                return FALSE;
+                return $this->redirect(['index']);
+            }
+            $model->deleted_at = Yii::$app->setupdatetime->storeFormat(time(), 'datetime');
+            if (!$model->save()) {
+                foreach ($model->errors as $key => $error) {
+                    Yii::$app->session->setFlash('warning', Yii::t('app', 'Fout met opslaan: ' . $key . ':' . $error[0]));
+                }
+
+                $dbTransaction->rollBack();
+                return $this->redirect(['index']);
             }
             $dbTransaction->commit();
         } catch (\Exception $e) {
-            Yii::$app->session->setFlash('warning', Yii::t('app', 'Je kunt deze turven niet verwijderen.'));
+            Yii::$app->session->setFlash('warning', Yii::t('app', 'Je kunt deze turven niet verwijderen: ') . $e);
         }
         return $this->redirect(['index']);
     }

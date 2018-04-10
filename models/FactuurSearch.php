@@ -41,7 +41,8 @@ class FactuurSearch extends Factuur
      */
     public function search($params)
     {
-        $query = Factuur::find();
+        $query = Factuur::find()
+            ->orderBy(['factuur_id' => SORT_DESC]);
 
         // add conditions that should always apply here
 

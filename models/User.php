@@ -1,26 +1,31 @@
 <?php
 
 namespace app\models;
-use yii\helpers\ArrayHelper;
 
+use Yii;
+use yii\helpers\ArrayHelper;
 use dektrium\user\models\User as BaseUser;
 
 /**
  * This is the model class for table "user".
  *
- * @property integer $id
+ * @property int $id
  * @property string $username
  * @property string $email
  * @property string $password_hash
  * @property string $auth_key
- * @property integer $confirmed_at
+ * @property int $confirmed_at
  * @property string $unconfirmed_email
- * @property integer $blocked_at
+ * @property int $blocked_at
  * @property string $registration_ip
- * @property integer $created_at
- * @property integer $updated_at
- * @property integer $flags
- * @property integer $last_login_at
+ * @property int $created_at
+ * @property int $updated_at
+ * @property int $flags
+ * @property int $last_login_at
+ * @property string $pay_key
+ * @property int $automatische_betaling
+ * @property string $mollie_customer_id
+ * @property string $mollie_bedrag
  *
  * @property Assortiment[] $assortiments
  * @property Assortiment[] $assortiments0
@@ -28,6 +33,10 @@ use dektrium\user\models\User as BaseUser;
  * @property BetalingType[] $betalingTypes0
  * @property Bonnen[] $bonnens
  * @property Bonnen[] $bonnens0
+ * @property Bonnen[] $bonnens1
+ * @property Factuur[] $factuurs
+ * @property Factuur[] $factuurs0
+ * @property Factuur[] $factuurs1
  * @property Favorieten[] $favorietens
  * @property Favorieten[] $favorietens0
  * @property Favorieten[] $favorietens1
@@ -36,10 +45,14 @@ use dektrium\user\models\User as BaseUser;
  * @property FavorietenLijsten[] $favorietenLijstens1
  * @property Inkoop[] $inkoops
  * @property Inkoop[] $inkoops0
- * @property Inkoop[] $inkoops1
+ * @property Inkoop[] $inkoops
+ * @property Kosten[] $kostens
+ * @property Kosten[] $kostens0
  * @property Prijslijst[] $prijslijsts
  * @property Prijslijst[] $prijslijsts0
  * @property Profile $profile
+ * @property RelatedTransacties[] $relatedTransacties
+ * @property RelatedTransacties[] $relatedTransacties0
  * @property SocialAccount[] $socialAccounts
  * @property Token[] $tokens
  * @property Transacties[] $transacties
@@ -54,11 +67,10 @@ use dektrium\user\models\User as BaseUser;
 
 class User extends BaseUser
 {
-    public $openstaand;
-
-     /**
-     * @inheritdoc
-     */
+    public $balans;
+    /**
+    * @inheritdoc
+    */
     public static function tableName()
     {
         return 'user';
@@ -69,16 +81,11 @@ class User extends BaseUser
      */
     public function rules()
     {
-        return [
-            [['username', 'email', 'password_hash', 'auth_key', 'created_at', 'updated_at'], 'required'],
-            [['confirmed_at', 'blocked_at', 'created_at', 'updated_at', 'flags', 'last_login_at'], 'integer'],
-            [['username', 'email', 'unconfirmed_email'], 'string', 'max' => 255],
-            [['password_hash'], 'string', 'max' => 60],
-            [['auth_key'], 'string', 'max' => 32],
-            [['registration_ip'], 'string', 'max' => 45],
-            [['username'], 'unique'],
-            [['email'], 'unique'],
-        ];
+        $rules = parent::rules();
+        $rules[] = [['mollie_bedrag'], 'number'];
+        $rules[] = [['pay_key', 'mollie_customer_id'], 'string', 'max' => 255];
+        $rules[] = [['automatische_betaling'], 'boolean'];
+        return $rules;
     }
 
     /**
@@ -106,8 +113,20 @@ class User extends BaseUser
             'sumOldAfTransactiesUser' => 'Oud betaling af',
             'sumNewTurvenUsers' => 'New turven',
             'sumOldTurvenUsers' => 'Oud turven',
-            'openstaand' => 'Openstaand bedrag',
+            'balans' => 'Openstaand bedrag',
+            'pay_key' => 'Pay Key',
+            'automatische_betaling' => 'Automatische Betaling',
+            'mollie_customer_id' => 'Mollie Customer ID',
+            'mollie_bedrag' => 'Mollie Bedrag',
         ];
+    }
+
+    public function beforeSave($insert)
+    {
+        if (empty($this->pay_key)) {
+            $this->setAttribute('pay_key', Yii::$app->security->generateRandomString());
+        }
+        return parent::beforeSave($insert);
     }
 
     /**
@@ -127,107 +146,156 @@ class User extends BaseUser
     }
 
     public function getBetalingTypes()
-     {
-         return $this->hasMany(BetalingType::className(), ['created_by' => 'id']);
-     }
-     /**
-      * @return \yii\db\ActiveQuery
-      */
-     public function getBetalingTypes0()
-     {
-         return $this->hasMany(BetalingType::className(), ['updated_by' => 'id']);
-     }
-     /**
-      * @return \yii\db\ActiveQuery
-      */
-     public function getBonnens()
-     {
-         return $this->hasMany(Bonnen::className(), ['created_by' => 'id']);
-     }
-     /**
-      * @return \yii\db\ActiveQuery
-      */
-     public function getBonnens0()
-     {
-         return $this->hasMany(Bonnen::className(), ['updated_by' => 'id']);
-     }
-     /**
-      * @return \yii\db\ActiveQuery
-      */
-     public function getFavorietens()
-     {
-         return $this->hasMany(Favorieten::className(), ['created_by' => 'id']);
-     }
-     /**
-      * @return \yii\db\ActiveQuery
-      */
-     public function getFavorietens0()
-     {
-         return $this->hasMany(Favorieten::className(), ['selected_user_id' => 'id']);
-     }
-     /**
-      * @return \yii\db\ActiveQuery
-      */
-     public function getFavorietens1()
-     {
-         return $this->hasMany(Favorieten::className(), ['updated_by' => 'id']);
-     }
-     /**
-      * @return \yii\db\ActiveQuery
-      */
-     public function getFavorietenLijstens()
-     {
-         return $this->hasMany(FavorietenLijsten::className(), ['created_by' => 'id']);
-     }
-     /**
-      * @return \yii\db\ActiveQuery
-      */
-     public function getFavorietenLijstens0()
-     {
-         return $this->hasMany(FavorietenLijsten::className(), ['updated_by' => 'id']);
-     }
-     /**
-      * @return \yii\db\ActiveQuery
-      */
-     public function getFavorietenLijstens1()
-     {
-         return $this->hasMany(FavorietenLijsten::className(), ['user_id' => 'id']);
-     }
-     /**
-      * @return \yii\db\ActiveQuery
-      */
-     public function getInkoops()
-     {
-         return $this->hasMany(Inkoop::className(), ['created_by' => 'id']);
-     }
-     /**
-      * @return \yii\db\ActiveQuery
-      */
-     public function getInkoops0()
-     {
-         return $this->hasMany(Inkoop::className(), ['updated_by' => 'id']);
-     }
-     /**
-      * @return \yii\db\ActiveQuery
-      */
-     public function getInkoops1()
-     {
-         return $this->hasMany(Inkoop::className(), ['inkoper_user_id' => 'id']);
-     }
-     /**
-      * @return \yii\db\ActiveQuery
-      */
-     public function getPrijslijsts()
-     {
-         return $this->hasMany(Prijslijst::className(), ['created_by' => 'id']);
-     }
-     /**
-      * @return \yii\db\ActiveQuery
-      */
-     public function getPrijslijsts0()
-     {
-         return $this->hasMany(Prijslijst::className(), ['updated_by' => 'id']);
-     }
+    {
+        return $this->hasMany(BetalingType::className(), ['created_by' => 'id']);
+    }
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getBetalingTypes0()
+    {
+        return $this->hasMany(BetalingType::className(), ['updated_by' => 'id']);
+    }
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getBonnens()
+    {
+        return $this->hasMany(Bonnen::className(), ['created_by' => 'id']);
+    }
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getBonnens0()
+    {
+        return $this->hasMany(Bonnen::className(), ['updated_by' => 'id']);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getBonnens1()
+    {
+        return $this->hasMany(Bonnen::className(), ['inkoper_user_id' => 'id']);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getFactuurs()
+    {
+        return $this->hasMany(Factuur::className(), ['created_by' => 'id']);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getFactuurs0()
+    {
+        return $this->hasMany(Factuur::className(), ['ontvanger' => 'id']);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getFactuurs1()
+    {
+        return $this->hasMany(Factuur::className(), ['updated_by' => 'id']);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getFavorietens()
+    {
+        return $this->hasMany(Favorieten::className(), ['created_by' => 'id']);
+    }
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getFavorietens0()
+    {
+        return $this->hasMany(Favorieten::className(), ['selected_user_id' => 'id']);
+    }
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getFavorietens1()
+    {
+        return $this->hasMany(Favorieten::className(), ['updated_by' => 'id']);
+    }
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getFavorietenLijstens()
+    {
+        return $this->hasMany(FavorietenLijsten::className(), ['created_by' => 'id']);
+    }
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getFavorietenLijstens0()
+    {
+        return $this->hasMany(FavorietenLijsten::className(), ['updated_by' => 'id']);
+    }
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getFavorietenLijstens1()
+    {
+        return $this->hasMany(FavorietenLijsten::className(), ['user_id' => 'id']);
+    }
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getInkoops()
+    {
+        return $this->hasMany(Inkoop::className(), ['created_by' => 'id']);
+    }
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getInkoops0()
+    {
+        return $this->hasMany(Inkoop::className(), ['updated_by' => 'id']);
+    }
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getInkoops1()
+    {
+        return $this->hasMany(Inkoop::className(), ['inkoper_user_id' => 'id']);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getKostens()
+    {
+        return $this->hasMany(Kosten::className(), ['created_by' => 'id']);
+    }
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getKostens0()
+    {
+        return $this->hasMany(Kosten::className(), ['updated_by' => 'id']);
+    }
+    
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getPrijslijsts()
+    {
+        return $this->hasMany(Prijslijst::className(), ['created_by' => 'id']);
+    }
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getPrijslijsts0()
+    {
+        return $this->hasMany(Prijslijst::className(), ['updated_by' => 'id']);
+    }
 
     /**
      * @return \yii\db\ActiveQuery
@@ -237,6 +305,22 @@ class User extends BaseUser
         return $this->hasOne(Profile::className(), ['user_id' => 'id']);
     }
 
+    /**
+    * @return \yii\db\ActiveQuery
+    */
+    public function getRelatedTransacties()
+    {
+        return $this->hasMany(RelatedTransacties::className(), ['updated_by' => 'id']);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getRelatedTransacties0()
+    {
+        return $this->hasMany(RelatedTransacties::className(), ['created_by' => 'id']);
+    }
+ 
     /**
      * @return \yii\db\ActiveQuery
      */
@@ -278,10 +362,12 @@ class User extends BaseUser
         $ids = ArrayHelper::getColumn($test, 'type_id');
 
         return $this->hasMany(Transacties::className(), ['transacties_user_id' => 'id'])
-            ->where('transacties.status =:status')
+            ->where('transacties.status =:status_gecontroleerd OR transacties.status =:status_herberekend')
             ->andWhere(['in', 'transacties.type_id', $ids])
+            ->andWhere('ISNULL(deleted_at)')
             ->params([
-                ':status' =>Transacties::STATUS_gecontroleerd
+                ':status_gecontroleerd' =>Transacties::STATUS_gecontroleerd,
+                ':status_herberekend' =>Transacties::STATUS_herberekend
             ]);
     }
 
@@ -294,11 +380,31 @@ class User extends BaseUser
         $ids = ArrayHelper::getColumn($test, 'type_id');
 
         return $this->hasMany(Transacties::className(), ['transacties_user_id' => 'id'])
-            ->where('transacties.status =:status')
+            ->where('transacties.status =:status_gecontroleerd OR transacties.status =:status_herberekend')
             ->andWhere(['in', 'transacties.type_id', $ids])
+            ->andWhere('ISNULL(deleted_at)')
             ->params([
-                ':status' =>Transacties::STATUS_gecontroleerd
+                ':status_gecontroleerd' =>Transacties::STATUS_gecontroleerd,
+                ':status_herberekend' =>Transacties::STATUS_herberekend
             ]);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getInvalidTransactionsNotInvoiced()
+    {
+        $status = [
+            Transacties::STATUS_ingevoerd,
+            Transacties::STATUS_tercontrole,
+            Transacties::STATUS_teruggestord,
+            Transacties::STATUS_geannuleerd,
+            Transacties::STATUS_ongeldig
+        ];
+        return $this->hasMany(Transacties::className(), ['transacties_user_id' => 'id'])
+            ->Where(['in', 'transacties.status', $status])
+            ->andWhere('ISNULL(deleted_at)')
+            ->andWhere('ISNULL(factuur_id)');
     }
 
     /**
@@ -310,10 +416,12 @@ class User extends BaseUser
         $ids = ArrayHelper::getColumn($test, 'type_id');
 
         return $this->hasMany(Transacties::className(), ['transacties_user_id' => 'id'])
-            ->where('transacties.status =:status')
+            ->where('transacties.status =:status_gecontroleerd OR transacties.status =:status_herberekend')
             ->andWhere(['in', 'transacties.type_id', $ids])
+            ->andWhere('ISNULL(deleted_at)')
             ->params([
-                ':status' =>Transacties::STATUS_gecontroleerd
+                ':status_gecontroleerd' =>Transacties::STATUS_gecontroleerd,
+                ':status_herberekend' =>Transacties::STATUS_herberekend
             ])
             ->sum('bedrag');
     }
@@ -327,10 +435,12 @@ class User extends BaseUser
         $ids = ArrayHelper::getColumn($test, 'type_id');
 
         return $this->hasMany(Transacties::className(), ['transacties_user_id' => 'id'])
-            ->where('transacties.status =:status')
+            ->where('transacties.status =:status_gecontroleerd OR transacties.status =:status_herberekend')
             ->andWhere(['in', 'transacties.type_id', $ids])
+            ->andWhere('ISNULL(deleted_at)')
             ->params([
-                ':status' =>Transacties::STATUS_gecontroleerd
+                ':status_gecontroleerd' =>Transacties::STATUS_gecontroleerd,
+                ':status_herberekend' =>Transacties::STATUS_herberekend
             ])
             ->sum('bedrag');
     }
@@ -346,6 +456,7 @@ class User extends BaseUser
         return $this->hasMany(Transacties::className(), ['transacties_user_id' => 'id'])
             ->where(['>=', 'transacties.status',  Transacties::STATUS_factuur_gegenereerd])
             ->andWhere(['in', 'transacties.type_id', $ids])
+            ->andWhere('ISNULL(deleted_at)')
             ->sum('bedrag');
     }
 
@@ -360,6 +471,7 @@ class User extends BaseUser
         return $this->hasMany(Transacties::className(), ['transacties_user_id' => 'id'])
             ->where(['>=', 'transacties.status', Transacties::STATUS_factuur_gegenereerd])
             ->andWhere(['in', 'transacties.type_id', $ids])
+            ->andWhere('ISNULL(deleted_at)')
             ->sum('bedrag');
     }
 
@@ -393,7 +505,12 @@ class User extends BaseUser
     public function getNewTurvenUsers()
     {
         return $this->hasMany(Turven::className(), ['consumer_user_id' => 'id'])
-            ->where(['turven.status' => Turven::STATUS_gecontroleerd])
+            ->where('turven.status =:status_gecontroleerd OR turven.status =:status_herberekend')
+            ->andWhere('ISNULL(deleted_at)')
+            ->params([
+                ':status_gecontroleerd' =>Turven::STATUS_gecontroleerd,
+                ':status_herberekend' =>Turven::STATUS_herberekend
+            ])
             ->orderBy(['datum'=>SORT_DESC]);
     }
 
@@ -403,7 +520,12 @@ class User extends BaseUser
     public function getSumNewTurvenUsers()
     {
         return $this->hasMany(Turven::className(), ['consumer_user_id' => 'id'])
-            ->where(['turven.status' => Turven::STATUS_gecontroleerd])
+            ->where('turven.status =:status_gecontroleerd OR turven.status =:status_herberekend')
+            ->andWhere('ISNULL(deleted_at)')
+            ->params([
+                ':status_gecontroleerd' =>Turven::STATUS_gecontroleerd,
+                ':status_herberekend' =>Turven::STATUS_herberekend
+            ])
             ->sum('totaal_prijs');
     }
 
@@ -414,22 +536,23 @@ class User extends BaseUser
     {
         return $this->hasMany(Turven::className(), ['consumer_user_id' => 'id'])
             ->where(['>=', 'turven.status',  Transacties::STATUS_factuur_gegenereerd])
+            ->andWhere('ISNULL(deleted_at)')
             ->sum('totaal_prijs');
     }
 
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getOpenstaand()
+    public function getBalans()
     {
-            $vorig_openstaand =  $this->getSumOldBijTransactiesUser() - $this->getSumOldTurvenUsers() - $this->getSumOldAfTransactiesUser();
-            $nieuw_openstaand = $vorig_openstaand - $this->sumNewTurvenUsers + $this->sumNewBijTransactiesUser - $this->sumNewAfTransactiesUser;
-            return $nieuw_openstaand;
+        $vorig_openstaand =  $this->getSumOldBijTransactiesUser() - $this->getSumOldTurvenUsers() - $this->getSumOldAfTransactiesUser();
+        $this->balans = $vorig_openstaand - $this->sumNewTurvenUsers + $this->sumNewBijTransactiesUser - $this->sumNewAfTransactiesUser;
+        return $this->balans;
     }
 
     /**
-     * @return \yii\db\ActiveQuery
-     */
+      * @return \yii\db\ActiveQuery
+      */
     public function getTurvens0()
     {
         return $this->hasMany(Turven::className(), ['created_by' => 'id']);
@@ -455,45 +578,28 @@ class User extends BaseUser
     }
 
     /**
-     * @inheritdoc
-     * @return UserQuery the active query used by this AR class.
+     * @return \yii\db\ActiveQuery
      */
-    public static function find()
+    public function getPrijzens()
     {
-        return new UserQuery(get_called_class());
+        return $this->hasMany(Prijzen::className(), ['created_by' => 'id']);
     }
 
-   /**
-    * @return \yii\db\ActiveQuery
-    */
-   public function getFactuurs0()
-   {
-       return $this->hasMany(Factuur::className(), ['updated_by' => 'id']);
-   }
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getPrijzens0()
+    {
+        return $this->hasMany(Prijzen::className(), ['updated_by' => 'id']);
+    }
 
-   /**
-    * @return \yii\db\ActiveQuery
-    */
-   public function getPrijzens()
-   {
-       return $this->hasMany(Prijzen::className(), ['created_by' => 'id']);
-   }
-
-   /**
-    * @return \yii\db\ActiveQuery
-    */
-   public function getPrijzens0()
-   {
-       return $this->hasMany(Prijzen::className(), ['updated_by' => 'id']);
-   }
-
-   /**
-    * @return \yii\db\ActiveQuery
-    */
-   public function getSocialAccounts()
-   {
-       return $this->hasMany(SocialAccount::className(), ['user_id' => 'id']);
-   }
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getSocialAccounts()
+    {
+        return $this->hasMany(SocialAccount::className(), ['user_id' => 'id']);
+    }
 
     /**
      * Finds user by username
@@ -501,16 +607,29 @@ class User extends BaseUser
      * @param  string      $username
      * @return static|null
      */
-    public static function findByUsername($username) {
+    public static function findByUsername($username)
+    {
         return static::findOne(['username' => $username]);
     }
-    
+
+    /**
+     * Finds user by PayKey
+     *
+     * @param  string      $key
+     * @return static|null
+     */
+    public static function findByPayKey($key)
+    {
+        return static::findOne(['pay_key' => $key]);
+    }
+
     /**
      * Generates password hash from password and sets it to the model
      *
      * @param string $password
      */
-    public function hashPassword($password) {
+    public function hashPassword($password)
+    {
         return md5($password);
     }
         
@@ -520,7 +639,8 @@ class User extends BaseUser
      * @param  string  $password password to validate
      * @return boolean if password provided is valid for current user
      */
-    public function validatePassword($password) {
+    public function validatePassword($password)
+    {
         return $this->password === $this->hashPassword($password);
     }
 
@@ -530,7 +650,8 @@ class User extends BaseUser
      * @param int $id Assortiment id.
      * @return string Name of assortiment.
      */
-    public function getUserDisplayName($id) {
+    public function getUserDisplayName($id)
+    {
         if (($model = self::findOne($id)) !== null) {
             $name = $model->profile->voornaam;
             if (isset($model->profile->tussenvoegsel)) {
@@ -540,7 +661,7 @@ class User extends BaseUser
             return $name;
         }
 
-        return FALSE;
+        return false;
     }
     
     /**
@@ -549,19 +670,19 @@ class User extends BaseUser
      * @param int $id user id.
      * @return bolean.
      */
-    public function limitenControleren($id) {
+    public function limitenControleren($id)
+    {
         $user = User::findOne($id);
         // Zet de default limiet
         $limiet = -20;
 
-        if($user->profile->limit_hard !== NULL) {
+        if ($user->profile->limit_hard !== null) {
             $limiet = $user->profile->limit_hard;
         }
-
-        if($user->Openstaand < $limiet) {
-            return FALSE;
+        if ($user->Balans < $limiet) {
+            return false;
         }
 
-        return TRUE;
+        return true;
     }
 }

@@ -11,7 +11,6 @@ $config = [
         'app\components\Bootstrap',
     ],
     'controllerNamespace' => 'app\commands',
-//    'controllerNamespace' => 'console\controllers',
     'components' => [
         'cache' => [
             'class' => 'yii\caching\FileCache',
@@ -29,29 +28,32 @@ $config = [
             // send all mails to a file by default. You have to set
             // 'useFileTransport' to false and configure a transport
             // for the mailer to send real emails.
-            'useFileTransport' => false,
+            'useFileTransport' => YII_ENV_DEV ? true : false,
             'transport' => require(__DIR__ . '/email.php')
         ],
         'setupdatetime' => [
             'class' => 'app\components\SetupDateTime',
         ],
         'db' => $db,
+        'urlManager' => [
+            'class' => 'yii\web\UrlManager',
+            'scriptUrl' => YII_ENV_DEV ? 'https://popupbar.biologenkantoor.nl' : 'https://bar.debison.nl',
+        ]
     ],
-//    'authManager' => [
-//        'class' => 'dektrium\rbac\RbacConsoleModule',
-//        'defaultRoles' => ['guest', 'user'],
-//    ],
     'modules' => [
+        'user' => [
+            'class' => 'dektrium\user\Module',
+            'modelMap' => [
+                'User' => 'app\models\User',
+            ],
+            'controllerMap' => [
+                'admin' => 'app\controllers\user\AdminController'
+            ],
+            'admins' => ['daan']
+        ],
         'rbac' => 'dektrium\rbac\RbacConsoleModule'
     ],
     'params' => $params,
-    /*
-    'controllerMap' => [
-        'fixture' => [ // Fixture generation command line.
-            'class' => 'yii\faker\FixtureController',
-        ],
-    ],
-    */
 ];
 
 if (YII_ENV_DEV) {

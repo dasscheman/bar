@@ -27,8 +27,9 @@ class TransactiesController extends Controller
         return [
             'verbs' => [
                 'class' => VerbFilter::className(),
-                'actions' => [
-                    'delete' => ['POST'],
+                    'actions' => [
+                        'webhook' => ['POST', 'GET'],
+                        'delete' => ['POST'],
                 ],
             ],
             'access' => [
@@ -37,7 +38,7 @@ class TransactiesController extends Controller
                     'class' => AccessRule::className(),
                 ],
                 // We will override the default rule config with the new AccessRule class
-                'only' => ['index', 'view', 'create', 'create-declaraties', 'update', 'delete'],
+//                'only' => ['index', 'view', 'create', 'create-declaraties', 'update', 'delete'],
                 'rules' => [
                     [
                         'allow' => true,
@@ -186,7 +187,7 @@ class TransactiesController extends Controller
                     $image->saveAs($path);
                 } else {
                     foreach ($modelBonnen->errors as $key => $error) {
-                        Yii::$app->session->setFlash('warning', Yii::t('app', 'Fout met opslaan: ' . $key . ':' . $error[0]));
+                        Yii::$app->session->setFlash('warning', Yii::t('app', 'Fout met opslaan: ' . $key . ': ' . $error[0]));
                     }
                 }
                 $modelTransacties->bon_id = $modelBonnen->bon_id;
@@ -239,7 +240,9 @@ class TransactiesController extends Controller
                         return $this->redirect(['index']);
                     }
                 }
-                if (!$model->delete()) {
+
+                $model->deleted_at = Yii::$app->setupdatetime->storeFormat(time(), 'datetime');
+                if (!$model->save()) {
                     $dbTransaction->rollBack();
                     foreach ($model->errors as $key => $error) {
                         Yii::$app->session->setFlash('warning', Yii::t('app', 'Fout met opslaan: ' . $key . ':' . $error[0]));
@@ -261,26 +264,24 @@ class TransactiesController extends Controller
                     // goed gaat als dit record dan eerst gewijzigd wordt.
                     continue;
                 }
-                $transactie->status = Transacties::STATUS_tercontrole;
+                $transactie->status = Transacties::STATUS_herberekend;
                 $transactie->factuur_id = null;
                 if (!$transactie->save()) {
                     $dbTransaction->rollBack();
                     foreach ($transactie->errors as $key => $error) {
                         Yii::$app->session->setFlash('warning', Yii::t('app', 'Fout met opslaan: ' . $key . ':' . $error[0]));
                     }
-                    dd($transactie->errors);
                     return $this->redirect(['index']);
                 }
             }
             foreach ($factuur->getTurvens()->all() as $turf) {
-                $turf->status = Turven::STATUS_tercontrole;
+                $turf->status = Turven::STATUS_herberekend;
                 $turf->factuur_id = null;
                 if (!$turf->save()) {
                     $dbTransaction->rollBack();
                     foreach ($turf->errors as $key => $error) {
                         Yii::$app->session->setFlash('warning', Yii::t('app', 'Fout met opslaan: ' . $key . ':' . $error[0]));
                     }
-                    dd($turf->errors);
                     return $this->redirect(['index']);
                 }
             }
@@ -292,24 +293,25 @@ class TransactiesController extends Controller
                         ->all();
             foreach ($relatedModels as $relatedModel) {
                 if (!$relatedModel->delete()) {
-                    dd($relatedModels);
                     $dbTransaction->rollBack();
                     foreach ($relatedModel->errors as $key => $error) {
                         Yii::$app->session->setFlash('warning', Yii::t('app', 'Fout met opslaan: ' . $key . ':' . $error[0]));
                     }
-                    dd($relatedModel->errors);
                     return $this->redirect(['index']);
                 }
             }
 
-            if (!$factuur->delete()) {
+            $factuur->deleted_at = Yii::$app->setupdatetime->storeFormat(time(), 'datetime');
+            if (!$factuur->save()) {
                 $dbTransaction->rollBack();
                 foreach ($factuur->errors as $key => $error) {
                     Yii::$app->session->setFlash('warning', Yii::t('app', 'Fout met opslaan: ' . $key . ':' . $error[0]));
                 }
                 return $this->redirect(['index']);
             }
-            if (!$model->delete()) {
+
+            $model->deleted_at = Yii::$app->setupdatetime->storeFormat(time(), 'datetime');
+            if (!$model->save()) {
                 $dbTransaction->rollBack();
                 foreach ($model->errors as $key => $error) {
                     Yii::$app->session->setFlash('warning', Yii::t('app', 'Fout met opslaan: ' . $key . ':' . $error[0]));

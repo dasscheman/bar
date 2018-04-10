@@ -99,7 +99,10 @@ class FactuurController extends Controller
             return $this->redirect(['index']);
         }
         foreach ($users as $user) {
-            if (!$user->getNewAfTransactiesUser()->exists() && !$user->getNewBijTransactiesUser()->exists() && !$user->getNewTurvenUsers()->exists()) {
+            if (!$user->getNewAfTransactiesUser()->exists() &&
+                !$user->getNewBijTransactiesUser()->exists() &&
+                !$user->getNewTurvenUsers()->exists() &&
+                !$user->getInvalidTransactionsNotInvoiced()->exists()) {
                 continue;
             }
             $factuur = new Factuur;
@@ -108,6 +111,7 @@ class FactuurController extends Controller
 
             $new_bij_transacties = $user->getNewBijTransactiesUser()->all();
             $new_af_transacties = $user->getNewAfTransactiesUser()->all();
+            $new_invalid_transacties = $user->getInvalidTransactionsNotInvoiced()->all();
             $new_turven = $user->getNewTurvenUsers()->all();
             $sum_new_bij_transacties = $user->getSumNewBijTransactiesUser();
             $sum_new_af_transacties = $user->getSumNewAfTransactiesUser();
@@ -122,6 +126,7 @@ class FactuurController extends Controller
                     'user' => $user,
                     'new_bij_transacties' => $new_bij_transacties,
                     'new_af_transacties' => $new_af_transacties,
+                    'new_invalid_transacties' => $new_invalid_transacties,
                     'new_turven' => $new_turven,
                     'sum_new_bij_transacties' => $sum_new_bij_transacties,
                     'sum_new_af_transacties' => $sum_new_af_transacties,
@@ -218,29 +223,38 @@ class FactuurController extends Controller
         $dbTransaction = Yii::$app->db->beginTransaction();
         try {
             foreach ($factuur->getTransacties()->all() as $transactie) {
-                $transactie->status = Transacties::STATUS_gecontroleerd;
+                $transactie->status = Transacties::STATUS_herberekend;
                 $transactie->factuur_id = null;
                 if (!$transactie->save()) {
+                    foreach ($transactie->errors as $key => $error) {
+                        Yii::$app->session->setFlash('warning', Yii::t('app', 'Fout met opslaan: ' . $key . ':' . $error[0]));
+                    }
                     $dbTransaction->rollBack();
-                    return false;
+                    return $this->redirect(['index']);
                 }
             }
             foreach ($factuur->getTurvens()->all() as $turf) {
-                $turf->status = Turven::STATUS_gecontroleerd;
+                $turf->status = Turven::STATUS_herberekend;
                 $turf->factuur_id = null;
                 if (!$turf->save()) {
+                    foreach ($turf->errors as $key => $error) {
+                        Yii::$app->session->setFlash('warning', Yii::t('app', 'Fout met opslaan: ' . $key . ':' . $error[0]));
+                    }
                     $dbTransaction->rollBack();
-                    return false;
+                    return $this->redirect(['index']);
                 }
             }
-            if (!$factuur->delete()) {
+            $factuur->deleted_at = Yii::$app->setupdatetime->storeFormat(time(), 'datetime');
+            if (!$factuur->save()) {
+                foreach ($factuur->errors as $key => $error) {
+                    Yii::$app->session->setFlash('warning', Yii::t('app', 'Fout met opslaan: ' . $key . ':' . $error[0]));
+                }
                 $dbTransaction->rollBack();
-                return false;
+                return $this->redirect(['index']);
             }
             $dbTransaction->commit();
-            unlink($filename);
         } catch (\Exception $e) {
-            Yii::$app->session->setFlash('warning', Yii::t('app', 'Je kunt deze factuur niet verwijderen.'));
+            Yii::$app->session->setFlash('info', Yii::t('app', 'Je kunt deze factuur niet verwijderen: ' .  $e));
         }
         return $this->redirect(['index']);
     }

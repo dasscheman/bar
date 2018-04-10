@@ -14,16 +14,16 @@ use app\models\Turven;
  * @var \app\models\Turven $searchModel
  */
 
-$bordered = FALSE;
-$striped = TRUE;
-$condensed = TRUE;
-$responsive = FALSE;
-$hover = TRUE;
-$pageSummary = FALSE;
-$heading = FALSE;
-$exportConfig = FALSE;
-$responsiveWrap = FALSE;
-$toolbar = FALSE;
+$bordered = false;
+$striped = true;
+$condensed = true;
+$responsive = false;
+$hover = true;
+$pageSummary = false;
+$heading = false;
+$exportConfig = false;
+$responsiveWrap = false;
+$toolbar = false;
 
 ?>
 <div class="row">
@@ -45,7 +45,7 @@ $toolbar = FALSE;
                     'columns' => [
                         'displayname' => [
                             'attribute' => 'displayname',
-                            'value' => function($model){
+                            'value' => function ($model) {
                                 return $model->getConsumerUser()->one()->username;
                             },
                         ],
@@ -53,35 +53,35 @@ $toolbar = FALSE;
                             'attribute'=>'assortiment_name',
                             'format' => 'raw',
                             'value'=>function ($model) {
-                                 return Html::a($model->assortiment->name, ['assortiment/view', 'id' => $model->assortiment_id]);
-                             },
+                                return Html::a($model->assortiment->name, ['assortiment/view', 'id' => $model->assortiment_id]);
+                            },
                         ],
                         'datum' => [
                             'attribute' => 'datum',
-                            'value' => function($model){
-                                return empty($model->datum)?'':Yii::$app->setupdatetime->displayFormat($model->datum, 'datetime2', TRUE);
+                            'value' => function ($model) {
+                                return empty($model->datum)?'':Yii::$app->setupdatetime->displayFormat($model->datum, 'datetime2', true);
                             },
                         ],
                         [
                             'attribute'=>'prijslijst_id',
                             'format' => 'raw',
                             'value'=>function ($model) {
-                                 return Html::a('Prijslijst ' . $model->prijslijst_id, ['prijslijst/view', 'id' => $model->prijslijst_id]);
-                             },
+                                return Html::a('Prijslijst ' . $model->prijslijst_id, ['prijslijst/view', 'id' => $model->prijslijst_id]);
+                            },
                          ],
                         'aantal',
                         'totaal_prijs',
                         'type' => [
                             'attribute' => 'type',
                             'filter'=> Turven::getTypeOptions(),
-                            'value' => function($model){
+                            'value' => function ($model) {
                                 return $model->getTypeText();
                             },
                         ],
                         'status' => [
                             'attribute' => 'status',
                             'filter'=> Turven::getStatusOptions(),
-                            'value' => function($model){
+                            'value' => function ($model) {
                                 return $model->getStatusText();
                             },
                         ],
@@ -90,13 +90,22 @@ $toolbar = FALSE;
                             'format' => 'raw',
                             'value'=>function ($model) {
                                 return empty($model->factuur_id)?'':Html::a('Factuur ' . $model->factuur_id, ['factuur/view', 'id' => $model->factuur_id]);
-                             },
+                            },
                         ],
+                        'deleted_at',
                         [
                             'class' => 'yii\grid\ActionColumn',
                             'header'=>'Actions',
                             'template' => '{update} {view} {delete}',
                             'headerOptions' => ['style' => 'width:10%'],
+                            'visibleButtons' => [
+                                'delete' => function ($model, $key, $index) {
+                                    if ($model->deleted_at === null) {
+                                        return true;
+                                    }
+                                    return false;
+                                },
+                            ],
                         ],
                     ],
 

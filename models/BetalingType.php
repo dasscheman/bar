@@ -8,13 +8,14 @@ use app\models\BarActiveRecord;
 /**
  * This is the model class for table "betaling_type".
  *
- * @property integer $type_id
+ * @property int $type_id
  * @property string $omschrijving
- * @property integer $bijaf
+ * @property int $bijaf
  * @property string $created_at
- * @property integer $created_by
+ * @property int $created_by
  * @property string $updated_at
- * @property integer $updated_by
+ * @property int $updated_by
+ * @property int $state
  *
  * @property User $createdBy
  * @property User $updatedBy
@@ -25,6 +26,8 @@ class BetalingType extends BarActiveRecord
     const BIJAF_af = 1;
     const BIJAF_bij = 2;
 
+    const STATE_system = 1;
+    const STATE_custom = 2;
     /**
      * @inheritdoc
      */
@@ -40,7 +43,7 @@ class BetalingType extends BarActiveRecord
     {
         return [
             [['omschrijving', 'bijaf'], 'required'],
-            [['bijaf', 'created_by', 'updated_by'], 'integer'],
+            [['bijaf', 'created_by', 'updated_by', 'state'], 'integer'],
             [['created_at', 'updated_at'], 'safe'],
             [['omschrijving'], 'string', 'max' => 255],
             [['created_by'], 'exist', 'skipOnError' => true, 'targetClass' => User::className(), 'targetAttribute' => ['created_by' => 'id']],
@@ -61,6 +64,7 @@ class BetalingType extends BarActiveRecord
             'created_by' => 'Created By',
             'updated_at' => 'Updated At',
             'updated_by' => 'Updated By',
+           'state' => 'State',
         ];
     }
 
@@ -92,7 +96,8 @@ class BetalingType extends BarActiveRecord
      * Retrieves a list of statussen
      * @return array an array of available statussen.
      */
-    public function getBijAfOptions() {
+    public function getBijAfOptions()
+    {
         return [
             self::BIJAF_af => Yii::t('app', 'Af'),
             self::BIJAF_bij => Yii::t('app', 'Bij'),
@@ -102,11 +107,56 @@ class BetalingType extends BarActiveRecord
     /**
      * @return string the status text display
      */
-    public function getBijAfText() {
+    public function getBijAfText()
+    {
         $bijafOptions = $this->bijafOptions;
         if (isset($bijafOptions[$this->bijaf])) {
             return $bijafOptions[$this->bijaf];
         }
         return "Onbekende type ({$this->bijaf})";
+    }
+
+    /**
+     * Retrieves a list of statussen
+     * @return array an array of available statussen.
+     */
+    public function getStateOptions()
+    {
+        return [
+            self::STATE_system => 'Systeem',
+            self::STATE_custom => 'Custom',
+        ];
+    }
+
+    /**
+     * @return string the status text display
+     */
+    public function getStateText()
+    {
+        $stateOptions = $this->stateOptions;
+        if (isset($stateOptions[$this->state])) {
+            return $stateOptions[$this->state];
+        }
+        return "Onbekende staat ({$this->state})";
+    }
+
+    public function getIdealId()
+    {
+        $betaling = BetalingType::findOne(['omschrijving' => 'Ideal']);
+        
+        if (isset($betaling->type_id)) {
+            return $betaling->type_id;
+        }
+        return;
+    }
+
+    public function getIdealTerugbetalingId()
+    {
+        $betaling = BetalingType::findOne(['omschrijving' => 'Ideal terugbetaling']);
+        
+        if (isset($betaling->type_id)) {
+            return $betaling->type_id;
+        }
+        return;
     }
 }

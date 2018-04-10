@@ -20,18 +20,13 @@ use app\models\Assortiment;
             <?php
             echo $this->render('/_alert');
 
-            if(!empty($modelsUsers)) {
+            if (!empty($modelsUsers)) {
                 foreach ($modelsUsers as $user) {
-                    if(in_array($user->id, $users)) {
-                        if(!$user->limitenControleren($user->id)) {
-                            echo Html::a(
+                    if (in_array($user->id, $users)) {
+                        if (!$user->limitenControleren($user->id)) {
+                            echo Html::button(
                                 $user->profile->name,
-                                [
-                                    'favorieten-aanpassen',
-                                    'id' => $model->favorieten_lijsten_id,
-                                    'remove' => $user->id,
-                                    'users' => $users],
-                                [ 'class' => 'btn-lg btn-danger namen' ]
+                                [ 'class' => 'btn btn-lg btn-danger namen disabled']
                             );
                             // Na 1 maart 2018 continue
                             continue;
@@ -69,7 +64,7 @@ use app\models\Assortiment;
                     '/turven/barinvoer',
                     '#' => 'w1-tab2'
                 ],
-                [ 
+                [
                     'class' => 'btn-lg btn-danger namen',
                     'data' => [
                         'confirm' => 'Je wijzegingen zijn niet opgeslagen',
@@ -81,16 +76,11 @@ use app\models\Assortiment;
     <div class="knoppen">
         <?php
         foreach ($modelsUsers as $user) {
-            if(!in_array($user->id, $users)) {
-                if(!$user->limitenControleren($user->id)) {
-                    echo Html::a(
+            if (!in_array($user->id, $users)) {
+                if (!$user->limitenControleren($user->id)) {
+                    echo Html::button(
                         $user->profile->name,
-                        [
-                            'favorieten-aanpassen',
-                            'id' => $model->favorieten_lijsten_id,
-                            'remove' => $user->id,
-                            'users' => $users],
-                        [ 'class' => 'btn-lg btn-danger namen' ]
+                        [ 'class' => 'btn btn-lg btn-danger namen disabled']
                     );
                     // Na 1 maart 2018 continue
                     continue;

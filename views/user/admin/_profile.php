@@ -40,7 +40,6 @@ use kartik\money\MaskMoney;
     echo $form->field($profile, 'achternaam');
     echo $form->field($profile, 'public_email');
     echo $form->field($profile, 'limit_hard')->widget(MaskMoney::classname());
-    echo $form->field($profile, 'limit_bereikt')->checkbox();
     echo $form->field($profile, 'limit_ophogen')->widget(MaskMoney::classname());
 
 ?>
