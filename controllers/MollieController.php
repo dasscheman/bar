@@ -38,17 +38,17 @@ class MollieController extends Controller
                     'class' => AccessRule::className(),
                 ],
                 // We will override the default rule config with the new AccessRule class
-//                'only' => ['index', 'view', 'create', 'create-declaraties', 'update', 'delete'],
+                'only' => ['return-betaling', 'betaling', 'automatisch-betaling-annuleren'],
                 'rules' => [
                     [
                         'allow' => true,
-                'actions' => ['return-betaling', 'betaling','automatisch-betaling-update', 'automatisch-betaling-annuleren'],
+                'actions' => ['return-betaling', 'betaling'],
                         'roles' =>  ['onlinebetalen'],
                     ],
                     [
                         'allow' => true,
-                        'actions' => ['webhook'],
-                        'roles' =>  ['?'],
+                        'actions' => ['webhook', 'automatisch-betaling-update', 'automatisch-betaling-annuleren'],
+                        'roles' =>  ['*'],
                     ],
                 ],
             ],
@@ -134,6 +134,10 @@ class MollieController extends Controller
     {
         $mollie = new Mollie;
         $old_factuur = null;
+        if (Yii::$app->request->post('id') === null) {
+            throw new NotFoundHttpException('Je bent niet ingelogt of de link uit je email is niet meer geldig.');
+        }
+
         /*
          * Retrieve the payment's current state.
          */
