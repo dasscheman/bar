@@ -49,7 +49,11 @@ AppAsset::register($this);
                     ],
                     [
                         'label' => 'Bar beheer',
-                        'url'=>['/assortiment/index'],
+                        'url'=>['/turven/index'],
+                    ],
+                    [
+                        'label' => 'Verstuur testmail',
+                        'url'=>['/site/testmail'],
                     ],
 //                    [
 //                        'label' => 'Turven',

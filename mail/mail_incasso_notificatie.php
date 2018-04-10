@@ -26,7 +26,9 @@ use yii\helpers\Url;
         <br>
         Wil je toekomstige incasso aanpassen, dan kun je dat hier doen:
         
-        <?php echo Html::a(' Automatisch ophogen wijzigen', ['/mollie/betaling', 'pay_key' => $user->pay_key]); ?>
+        <?php
+            $link = Url::to(['/mollie/betaling', 'pay_key' => $user->pay_key], 'https');
+            echo Html::a(' Automatisch ophogen wijzigen', $link); ?>
 
         <br>
         Transactie gegevens:

@@ -38,6 +38,7 @@ $config = [
         'urlManager' => [
             'class' => 'yii\web\UrlManager',
             'scriptUrl' => YII_ENV_DEV ? 'https://popupbar.biologenkantoor.nl' : 'https://bar.debison.nl',
+            'hostInfo' => YII_ENV_DEV ? 'https://popupbar.biologenkantoor.nl' : 'https://bar.debison.nl',
         ]
     ],
     'modules' => [

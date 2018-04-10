@@ -10,6 +10,7 @@ use app\models\Inkoop;
 use app\models\Kosten;
 use app\models\LoginForm;
 use app\models\Turven;
+use app\models\User;
 use yii\filters\AccessControl;
 use yii\filters\VerbFilter;
 use yii\web\Controller;
@@ -27,7 +28,7 @@ class SiteController extends Controller
                 'only' => ['logout'],
                 'rules' => [
                     [
-                        'actions' => ['logout', 'grafieken'],
+                        'actions' => ['logout', 'grafieken', 'testmail'],
                         'allow' => true,
                         'roles' => ['@'],
                     ],
@@ -132,8 +133,7 @@ class SiteController extends Controller
         $volume_inkoop = [];
         $volume_verkoop = [];
 
-        if (Yii::$app->request->get('merk') !== NULL) {
-
+        if (Yii::$app->request->get('merk') !== null) {
             $assortiments = Assortiment::find()
                     ->where('merk =:merk')
                     ->params([':merk' => Yii::$app->request->get('merk')])
@@ -148,7 +148,7 @@ class SiteController extends Controller
                         ->andWhere('assortiment_id = ' . $assortiment->assortiment_id)
                         ->sum('totaal_prijs');
 
-                    if(isset($inkomsten[date("M", strtotime("-$i months"))])) {
+                    if (isset($inkomsten[date("M", strtotime("-$i months"))])) {
                         $inkomsten[date("M", strtotime("-$i months"))] = $inkomsten_temp + $inkomsten[date("M", strtotime("-$i months"))];
                     } else {
                         $inkomsten[date("M", strtotime("-$i months"))] = $inkomsten_temp;
@@ -162,7 +162,7 @@ class SiteController extends Controller
                     $item = Assortiment::findOne($assortiment->assortiment_id);
                     $volume = (float) $aantal * (float) $item->volume / (float) 1000;
 
-                    if(isset($volume_verkoop[date("M", strtotime("-$i months"))])) {
+                    if (isset($volume_verkoop[date("M", strtotime("-$i months"))])) {
                         $volume_verkoop[date("M", strtotime("-$i months"))] = $volume + $volume_verkoop[date("M", strtotime("-$i months"))];
                     } else {
                         $volume_verkoop[date("M", strtotime("-$i months"))] = $volume;
@@ -174,7 +174,7 @@ class SiteController extends Controller
                         ->andWhere('status = ' . Inkoop::STATUS_verkocht)
                         ->sum('totaal_prijs');
 
-                    if (isset( $uitgavenDrank[date("M", strtotime("-$i months"))])) {
+                    if (isset($uitgavenDrank[date("M", strtotime("-$i months"))])) {
                         $uitgavenDrank[date("M", strtotime("-$i months"))] = $uitgavenDrank[date("M", strtotime("-$i months"))] + $uitgaven_temp;
                     } else {
                         $uitgavenDrank[date("M", strtotime("-$i months"))] = $uitgaven_temp;
@@ -186,7 +186,7 @@ class SiteController extends Controller
                         ->andWhere('status = ' . Inkoop::STATUS_verkocht)
                         ->sum('volume');
 
-                    if(isset($volume_inkoop[date("M", strtotime("-$i months"))])) {
+                    if (isset($volume_inkoop[date("M", strtotime("-$i months"))])) {
                         $volume_inkoop[date("M", strtotime("-$i months"))] = $volume_inkoop[date("M", strtotime("-$i months"))] + $volume_inkoop_temp;
                     } else {
                         $volume_inkoop[date("M", strtotime("-$i months"))] = $volume_inkoop_temp;
@@ -196,7 +196,6 @@ class SiteController extends Controller
             }
             $series[] = ['name' => 'Inkomsten', 'data' => array_values($inkomsten), 'stack' => 'inkomsten'];
             $series[] = ['name' => 'Uitgaven Drank', 'data' => array_values($uitgavenDrank), 'stack' => 'uitgaven'];
-
         } else {
             $kosteTypes = Kosten::getTypeOptions();
             while ($i < 4) {
@@ -211,7 +210,7 @@ class SiteController extends Controller
                     ->andWhere('status = ' . Inkoop::STATUS_verkocht)
                     ->sum('totaal_prijs');
 
-                foreach($kosteTypes as $key => $kostenType) {
+                foreach ($kosteTypes as $key => $kostenType) {
                     $uitgavenMateriaal[$kostenType][date("M", strtotime("-$i months"))] = (float) Kosten::find()
                         ->where('month(datum) = month(' . $date . ')')
                         ->andWhere('type = ' . $key)
@@ -222,7 +221,7 @@ class SiteController extends Controller
             }
             $series[] = ['name' => 'Inkomsten', 'data' => array_values($inkomsten), 'stack' => 'inkomsten'];
             $series[] = ['name' => 'Drank', 'data' => array_values($uitgavenDrank), 'stack' => 'uitgaven'];
-            foreach($uitgavenMateriaal as $key => $value) {
+            foreach ($uitgavenMateriaal as $key => $value) {
                 $series[] = ['name' => $key, 'data' => array_values($value), 'stack' => 'uitgaven'];
             }
         }
@@ -240,6 +239,23 @@ class SiteController extends Controller
             'volume_inkoop' => $volume_inkoop,
             'assortimentItems' => $assortimentItems,
         ]);
+    }
+
+    public function actionTestmail()
+    {
+        $user = User::findOne(Yii::$app->user->id);
+        $message = Yii::$app->mailer->compose('mail_test', [
+                'user' => $user,
+            ])
+            ->setFrom('bar@debison.nl')
+            ->setTo($user->email)
+            ->setSubject('Test mail Bison bar');
+        $message->send();
+
+
+        Yii::$app->session->setFlash('succes', Yii::t('app', 'Test mail verzonden'));
+
+        return $this->redirect(['index']);
     }
 
     /**

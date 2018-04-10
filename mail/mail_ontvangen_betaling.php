@@ -66,7 +66,9 @@ use yii\helpers\Url;
             Je maakt gebruik van automatisch ophogen, je tegoed wordt automatisch ogehoogd met <?php number_format($user->mollie_bedrag, 2, ',', ' ') ?> €
             <br>
             Hier kun je automatisch ophogen stop zetten of de hoogte van het bedrag wijzigen:
-            <?php echo Html::a(' Automatisch ophogen wijzigen', ['/mollie/betaling', 'pay_key' => $user->pay_key]);
+            <?php
+            $link = Url::to(['/mollie/betaling', 'pay_key' => $user->pay_key], 'https');
+            echo Html::a(' Automatisch ophogen wijzigen', $link);
         } else {
             ?> Je maakt geen gebruik van automatisch ophogen. <?php
         } ?>

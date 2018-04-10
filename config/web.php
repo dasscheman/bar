@@ -51,14 +51,11 @@ $config = [
             'class' => 'app\components\SetupDateTime',
         ],
         'db' => require(__DIR__ . '/db.php'),
-        /*
         'urlManager' => [
-            'enablePrettyUrl' => true,
-            'showScriptName' => false,
-            'rules' => [
-            ],
+            'class' => 'yii\web\UrlManager',
+//            'scriptUrl' => YII_ENV_DEV ? 'https://popupbar.biologenkantoor.nl' : 'https://bar.debison.nl',
+            'hostInfo' => YII_ENV_DEV ? 'https://popupbar.biologenkantoor.nl' : 'https://bar.debison.nl',
         ],
-        */
 
 //        'authManager' => [
 //            'class' => 'dektrium\rbac\RbacWebModule',
