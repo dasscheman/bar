@@ -121,7 +121,11 @@ a.desc:after {
     font-size: 20px;
     display: inline-block;
 } 
-
+ 
+.btn, .disabled {
+    margin-top: -7px;
+    height: 46px;
+}
 .bold-red {
     color: red;
     font-weight: bold;

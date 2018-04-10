@@ -21,7 +21,7 @@ use app\models\Assortiment;
             echo $this->render('/_alert');
 
             foreach ($models as $user) {
-                if(in_array($user->id, $users)) {
+                if (in_array($user->id, $users)) {
                     echo Html::a(
                         $user->profile->name,
                         [
@@ -54,7 +54,7 @@ use app\models\Assortiment;
                     'barinvoer',
                     '#' => 'w1-tab1'
                 ],
-                [ 
+                [
                     'class' => 'btn-lg btn-danger namen',
                     'data' => [
                         'confirm' => 'De turven zijn niet opgeslagen',
@@ -66,16 +66,11 @@ use app\models\Assortiment;
     <div class="knoppen">
         <?php
         foreach ($models as $user) {
-            if(!in_array($user->id, $users)) {  
-                if(!$user->limitenControleren($user->id)) {
-                    echo Html::a(
+            if (!in_array($user->id, $users)) {
+                if (!$user->limitenControleren($user->id)) {
+                    echo Html::button(
                         $user->profile->name,
-                        [
-                            'rondje',
-                            'user_id' => $user->id,
-                            'users' => $users,
-                            'assortiment_id' => $assortiment_id],
-                        [ 'class' => 'btn-lg btn-danger namen' ]
+                        [ 'class' => 'btn btn-lg btn-danger namen disabled' ]
                     );
                     // Na 1 maart 2018 continue
                     continue;
