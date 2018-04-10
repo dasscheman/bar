@@ -578,15 +578,6 @@ class User extends BaseUser
     }
 
     /**
-     * @inheritdoc
-     * @return UserQuery the active query used by this AR class.
-     */
-    public static function find()
-    {
-        return new UserQuery(get_called_class());
-    }
-
-    /**
      * @return \yii\db\ActiveQuery
      */
     public function getPrijzens()
