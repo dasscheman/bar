@@ -55,6 +55,8 @@ use app\models\User;
                 . 'Elke mail die je onvangt zal een link bevatten waarmee je eenvoudig automatisch verhogen uit kan zetten.');
         echo $form->field($model, 'automatische_betaling')->checkbox();
     }
+    
+    echo $form->field($model, 'transacties_user_id')->hiddenInput(['value'=> $model->transacties_user_id])->label(false);
     echo Html::submitButton(Yii::t('app', 'Save'), ['class' => 'btn btn-success btn-block']);
 
     ActiveForm::end();

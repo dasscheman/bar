@@ -45,7 +45,7 @@ class Mollie extends Transacties
     {
         $rules = parent::rules();
         $rules[] = [['issuer', 'omschrijving', 'bedrag'], 'required', 'on' => 'betaling'];
-        $rules[] = [['automatische_betaling'], 'safe'];
+        $rules[] = [['automatische_betaling', 'transacties_user_id'], 'safe'];
         
         return $rules;
     }
