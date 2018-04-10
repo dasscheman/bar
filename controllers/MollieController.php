@@ -77,9 +77,12 @@ class MollieController extends Controller
             $model->type_id = BetalingType::getIdealId();
             $model->datum = date('Y-m-d H:i:s');
             $model->status = Transacties::STATUS_ingevoerd;
+            if ($model->automatische_betaling) {
+                $model->omschrijving = 'Instellen Automatisch'. $model->omschrijving;
+            }
             if ($model->save()) {
                 $model->setParameters();
-                if ($model->automatische_betaling && $model->createUser()) {
+                if ($model->automatische_betaling && $model->createRecurringPayment()) {
                     $user = User::findOne($model->transacties_user_id);
                     $message = Yii::$app->mailer->compose('mail_incasso_betaling_aangemaakt', [
                         'user' => $user,

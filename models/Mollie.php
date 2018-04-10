@@ -34,7 +34,7 @@ class Mollie extends Transacties
     public function scenarios()
     {
         $scenarios = parent::scenarios();
-        $scenarios['betaling'] = ['issuer', 'omschrijving', 'bedrag']; //Scenario Values Only Accepted
+        $scenarios['betaling'] = ['issuer', 'omschrijving', 'bedrag', 'automatische_betaling']; //Scenario Values Only Accepted
         return $scenarios;
     }
 
@@ -49,7 +49,7 @@ class Mollie extends Transacties
         
         return $rules;
     }
-    
+
     /**
      * @inheritdoc
      */
@@ -181,7 +181,7 @@ class Mollie extends Transacties
         }
     }
     
-    public function createUser()
+    public function createRecurringPayment()
     {
         if (!isset($this->transacties_user_id)) {
             throw new NotFoundHttpException('Je bent niet ingelogt of de link uit je email is niet meer geldig.');
