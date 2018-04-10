@@ -46,6 +46,16 @@ $config = [
 //        'defaultRoles' => ['guest', 'user'],
 //    ],
     'modules' => [
+        'user' => [
+            'class' => 'dektrium\user\Module',
+            'modelMap' => [
+                'User' => 'app\models\User',
+            ],
+            'controllerMap' => [
+                'admin' => 'app\controllers\user\AdminController'
+            ],
+            'admins' => ['daan']
+        ],
         'rbac' => 'dektrium\rbac\RbacConsoleModule'
     ],
     'params' => $params,
