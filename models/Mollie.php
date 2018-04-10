@@ -34,7 +34,7 @@ class Mollie extends Transacties
     public function scenarios()
     {
         $scenarios = parent::scenarios();
-        $scenarios['betaling'] = ['issuer', 'omschrijving', 'bedrag', 'automatische_betaling']; //Scenario Values Only Accepted
+        $scenarios['betaling'] = ['issuer', 'omschrijving', 'bedrag', 'automatische_betaling', 'transacties_user_id']; //Scenario Values Only Accepted
         return $scenarios;
     }
 
