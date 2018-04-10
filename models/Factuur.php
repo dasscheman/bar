@@ -4,6 +4,7 @@ namespace app\models;
 
 use Yii;
 use app\models\BarActiveRecord;
+use app\models\User;
 
 /**
  * This is the model class for table "factuur".
@@ -200,7 +201,7 @@ class Factuur extends BarActiveRecord
     public function verzendFacturen()
     {
         $aantal = 0;
-        $facturen = Factuur::find()->where('ISNULL(verzend_datum)')->all();
+        $facturen = Factuur::find()->where('ISNULL(verzend_datum) and ISNULL(deleted_at)')->all();
 
         foreach ($facturen as $factuur) {
             if ($aantal > 50) {
