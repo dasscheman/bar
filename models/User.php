@@ -2,8 +2,8 @@
 
 namespace app\models;
 
+use Yii;
 use yii\helpers\ArrayHelper;
-
 use dektrium\user\models\User as BaseUser;
 
 /**
@@ -81,18 +81,11 @@ class User extends BaseUser
      */
     public function rules()
     {
-        return [
-            [['username', 'email', 'password_hash', 'auth_key', 'created_at', 'updated_at'], 'required'],
-            [['confirmed_at', 'blocked_at', 'created_at', 'updated_at', 'flags', 'last_login_at'], 'integer'],
-            [['mollie_bedrag'], 'number'],
-            [['username', 'email', 'unconfirmed_email', 'pay_key', 'mollie_customer_id'], 'string', 'max' => 255],
-            [['password_hash'], 'string', 'max' => 60],
-            [['auth_key'], 'string', 'max' => 32],
-            [['registration_ip'], 'string', 'max' => 45],
-            [['automatische_betaling'], 'string', 'max' => 1],
-            [['username'], 'unique'],
-            [['email'], 'unique'],
-        ];
+        $rules = parent::rules();
+        $rules[] = [['mollie_bedrag'], 'number'];
+        $rules[] = [['pay_key', 'mollie_customer_id'], 'string', 'max' => 255];
+        $rules[] = [['automatische_betaling'], 'boolean'];
+        return $rules;
     }
 
     /**
@@ -126,6 +119,14 @@ class User extends BaseUser
             'mollie_customer_id' => 'Mollie Customer ID',
             'mollie_bedrag' => 'Mollie Bedrag',
         ];
+    }
+
+    public function beforeSave($insert)
+    {
+        if (empty($this->pay_key)) {
+            $this->setAttribute('pay_key', Yii::$app->security->generateRandomString());
+        }
+        return parent::beforeSave($insert);
     }
 
     /**

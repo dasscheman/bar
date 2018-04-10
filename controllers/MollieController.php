@@ -4,7 +4,10 @@ namespace app\controllers;
 
 use Yii;
 use app\models\Transacties;
-use app\controllers\TransactiesController;
+use yii\filters\VerbFilter;
+use yii\filters\AccessControl;
+use dektrium\user\filters\AccessRule;
+use yii\web\Controller;
 use app\models\Mollie;
 use app\models\BetalingType;
 use app\models\User;
@@ -14,31 +17,42 @@ use yii\web\NotFoundHttpException;
 /**
  * TransactiesController implements the CRUD actions for Transacties model.
  */
-class MollieController extends TransactiesController
+class MollieController extends Controller
 {
     /**
      * @inheritdoc
      */
     public function behaviors()
     {
-        $behaviors = parent::behaviors();
-//        $behaviors['access']['only'][] = 'betaling';
-//        $behaviors['access']['only'][] = 'webhook';
-//        $behaviors['access']['only'][] = 'return-betaling';
-//        $behaviors['access']['only'][] = 'automatisch-betaling-updaten';
-        $behaviors['access']['rules'][] =
-            [
-                'allow' => true,
-                'actions' => ['webhook', 'betaling', 'return-betaling', 'automatisch-betaling-updaten'],
-                'roles' =>  ['admin', 'beheerder', 'onlinebetalen'],
-            ];
-        $behaviors['access']['rules'][] =
-            [
-                'allow' => true,
-                'actions' => ['webhook'],
-                'roles' =>  ['?'],
-            ];
-        return $behaviors;
+        return [
+            'verbs' => [
+                'class' => VerbFilter::className(),
+                    'actions' => [
+                        'webhook' => ['POST', 'GET'],
+                        'delete' => ['POST'],
+                ],
+            ],
+            'access' => [
+                'class' => AccessControl::className(),
+                'ruleConfig' => [
+                    'class' => AccessRule::className(),
+                ],
+                // We will override the default rule config with the new AccessRule class
+//                'only' => ['index', 'view', 'create', 'create-declaraties', 'update', 'delete'],
+                'rules' => [
+                    [
+                        'allow' => true,
+                'actions' => ['return-betaling', 'betaling','automatisch-betaling-update', 'automatisch-betaling-annuleren'],
+                        'roles' =>  ['onlinebetalen'],
+                    ],
+                    [
+                        'allow' => true,
+                        'actions' => ['webhook'],
+                        'roles' =>  ['?'],
+                    ],
+                ],
+            ],
+        ];
     }
    
     public function beforeAction($action)
@@ -106,6 +120,7 @@ class MollieController extends TransactiesController
 
         $this->layout = 'main-fluid';
         $model->transacties_user_id = $user->id;
+        $model->omschrijving = 'betaling Bisonbar ' . $user->profile->voornaam . ' '  . $user->profile->achternaam;
         return $this->render('create', [
             'model' => $model,
             'user' => $user
@@ -253,67 +268,74 @@ class MollieController extends TransactiesController
         return $this->render('/user/overzicht', ['model' => User::findOne(Yii::$app->user->id)]);
     }
 
-    public function actionAutomatischBetalingUpdaten()
+    public function actionAutomatischBetalingUpdate()
     {
-        $user = new User;
-
-        if ($user->load(Yii::$app->request->post())) {
-            if (Yii::$app->request->get('actie') === 'annuleren') {
-                $user->automatische_betaling = false;
-                $user->mollie_customer_id = '';
-                $user->mollie_bedrag = null;
-            }
-            if ($user->save()) {
-                if (Yii::$app->request->get('actie') === 'annuleren') {
-                    Yii::$app->session->setFlash('success', 'Automatisch ophogen is stop gezet.');
-                    $message = Yii::$app->mailer->compose('mail_incasso_betaling_gestopt', [
-                            'user' => $user,
-                        ])
-                        ->setFrom('bar@debison.nl')
-                        ->setTo($user->email)
-                        ->setSubject('Annulering incasso Bison bar');
-                    if (!empty($user->profile->public_email)) {
-                        $message->setCc($user->profile->public_email);
-                    }
-                    $message->send();
-                }
-                if (Yii::$app->request->get('actie') !== 'annuleren') {
-                    Yii::$app->session->setFlash('success', 'Wijziging in bedrag is opgeslagen.');
-                    $message = Yii::$app->mailer->compose('mail_incasso_betaling_gewijzigd', [
-                            'user' => $user,
-                        ])
-                        ->setFrom('bar@debison.nl')
-                        ->setTo($user->email)
-                        ->setSubject('Wijziging betaling Bison bar');
-                    if (!empty($user->profile->public_email)) {
-                        $message->setCc($user->profile->public_email);
-                    }
-                    $message->send();
-                }
-            } else {
-                foreach ($modelBonnen->errors as $key => $error) {
-                    Yii::$app->session->setFlash('warning', Yii::t('app', 'Fout met opslaan: ' . $key . ':' . $error[0]));
-                }
-            }
-            if (!isset(Yii::$app->user->id)) {
-                Yii::$app->session->setFlash('primary', 'Log in om je overzicht te bekijken.');
-            }
-            return $this->render('/user/overzicht', ['model' => User::findOne(Yii::$app->user->id)]);
-        }
         if (isset(Yii::$app->user->id)) {
-            $model = User::findOne(Yii::$app->user->id);
+            $user = User::findOne(Yii::$app->user->id);
         }
 
-        if (!isset($model)) {
-            $model = User::findByPayKey(Yii::$app->request->get('pay_key'));
+        if (!isset($user)) {
+            $user = User::findByPayKey(Yii::$app->request->post('pay_key'));
         }
 
-        if (!isset($model)) {
+        if (!isset($user)) {
             throw new NotFoundHttpException('Je bent niet ingelogt of de link uit je email is niet meer geldig.');
         }
+
+        if ($user->load(Yii::$app->request->post()) && $user->save()) {
+            Yii::$app->session->setFlash('success', 'Wijziging in bedrag is opgeslagen.');
+            $message = Yii::$app->mailer->compose('mail_incasso_betaling_gewijzigd', [
+                    'user' => $user,
+                ])
+                ->setFrom('bar@debison.nl')
+                ->setTo($user->email)
+                ->setSubject('Wijziging betaling Bison bar');
+            if (!empty($user->profile->public_email)) {
+                $message->setCc($user->profile->public_email);
+            }
+            $message->send();
+
+            return $this->render('/user/overzicht', ['model' => $user]);
+        } else {
+            foreach ($user->errors as $key => $error) {
+                Yii::$app->session->setFlash('warning', Yii::t('app', 'Fout met opslaan: ' . $key . ':' . $error[0]));
+            }
+        }
+
+        $this->layout = 'main-fluid';
         return $this->render('update', [
-            'model' => $model,
-            'actie' => 'update'
+            'model' => $user
         ]);
+    }
+
+    public function actionAutomatischBetalingAnnuleren()
+    {
+        $user = User::findByPayKey(Yii::$app->request->post('pay_key'));
+
+        if (!isset($user)) {
+            throw new NotFoundHttpException('Je bent niet ingelogt of de link uit je email is niet meer geldig.');
+        }
+        $user->automatische_betaling = false;
+        $user->mollie_customer_id = '';
+        $user->mollie_bedrag = null;
+        if ($user->save()) {
+            Yii::$app->session->setFlash('success', 'Automatisch ophogen is stop gezet.');
+            $message = Yii::$app->mailer->compose('mail_incasso_betaling_gestopt', [
+                    'user' => $user,
+                ])
+                ->setFrom('bar@debison.nl')
+                ->setTo($user->email)
+                ->setSubject('Annulering incasso Bison bar');
+            if (!empty($user->profile->public_email)) {
+                $message->setCc($user->profile->public_email);
+            }
+            $message->send();
+        } else {
+            foreach ($user->errors as $key => $error) {
+                Yii::$app->session->setFlash('warning', Yii::t('app', 'Fout met opslaan: ' . $key . ':' . $error[0]));
+            }
+        }
+
+        return $this->render('/user/overzicht', ['model' => $user]);
     }
 }

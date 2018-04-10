@@ -11,9 +11,11 @@
 
 use kartik\select2\Select2;
 use kartik\widgets\ActiveForm;
+//use yii\widgets\ActiveForm;
 use yii\helpers\Html;
 use yii\helpers\ArrayHelper;
 use app\models\User;
+use yii\helpers\Url;
 
 ?>
 
@@ -40,9 +42,26 @@ use app\models\User;
         ],
     ]);
 
-    echo Html::submitButton('Wijzig bedrag', ['class' => 'btn btn-success namen'], ['actie' => 'opslaan']);
-    echo Html::submitButton('Stop automatisch ophogen', ['class' => 'btn btn-warning namen'], ['actie' => 'annuleren']);
+    echo $form->field($model, 'pay_key')->hiddenInput(['value'=> $model->pay_key])->label(false);
+?>
 
+    <div class="form-route"><?php
+
+        echo Html::submitButton('Wijzig bedrag', ['class' => 'btn btn-warning namen']);
+        echo Html::a(
+            'Stop automatisch ophogen',
+            [ 'mollie/automatisch-betaling-annuleren'],
+            [
+                'class' => 'btn btn-success namen',
+                'data' => [
+                    'method' => 'post',
+                    'params' => ['pay_key' => $model->pay_key],
+                ],
+            ]
+        );
+ ?>
+    </div>
+    <?php 
     ActiveForm::end(); ?>
 
 </div>

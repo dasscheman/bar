@@ -24,7 +24,7 @@ use app\models\User;
         'enableAjaxValidation'   => false,
         'type' => ActiveForm::TYPE_HORIZONTAL,
     ]);
-    echo $form->field($model, 'omschrijving')->textInput();
+    echo $form->field($model, 'omschrijving')->textInput(['readOnly'=> true]);
     echo $form->field($model, 'bedrag')->widget(Select2::className(), [
         'data' => [
             10 => '10 euro',
@@ -48,12 +48,36 @@ use app\models\User;
         ],
     ]);
 
-    echo Html::encode('Je kunt je betalingen automatisch laten uitvoeren op het moment dat je tegoed onder 0 euro komt. '
-            . 'Je tegoed wordt dan verhoogd met het bedrag dat je hier invult. '
-            . 'Elke mail die je onvangt zal een link bevatten waarmee je eenvoudig automatisch verhogen uit kan zetten.');
-    echo $form->field($model, 'automatische_betaling')->checkbox();
-    echo Html::submitButton(Yii::t('app', 'Save'), ['class' => 'btn btn-success btn-block', ['value'=>$user->id, 'name'=>'user']]);
+    if (!$user->automatische_betaling) {
+        echo Html::encode('Je kunt je betalingen automatisch laten uitvoeren op het moment dat je tegoed onder 0 euro komt. '
+                . 'Je tegoed wordt dan verhoogd met het bedrag dat je hier invult. '
+                . 'Elke mail die je onvangt zal een link bevatten waarmee je eenvoudig automatisch verhogen uit kan zetten.');
+        echo $form->field($model, 'automatische_betaling')->checkbox();
+    }
+    echo Html::submitButton(Yii::t('app', 'Save'), ['class' => 'btn btn-success btn-block']);
 
-    ActiveForm::end(); ?>
+    ActiveForm::end();
+    if ($user->automatische_betaling) {
+        ?>
+        <br>
+        <br>
+        <div>
+        Je hebt al een automatisch incasso lopen deze kan je hieronder aanpassen.
+        </div>
+        <br>
+        <br>
+        <?php
+        echo Html::a(
+            'Automatisch ophogen aanpassen',
+            [ 'mollie/automatisch-betaling-update'],
+            [
+                'class' => 'btn btn-info btn-block',
+                'data' => [
+                    'method' => 'post',
+                    'params' => ['pay_key' => $user->pay_key],
+                ],
+            ]
+        );
+    } ?>
 
 </div>

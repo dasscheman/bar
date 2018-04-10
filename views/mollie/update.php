@@ -19,7 +19,6 @@
  */
 
 use yii\helpers\Html;
-use yii\widgets\DetailView;
 
 /* @var $this yii\web\View */
 /* @var $model app\models\Assortiment */
@@ -34,12 +33,7 @@ use yii\widgets\DetailView;
             <div class="panel-body">
                 <?php echo $this->render('/_alert') ?>
                 <table class="table">
-                    <?php
-                    if($actie === 'update') {
-                        echo  $this->render('_form_update', ['model' => $model]);
-                    } else {
-                        echo  $this->render('_form_annuleren', ['model' => $model]);
-                    }?>
+                    <?php echo  $this->render('_form_update', ['model' => $model]);?>
                 </table>
             </div>
         </div>
