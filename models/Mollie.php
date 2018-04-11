@@ -114,9 +114,9 @@ class Mollie extends Transacties
             ];
 
             if (YII_ENV === 'prod') {
-                $mollie['webhookUrl'] = "https://bar.debison.nl/index.php?r=mollie/webhook";
+                $mollie['parameters']['webhookUrl'] = "https://bar.debison.nl/index.php?r=mollie/webhook";
             } else {
-                $mollie['webhookUrl'] = "https://popupbar.biologenkantoor.nl/index.php?r=mollie/webhook";
+                $mollie['parameters']['webhookUrl'] = "https://popupbar.biologenkantoor.nl/index.php?r=mollie/webhook";
             }
             
             $payment= $mollie->createPayment();
