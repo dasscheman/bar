@@ -117,8 +117,8 @@ class Mollie extends Transacties
                 $mollie->parameters['webhookUrl'] = "https://popupbar.biologenkantoor.nl/index.php?r=mollie/webhook";
             }
             
-            $payment= $mollie->createPayment();
-            if ($payment) {
+            $payment = $mollie->createPayment();
+            if ($payment !== null) {
                 $message = Yii::$app->mailer->compose('mail_incasso_notificatie', [
                         'user' => $user,
                         'transactie' => $mollie,
