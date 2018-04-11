@@ -118,19 +118,19 @@ class Mollie extends Transacties
             }
             
             $payment = $mollie->createPayment();
-            if ($payment !== null) {
-                $message = Yii::$app->mailer->compose('mail_incasso_notificatie', [
-                        'user' => $user,
-                        'transactie' => $mollie,
-                    ])
-                    ->setFrom('bar@debison.nl')
-                    ->setTo($user->email)
-                    ->setSubject('Incasso betaling Bison bar');
-                if (!empty($user->profile->public_email)) {
-                    $message->setCc($user->profile->public_email);
-                }
-                $message->send();
+
+            $message = Yii::$app->mailer->compose('mail_incasso_notificatie', [
+                    'user' => $user,
+                    'transactie' => $mollie,
+                ])
+                ->setFrom('bar@debison.nl')
+                ->setTo($user->email)
+                ->setSubject('Incasso betaling Bison bar');
+            if (!empty($user->profile->public_email)) {
+                $message->setCc($user->profile->public_email);
             }
+            $message->send();
+            
             $count++;
         }
         return $count;
