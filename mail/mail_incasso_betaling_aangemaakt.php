@@ -14,7 +14,7 @@ use yii\helpers\Url;
 
         <br>
         Je hebt een automatisch incasso aangemaakt. Als je tegoed onder de 0 euro komt dan wordt er automatisch een incasso gestart
-        en je tegoed opgehoogd met <?php number_format($user->mollie_bedrag, 2, ',', ' ') ?> €
+        en je tegoed opgehoogd met <?php echo number_format($user->mollie_bedrag, 2, ',', ' ') ?> €
 
         <br>
         <br>

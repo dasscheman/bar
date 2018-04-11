@@ -63,7 +63,7 @@ use yii\helpers\Url;
         <?php
         if ($user->automatische_betaling) {
             ?>
-            Je maakt gebruik van automatisch ophogen, je tegoed wordt automatisch ogehoogd met <?php number_format($user->mollie_bedrag, 2, ',', ' ') ?> €
+            Je maakt gebruik van automatisch ophogen, je tegoed wordt automatisch ogehoogd met <?php echo number_format($user->mollie_bedrag, 2, ',', ' ') ?> €
             <br>
             Hier kun je automatisch ophogen stop zetten of de hoogte van het bedrag wijzigen:
             <?php
