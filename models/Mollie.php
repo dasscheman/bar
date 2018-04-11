@@ -103,20 +103,18 @@ class Mollie extends Transacties
                 continue;
             }
 
-            $mollie['parameters'] = [
-                'amount'        => $user->mollie_bedrag,
-                'customerId'    => $user->mollie_customer_id,
-                'recurringType' => 'recurring',       // important
-                'description'   => $mollie->omschrijving,
-                "metadata"     => [
+            $mollie->parameters['amount'] = $user->mollie_bedrag;
+            $mollie->parameters['customerId'] = $user->mollie_customer_id;
+            $mollie->parameters['recurringType'] = 'recurring';       // important
+            $mollie->parameters['description'] = $mollie->omschrijving;
+            $mollie->parameters["metadata"] = [
                     "transacties_id" => $mollie->transacties_id,
-                ],
-            ];
+                ];
 
             if (YII_ENV === 'prod') {
-                $mollie['parameters'][] = ['webhookUrl' => "https://bar.debison.nl/index.php?r=mollie/webhook"];
+                $mollie->parameters['webhookUrl'] = "https://bar.debison.nl/index.php?r=mollie/webhook";
             } else {
-                $mollie['parameters'][] = ['webhookUrl' => "https://popupbar.biologenkantoor.nl/index.php?r=mollie/webhook"];
+                $mollie->parameters['webhookUrl'] = "https://popupbar.biologenkantoor.nl/index.php?r=mollie/webhook";
             }
             
             $payment= $mollie->createPayment();
@@ -179,7 +177,7 @@ class Mollie extends Transacties
             ],
             "issuer"       => !empty($this->issuer) ? $this->issuer : null
         ];
-            
+
         if (YII_ENV === 'prod') {
             $this->parameters['redirectUrl'] = "https://bar.debison.nl/index.php?r=mollie/return-betaling&transacties_id={$this->transacties_id}";
             $this->parameters['webhookUrl'] = "https://bar.debison.nl/index.php?r=mollie/webhook";
