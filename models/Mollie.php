@@ -112,6 +112,13 @@ class Mollie extends Transacties
                     "transacties_id" => $mollie->transacties_id,
                 ],
             ];
+
+            if (YII_ENV === 'prod') {
+                $mollie['webhookUrl'] = "https://bar.debison.nl/index.php?r=mollie/webhook";
+            } else {
+                $mollie['webhookUrl'] = "https://popupbar.biologenkantoor.nl/index.php?r=mollie/webhook";
+            }
+            
             $payment= $mollie->createPayment();
             if ($payment) {
                 $message = Yii::$app->mailer->compose('mail_incasso_notificatie', [
@@ -147,6 +154,7 @@ class Mollie extends Transacties
         return Transacties::find()
             ->where(['transacties_user_id' => $user_id])
             ->andWhere(['mollie_status' => self::MOLLIE_STATUS_pending])
+            ->andWhere('ISNULL(deleted_at)')
             ->exists();
     }
 
