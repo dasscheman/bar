@@ -194,7 +194,8 @@ class Turven extends BarActiveRecord
         $turven = Turven::find()
             ->where(['turven.status' => Turven::STATUS_ingevoerd])
             ->orWhere(['turven.status' => Turven::STATUS_tercontrole])
-            ->orWhere(['turven.status' => Turven::STATUS_factuur_gegenereerd]);
+            ->orWhere(['turven.status' => Turven::STATUS_factuur_gegenereerd])
+            ->andWhere('ISNULL(deleted_at)');
 
         if (!$turven->exists()) {
             return 0;

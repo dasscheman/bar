@@ -226,7 +226,8 @@ class Transacties extends BarActiveRecord
         $transacties = Transacties::find()
             ->where(['transacties.status' => Transacties::STATUS_ingevoerd])
             ->orWhere(['transacties.status' => Transacties::STATUS_tercontrole])
-            ->orWhere(['transacties.status' => Transacties::STATUS_factuur_gegenereerd]);
+            ->orWhere(['transacties.status' => Transacties::STATUS_factuur_gegenereerd])
+            ->andWhere('ISNULL(deleted_at)');
 
         if (!$transacties->exists()) {
             return 0;
