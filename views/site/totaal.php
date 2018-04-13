@@ -5,7 +5,7 @@
 use dosamigos\highcharts\HighCharts;
 use yii\helpers\Html;
 
-$this->title = 'Overzicht ' . $labels['titel'];
+$this->title = 'Overzichten';
 ?>
 <div class="site-about">
     <h1><?= Html::encode($this->title) ?></h1>
@@ -32,20 +32,15 @@ $this->title = 'Overzicht ' . $labels['titel'];
                         'text' => 'Euro'
                     ]
                 ],
-                'series' => $seriesGeld
+                'series' => $series
             ]
         ]);
 
-        if (!empty($seriesVolume)) {
+        if (!empty($volume_verkoop) && !empty($volume_inkoop)) {
             echo HighCharts::widget([
                 'clientOptions' => [
                     'chart' => [
                             'type' => 'column'
-                    ],
-                    'plotOptions' => [
-                        'column' => [
-                            'stacking' => 'normal'
-                        ]
                     ],
                     'title' => [
                          'text' => 'Overzicht volume'
@@ -55,10 +50,13 @@ $this->title = 'Overzicht ' . $labels['titel'];
                     ],
                     'yAxis' => [
                         'title' => [
-                            'text' => $labels['y_axis']
+                            'text' => 'Liter'
                         ]
                     ],
-                    'series' => $seriesVolume
+                    'series' => [
+                        ['name' => 'Verkoop', 'data' => array_values($volume_verkoop)],
+                        ['name' => 'Inkoop', 'data' => array_values($volume_inkoop)]
+                    ]
                 ]
             ]);
         }

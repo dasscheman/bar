@@ -8,6 +8,7 @@ use yii\bootstrap\Nav;
 use yii\bootstrap\NavBar;
 use yii\widgets\Breadcrumbs;
 use app\assets\AppAsset;
+use app\models\Assortiment;
 
 AppAsset::register($this);
 ?>
@@ -35,11 +36,19 @@ AppAsset::register($this);
         ],
     ]);
 
+    $graph_menu[] = ['label' => 'Overzicht', 'url' => ['/site/totaal']];
+    $graph_menu[] = ['label' => 'Rendement', 'url' => ['/site/rendement']];
+    foreach (Assortiment::getAssortimentMerken() as $merk) {
+        $graph_menu[] = ['label' => $merk->merk, 'url' =>  ['/site/per-merk', 'merk' => $merk->merk ]];
+    }
+
     echo Nav::widget([
         'options' => ['class' => 'navbar-nav navbar-right'],
         'items' => [
             Yii::$app->user->can('onlinebetalen') ? ['label' => 'Betalen', 'url' => ['/mollie/betaling']]:'',
-            Yii::$app->user->can('gebruiker') ? ['label' => 'Overzicht', 'url' => ['/site/grafieken']]:'',
+            Yii::$app->user->can('gebruiker') ? ['label' => 'Grafieken',
+                'items' => $graph_menu
+            ]:'',
             Yii::$app->user->can('beheerder') ? ['label' => 'Voorraad', 'url' => ['/inkoop/overzicht-actueel']]:'',
             Yii::$app->user->can('beheerder') ? ['label' => 'Beheerder',
                 'items' => [
