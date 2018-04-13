@@ -35,7 +35,7 @@ class InkoopController extends Controller
                     'class' => AccessRule::className(),
                 ],
                 // We will override the default rule config with the new AccessRule class
-                'only' => ['index', 'index-actueel', 'nieuw-geopend', 'overzicht-actueel', 'view', 'create', 'update', 'verbruikt', 'afgeschreven', 'delete'],
+                'only' => ['index', 'index-actueel', 'voorraad-bij-werken', 'overzicht-actueel', 'view', 'create', 'update', 'verbruikt', 'afgeschreven', 'delete'],
                 'rules' => [
                     [
                         'allow' =>  true,
@@ -43,12 +43,12 @@ class InkoopController extends Controller
                         'roles' =>  ['admin', 'beheerder'],
                     ],
                     [
-                        'allow' => TRUE,
-                        'actions' => ['overzicht-actueel', 'nieuw-geopend'],
+                        'allow' => true,
+                        'actions' => ['overzicht-actueel', 'voorraad-bij-werken'],
                         'roles' =>  ['gebruiker'],
                     ],
                     [
-                        'allow' => FALSE,  // deny all users
+                        'allow' => false,  // deny all users
                         'roles'=> ['*'],
                     ],
                 ],
@@ -135,12 +135,11 @@ class InkoopController extends Controller
             $dbTransaction = Yii::$app->db->beginTransaction();
             try {
                 for ($i = 1; $i <= $count; $i++) {
-
                     $modelTemp = new Inkoop();
                     $modelTemp->attributes = $model->attributes;
                     $modelTemp->aantal = 1;
                     $modelTemp->status = Inkoop::STATUS_voorraad;
-                    if(!$modelTemp->save()){
+                    if (!$modelTemp->save()) {
                         foreach ($modelTemp->errors as $key => $error) {
                             Yii::$app->session->setFlash('warning', Yii::t('app', 'Fout met opslaan: ' . $key . ':' . $error[0]));
                         }
@@ -199,7 +198,7 @@ class InkoopController extends Controller
         $model = $this->findModel($id);
         $model->status = Inkoop::STATUS_afgeschreven;
         $model->datum = date('Y-m-d H:i:s');
-        if(!$model->save()){
+        if (!$model->save()) {
             foreach ($model->errors as $key => $error) {
                 Yii::$app->session->setFlash('warning', Yii::t('app', 'Fout met opslaan: ' . $key . ':' . $error[0]));
             }
@@ -225,7 +224,7 @@ class InkoopController extends Controller
         $model = $this->findModel($id);
         $model->status = Inkoop::STATUS_verkocht;
         $model->datum = date('Y-m-d H:i:s');
-        if(!$model->save()){
+        if (!$model->save()) {
             foreach ($model->errors as $key => $error) {
                 Yii::$app->session->setFlash('warning', Yii::t('app', 'Fout met opslaan: ' . $key . ':' . $error[0]));
             }
@@ -245,18 +244,13 @@ class InkoopController extends Controller
      * @param integer $id
      * @return mixed
      */
-    public function actionNieuwGeopend($assortiment_id, $omschrijving)
+    public function actionVoorraadBijWerken($assortiment_id, $omschrijving, $status)
     {
-        Inkoop::voorraadBijWerken($assortiment_id, 1, Inkoop::STATUS_verkocht, $omschrijving);
-        
-        $searchModel = new InkoopSearch();
-        $dataProvider = $searchModel->searchActueelOverview(Yii::$app->request->queryParams);
+        Inkoop::voorraadBijWerken($assortiment_id, 1, $status, $omschrijving);
 
         Yii::$app->session->setFlash('success', Yii::t('app', 'Item is uit de voorraad gehaald.'));
-        return $this->render('overzicht-actueel', [
-            'searchModel' => $searchModel,
-            'dataProvider' => $dataProvider,
-        ]);
+
+        return $this->redirect(['overzicht-actueel']);
     }
 
     /**
