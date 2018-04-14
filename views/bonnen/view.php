@@ -6,6 +6,7 @@
 
 use yii\helpers\Html;
 use yii\widgets\DetailView;
+use yii\helpers\Url;
 
 /* @var $this yii\web\View */
 /* @var $model app\models\Assortiment */
@@ -84,7 +85,13 @@ use yii\widgets\DetailView;
                                 },
                             ],
                         ],
-                    ]) ?>
+                    ]);
+
+                    $image = Url::to('@web/uploads/bonnen/' . $model->image);
+
+                    echo Html::img($image, ['height'=>"100%", 'width'=>"100%"]);?>
+
+                  
                 </table>
             </div>
         </div>
