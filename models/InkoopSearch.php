@@ -75,7 +75,7 @@ class InkoopSearch extends Inkoop
         // grid filtering conditions
         $query->andFilterWhere([
             'inkoop_id' => $this->inkoop_id,
-            'assortiment_id' => $this->assortiment_id,
+            'assortiment.assortiment_id' => $this->assortiment_id,
             'volume' => $this->volume,
             'aantal' => $this->aantal,
             'type' => $this->type,
@@ -135,7 +135,7 @@ class InkoopSearch extends Inkoop
         // grid filtering conditions
         $query->andFilterWhere([
             'inkoop_id' => $this->inkoop_id,
-            'assortiment_id' => $this->assortiment_id,
+            'assortiment.assortiment_id' => $this->assortiment_id,
             'volume' => $this->volume,
             'aantal' => $this->aantal,
             'type' => $this->type,

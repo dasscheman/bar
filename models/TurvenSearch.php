@@ -22,7 +22,7 @@ class TurvenSearch extends Turven
         return [
             [['turven_id', 'turflijst_id', 'assortiment_id', 'prijslijst_id', 'consumer_user_id', 'aantal', 'type', 'status', 'datum', 'created_by', 'updated_by'], 'integer'],
             [['totaal_prijs'], 'number'],
-            [['created_at', 'updated_at', 'displayname', 'assortiment_name'], 'safe'],
+            [['created_at', 'updated_at', 'displayname', 'assortiment_name', 'consumer_user_id', 'factuur_id'], 'safe'],
         ];
     }
 
@@ -76,6 +76,8 @@ class TurvenSearch extends Turven
             'turven_id' => $this->turven_id,
             'turflijst_id' => $this->turflijst_id,
             'assortiment_id' => $this->assortiment_id,
+            'consumer_user_id' => $this->consumer_user_id,
+            'factuur_id' => $this->factuur_id,
             'prijslijst_id' => $this->prijslijst_id,
             'aantal' => $this->aantal,
             'totaal_prijs' => $this->totaal_prijs,

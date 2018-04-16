@@ -21,7 +21,7 @@ class TransactiesSearch extends Transacties
     {
         return [
             [['transacties_id', 'transacties_user_id', 'type_id', 'status', 'created_by', 'updated_by'], 'integer'],
-            [['omschrijving', 'created_at', 'updated_at', 'datum', 'displayname'], 'safe'],
+            [['omschrijving', 'created_at', 'updated_at', 'datum', 'displayname', 'transacties_user_id', 'factuur_id'], 'safe'],
             [['bedrag'], 'number'],
         ];
     }
@@ -72,6 +72,8 @@ class TransactiesSearch extends Transacties
             'bedrag' => $this->bedrag,
             'type_id' => $this->type_id,
             'status' => $this->status,
+            'transacties_user_id' => $this->transacties_user_id,
+            'factuur_id' => $this->factuur_id,
             'created_at' => $this->created_at,
             'created_by' => $this->created_by,
             'updated_at' => $this->updated_at,

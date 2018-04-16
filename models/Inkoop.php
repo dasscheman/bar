@@ -5,7 +5,6 @@ namespace app\models;
 use Yii;
 use app\models\BarActiveRecord;
 
-
 /**
  * This is the model class for table "inkoop".
  *
@@ -134,7 +133,8 @@ class Inkoop extends BarActiveRecord
      * Retrieves a list of statussen
      * @return array an array of available statussen.
      */
-    public function getTypeOptions() {
+    public function getTypeOptions()
+    {
         return [
             self::TYPE_fust => Yii::t('app', 'Fust'),
             self::TYPE_fles => Yii::t('app', 'Fles'),
@@ -144,7 +144,8 @@ class Inkoop extends BarActiveRecord
     /**
      * @return string the status text display
      */
-    public function getTypeText() {
+    public function getTypeText()
+    {
         $typeOptions = $this->typeOptions;
         if (isset($typeOptions[$this->type])) {
             return $typeOptions[$this->type];
@@ -177,9 +178,9 @@ class Inkoop extends BarActiveRecord
         return "unknown status ({$this->status})";
     }
 
-    public function voorraadBijWerken($assortiment_id, $count, $status, $omschrijving = NULL)
+    public function voorraadBijWerken($assortiment_id, $count, $status, $omschrijving = null)
     {
-        if($omschrijving === NULL ) {
+        if ($omschrijving === null) {
             $voorraad = Inkoop::find()
                 ->where('status =:status')
                 ->andWhere('assortiment_id =:assortiment_id')
@@ -202,17 +203,17 @@ class Inkoop extends BarActiveRecord
         }
         $i = 0;
         foreach ($voorraad as $item) {
-            if($i >= $count) {
+            if ($i >= $count) {
                 break;
             }
             $item->status = $status;
             $item->datum = date('Y-m-d H:i:s');
-            if(!$item->save()) {
+            if (!$item->save()) {
                 foreach ($item->errors as $key => $error) {
                     Yii::$app->session->setFlash('warning', Yii::t('app', 'Er is iets niet goed gegaan met het bijwerken van de voorraad:' . $error[0]));
                 }
             }
             $i++;
         }
-     }
+    }
 }

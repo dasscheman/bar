@@ -71,6 +71,28 @@ class FactuurController extends Controller
     }
 
     /**
+     * If "dektrium/yii2-rbac" extension is installed, this page displays form
+     * where user can assign multiple auth items to user.
+     *
+     * @param int $id
+     *
+     * @return string
+     * @throws NotFoundHttpException
+     */
+    public function actionAssignments($id)
+    {
+        if (!isset(\Yii::$app->extensions['dektrium/yii2-rbac'])) {
+            throw new NotFoundHttpException();
+        }
+        Url::remember('', 'actions-redirect');
+        $user = $this->findModel($id);
+
+        return $this->render('_assignments', [
+            'user' => $user,
+        ]);
+    }
+
+    /**
      * Displays a single Factuur model.
      * @param integer $id
      * @return mixed

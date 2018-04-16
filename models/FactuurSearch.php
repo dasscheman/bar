@@ -19,7 +19,7 @@ class FactuurSearch extends Factuur
     {
         return [
             [['factuur_id', 'ontvanger', 'created_by', 'updated_by'], 'integer'],
-            [['naam', 'verzend_datum', 'pdf', 'created_at', 'updated_at'], 'safe'],
+            [['naam', 'verzend_datum', 'pdf', 'created_at', 'updated_at', 'ontvanger'], 'safe'],
         ];
     }
 

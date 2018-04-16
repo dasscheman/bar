@@ -10,6 +10,8 @@ use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
 use yii\filters\AccessControl;
+use app\models\PrijslijstSearch;
+use app\models\InkoopSearch;
 
 /**
  * AssortimentController implements the CRUD actions for Assortiment model.
@@ -42,7 +44,7 @@ class AssortimentController extends Controller
                         'roles' =>  ['admin', 'beheerder'],
                     ],
                     [
-                        'allow' => FALSE,  // deny all users
+                        'allow' => false,  // deny all users
                         'roles'=> ['*'],
                     ],
                 ],
@@ -60,7 +62,7 @@ class AssortimentController extends Controller
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
         $this->layout = 'main-fluid';
-        return $this->render('index', [
+        return $this->render('beheer', [
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
         ]);
@@ -73,8 +75,26 @@ class AssortimentController extends Controller
      */
     public function actionView($id)
     {
+        $assortiment = $this->findModel($id);
+
+        $searchModelPrijslijst = new PrijslijstSearch();
+        $paramsPrijslijst['PrijslijstSearch']['assortiment_id'] = $id;
+        $dataProviderPrijslijst = $searchModelPrijslijst->search($paramsPrijslijst);
+
+        $searchModelInkoop = new InkoopSearch();
+        $paramsInkoop = Yii::$app->request->queryParams;
+        $paramsInkoop['InkoopSearch']['assortiment_id'] = $id;
+        $dataProviderInkoopAll = $searchModelInkoop->search($paramsInkoop);
+        $dataProviderInkoopVoorraad = $searchModelInkoop->searchActueel($paramsInkoop);
+
+        $this->layout = 'main-fluid';
         return $this->render('view', [
-            'model' => $this->findModel($id),
+            'model' => $assortiment,
+            'dataProviderPrijslijst' => $dataProviderPrijslijst,
+            'searchModelPrijslijst' => $searchModelPrijslijst,
+            'searchModelInkoop' => $searchModelInkoop,
+            'dataProviderInkoopAll' => $dataProviderInkoopAll,
+            'dataProviderInkoopVoorraad' => $dataProviderInkoopVoorraad
         ]);
     }
 
@@ -124,8 +144,7 @@ class AssortimentController extends Controller
     public function actionDelete($id)
     {
         $model = $this->findModel($id);
-        try
-        {
+        try {
             $model->delete();
         } catch (\Exception $e) {
             Yii::$app->session->setFlash('warning', Yii::t('app', 'Je kunt dit item uit het assoritment niet verwijderen.'));

@@ -37,12 +37,12 @@ class PrijslijstController extends Controller
                 'only' => ['index', 'view', 'create', 'update', 'delete'],
                 'rules' => [
                     [
-                        'allow' => TRUE,
+                        'allow' => true,
                         'actions' => ['index', 'delete', 'create', 'update', 'view'],
                         'roles' =>  ['admin', 'beheerder'],
                     ],
                     [
-                        'allow' => FALSE,  // deny all users
+                        'allow' => false,  // deny all users
                         'roles'=> ['*'],
                     ],
                 ],
@@ -60,7 +60,7 @@ class PrijslijstController extends Controller
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
         $this->layout = 'main-fluid';
-        return $this->render('index', [
+        return $this->render('beheer', [
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
         ]);
@@ -88,7 +88,7 @@ class PrijslijstController extends Controller
         $model = new Prijslijst();
 
         if ($model->load(Yii::$app->request->post())) {
-            if($model->save()) {
+            if ($model->save()) {
                 return $this->redirect(['view', 'id' => $model->prijslijst_id]);
             }
             foreach ($model->errors as $key => $error) {
@@ -128,8 +128,7 @@ class PrijslijstController extends Controller
     public function actionDelete($id)
     {
         $model = $this->findModel($id);
-        try
-        {
+        try {
             $model->delete();
         } catch (\Exception $e) {
             Yii::$app->session->setFlash('warning', Yii::t('app', 'Je kunt deze prijstlijst niet verwijderen.'));
