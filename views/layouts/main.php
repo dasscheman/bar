@@ -58,7 +58,7 @@ AppAsset::register($this);
                     ],
                     [
                         'label' => 'Bar beheer',
-                        'url'=>['/turven/index'],
+                        'url'=>['/assortiment/index'],
                     ],
                     [
                         'label' => 'Verstuur testmail',
