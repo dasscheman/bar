@@ -5,7 +5,6 @@
  */
 
 use kartik\grid\GridView;
-use yii\helpers\Html;
 use yii\widgets\Pjax;
 use app\models\Assortiment;
 

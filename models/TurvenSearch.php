@@ -20,9 +20,9 @@ class TurvenSearch extends Turven
     public function rules()
     {
         return [
-            [['turven_id', 'turflijst_id', 'assortiment_id', 'prijslijst_id', 'consumer_user_id', 'aantal', 'type', 'status', 'datum', 'created_by', 'updated_by'], 'integer'],
+            [['turven_id', 'turflijst_id', 'assortiment_id', 'prijslijst_id', 'consumer_user_id', 'aantal', 'type', 'status', 'created_by', 'updated_by'], 'integer'],
             [['totaal_prijs'], 'number'],
-            [['created_at', 'updated_at', 'displayname', 'assortiment_name', 'consumer_user_id', 'factuur_id'], 'safe'],
+            [['created_at', 'updated_at', 'displayname', 'assortiment_name', 'consumer_user_id', 'factuur_id', 'datum'], 'safe'],
         ];
     }
 

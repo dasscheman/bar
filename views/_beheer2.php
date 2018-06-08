@@ -17,13 +17,9 @@ use yii\bootstrap\Nav;
  * @var string $content
  */
 
-//$this->title = Yii::t('user', 'Update user account');
-//$this->params['breadcrumbs'][] = ['label' => Yii::t('user', 'Users'), 'url' => ['index']];
-//$this->params['breadcrumbs'][] = $this->title;
 ?>
 
-<?= $this->render('/_alert', ['module' => Yii::$app->getModule('user')]) ?>
-
+<?= $this->render('/_alert') ?>
 <?= $this->render('_menu') ?>
 
 <div class="row">
@@ -36,20 +32,24 @@ use yii\bootstrap\Nav;
                     ],
                     'items' => [
                         [
-                            'label' => 'Assortiment',
-                            'url' => ['/assortiment/index']
+                            'label' => 'Bankrekening',
+                            'url' => ['/transacties/bank']
                         ],
                         [
-                            'label' => 'Actueel',
-                            'url' => ['/inkoop/index-actueel']
+                            'label' => 'Transacties',
+                            'url' => ['/transacties/index']
                         ],
                         [
-                            'label' => 'Alles',
-                            'url' => ['/inkoop/index']
+                            'label' => 'Bonnen',
+                            'url' => ['/bonnen/index']
                         ],
                         [
-                            'label' => 'Prijslijst',
-                            'url' => ['/prijslijst/index']
+                            'label' => 'Facturen',
+                            'url' => ['/factuur/index']
+                        ],
+                        [
+                            'label' => 'Betalings Typen',
+                            'url' => ['/betaling-type/index']
                         ],
                   
                     ],

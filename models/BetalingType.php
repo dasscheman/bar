@@ -4,6 +4,7 @@ namespace app\models;
 
 use Yii;
 use app\models\BarActiveRecord;
+use yii\helpers\ArrayHelper;
 
 /**
  * This is the model class for table "betaling_type".
@@ -156,6 +157,19 @@ class BetalingType extends BarActiveRecord
         
         if (isset($betaling->type_id)) {
             return $betaling->type_id;
+        }
+        return;
+    }
+
+    public function getBankBetalingsType()
+    {
+        $betaling = BetalingType::find()
+                ->where('omschrijving = "Bankoverschrijving Bij" OR omschrijving = "Bankoverschrijving Af"')
+                ->asArray()
+                ->all();
+
+        if ($betaling !== null) {
+            return ArrayHelper::getColumn($betaling, 'type_id');
         }
         return;
     }

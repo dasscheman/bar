@@ -6,11 +6,12 @@
 
 
 /**
- * @var yii\web\View $this
- * @var dektrium\user\models\User $user
+ * @var \yii\web\View $this
+ * @var \yii\data\ActiveDataProvider $dataProvider
+ * @var \app\models\Assortiment $searchModel
  */
 
-$this->beginContent('../views/_beheer1.php');
+$this->beginContent('../views/_beheer3.php');
         echo $this->render('index', [
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,

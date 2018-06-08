@@ -49,12 +49,6 @@ use yii\widgets\DetailView;
                         'model' => $model,
                         'attributes' => [
                             'transacties_id',
-                            'transacties_user_id' => [
-                                'attribute' => 'transacties_user_id',
-                                'value' => function ($model) {
-                                    return $model->getTransactiesUser()->one()->username;
-                                },
-                            ],
                             'omschrijving',
                             'bedrag' => [
                                 'attribute' => 'bedrag',
@@ -79,6 +73,14 @@ use yii\widgets\DetailView;
                                 'attribute' => 'status',
                                 'value' => function ($model) {
                                     return $model->getStatusText();
+                                },
+                            ],
+                            'transacties_user_id' => [
+                                'attribute' => 'transacties_user_id',
+                                'value' => function ($model) {
+                                    if ($model->getTransactiesUser()->one() !== null) {
+                                        return $model->getTransactiesUser()->one()->username;
+                                    }
                                 },
                             ],
                             'all_related_transactions' => [

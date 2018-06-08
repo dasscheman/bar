@@ -12,7 +12,7 @@
 
 //$this->beginContent('@dektrium/user/views/admin/update.php', ['user' => $user]);
 //$this->beginContent('@web/views/_beheer.php');
-$this->beginContent('../views/_beheer.php');
+$this->beginContent('../views/_beheer1.php');
         echo $this->render('index', [
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,

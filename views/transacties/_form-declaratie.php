@@ -28,6 +28,13 @@ use app\models\BetalingType;
         'id'   => 'bonnen-form',
         'options'=> ['enctype'=>'multipart/form-data'],
     ]);
+    echo $form->field($modelTransacties, 'type_id')->widget(Select2::className(), [
+        'data' => ArrayHelper::map(BetalingType::find()->all(), 'type_id', 'omschrijving'),
+        'options'   => [
+            'placeholder' => Yii::t('app', 'Selecteer betaling type'),
+            'id' => 'type_id',
+        ],
+    ]);
     echo $form->field($modelTransacties, 'transacties_user_id')->widget(Select2::className(), [
         'data' => ArrayHelper::map(User::find()->all(), 'id', 'username'),
         'options'   => [

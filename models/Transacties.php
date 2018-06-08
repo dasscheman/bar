@@ -63,7 +63,7 @@ class Transacties extends BarActiveRecord
     public function rules()
     {
         return [
-            [['transacties_user_id', 'bedrag', 'type_id', 'status', 'datum'], 'required'],
+            [['bedrag', 'type_id', 'status', 'datum'], 'required'],
             [['transacties_user_id', 'bon_id', 'factuur_id', 'type_id', 'status', 'created_by', 'updated_by', 'mollie_status'], 'integer'],
             [['bedrag'], 'number'],
             [['datum', 'created_at', 'updated_at', 'deleted_at'], 'safe'],
@@ -250,10 +250,14 @@ class Transacties extends BarActiveRecord
 
     public function getTransactionOmschrijving()
     {
-        return $this->omschrijving . ' - '
-            . $this->getType()->one()->omschrijving . ' ('
-            . $this->getTransactiesUser()->one()->getProfile()->one()->voornaam . ' '
-            . $this->getTransactiesUser()->one()->getProfile()->one()->achternaam . ')';
+        $omschrijving = $this->omschrijving . ' - '
+            . $this->getType()->one()->omschrijving;
+        if ($this->getTransactiesUser()->one() !== null) {
+            $omschrijving .= ' ('
+                . $this->getTransactiesUser()->one()->getProfile()->one()->voornaam . ' '
+                . $this->getTransactiesUser()->one()->getProfile()->one()->achternaam . ')';
+        }
+        return $omschrijving;
     }
 
     /**
@@ -316,5 +320,25 @@ class Transacties extends BarActiveRecord
                 Yii::$app->session->setFlash('warning', Yii::t('app', 'Fout met opslaan: ' . $key . ':' . $error[0]));
             }
         }
+    }
+    public function checkBon()
+    {
+        $betaling = BetalingType::find()
+                ->where('omschrijving = "Declaratie" OR omschrijving = "Bankoverschrijving Af"')
+                ->asArray()
+                ->all();
+
+        if ($betaling !== null) {
+            $betalingArray = ArrayHelper::getColumn($betaling, 'type_id');
+        }
+
+        if (!in_array($this->type_id, $betalingArray)) {
+            return true;
+        }
+
+        if (isset($this->bon_id)) {
+            return true;
+        }
+        return false;
     }
 }

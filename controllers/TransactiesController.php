@@ -42,7 +42,7 @@ class TransactiesController extends Controller
                 'rules' => [
                     [
                         'allow' => true,
-                        'actions' => ['index', 'delete', 'create', 'create-declaraties', 'update', 'view'],
+                        'actions' => ['index', 'delete', 'create', 'create-declaratie', 'update', 'view', 'bank'],
                         'roles' =>  ['admin', 'beheerder'],
                     ],
                     [
@@ -65,7 +65,24 @@ class TransactiesController extends Controller
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
         $this->layout = 'main-fluid';
-        return $this->render('index', [
+        return $this->render('beheer', [
+            'searchModel' => $searchModel,
+            'dataProvider' => $dataProvider,
+        ]);
+    }
+
+    /**
+     * Lists all Transacties models.
+     * @return mixed
+     */
+    public function actionBank()
+    {
+        $searchModel = new TransactiesSearch();
+
+        $dataProvider = $searchModel->searchBank(Yii::$app->request->queryParams);
+
+        $this->layout = 'main-fluid';
+        return $this->render('beheer', [
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
         ]);

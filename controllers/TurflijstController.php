@@ -37,12 +37,12 @@ class TurflijstController extends Controller
                 'only' => ['index', 'view', 'create', 'update', 'delete'],
                 'rules' => [
                     [
-                        'allow' => TRUE,
+                        'allow' => true,
                         'actions' => ['index', 'delete', 'create', 'update', 'view'],
                         'roles' =>  ['admin', 'beheerder'],
                     ],
                     [
-                        'allow' => FALSE,  // deny all users
+                        'allow' => false,  // deny all users
                         'roles'=> ['*'],
                     ],
                 ],
@@ -60,7 +60,7 @@ class TurflijstController extends Controller
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
         $this->layout = 'main-fluid';
-        return $this->render('index', [
+        return $this->render('beheer', [
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
         ]);
@@ -126,8 +126,7 @@ class TurflijstController extends Controller
     public function actionDelete($id)
     {
         $model = $this->findModel($id);
-        try
-        {
+        try {
             $model->delete();
         } catch (\Exception $e) {
             Yii::$app->session->setFlash('warning', Yii::t('app', 'Je kunt deze turflijst niet verwijderen.'));

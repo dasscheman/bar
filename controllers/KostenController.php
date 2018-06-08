@@ -9,6 +9,8 @@ use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
 use app\models\Bonnen;
+use yii\filters\AccessControl;
+use dektrium\user\filters\AccessRule;
 
 /**
  * KostenController implements the CRUD actions for Kosten model.
@@ -27,6 +29,25 @@ class KostenController extends Controller
                     'delete' => ['POST'],
                 ],
             ],
+            'access' => [
+                'class' => AccessControl::className(),
+                'ruleConfig' => [
+                    'class' => AccessRule::className(),
+                ],
+                // We will override the default rule config with the new AccessRule class
+                'only' => ['index', 'view', 'create', 'update', 'delete'],
+                'rules' => [
+                    [
+                        'allow' => true,
+                        'actions' => ['index', 'delete', 'create', 'update', 'view'],
+                        'roles' =>  ['admin', 'beheerder'],
+                    ],
+                    [
+                        'allow' => false,  // deny all users
+                        'roles'=> ['*'],
+                    ],
+                ],
+            ],
         ];
     }
 
@@ -40,7 +61,7 @@ class KostenController extends Controller
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
         $this->layout = 'main-fluid';
-        return $this->render('index', [
+        return $this->render('beheer', [
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
         ]);
@@ -71,7 +92,7 @@ class KostenController extends Controller
         if ($model->load(Yii::$app->request->post())) {
             $bon = Bonnen::findOne($model->bon_id);
             $model->datum = $bon->datum;
-            if($model->save()) {
+            if ($model->save()) {
                 return $this->redirect(['index']);
             }
             foreach ($model->errors as $key => $error) {

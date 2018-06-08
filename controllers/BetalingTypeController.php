@@ -8,6 +8,8 @@ use app\models\BetalingTypeSearch;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
+use yii\filters\AccessControl;
+use yii\filters\AccessRule;
 
 /**
  * BetalingTypeController implements the CRUD actions for BetalingType model.
@@ -26,6 +28,25 @@ class BetalingTypeController extends Controller
                     'delete' => ['POST'],
                 ],
             ],
+            'access' => [
+                'class' => AccessControl::className(),
+                'ruleConfig' => [
+                    'class' => AccessRule::className(),
+                ],
+                // We will override the default rule config with the new AccessRule class
+                'only' => ['index', 'view', 'create', 'update', 'delete'],
+                'rules' => [
+                    [
+                        'allow' =>  true,
+                        'actions' => ['index', 'delete', 'create', 'update', 'view'],
+                        'roles' =>  ['admin', 'beheerder'],
+                    ],
+                    [
+                        'allow' => false,  // deny all users
+                        'roles'=> ['*'],
+                    ],
+                ],
+            ],
         ];
     }
 
@@ -39,7 +60,7 @@ class BetalingTypeController extends Controller
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
         $this->layout = 'main-fluid';
-        return $this->render('index', [
+        return $this->render('beheer', [
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
         ]);

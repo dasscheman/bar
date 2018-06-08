@@ -13,32 +13,21 @@ echo Nav::widget([
     ],
     'items' => [
         [
-            'label' => 'Kosten',
-            'url' => ['/kosten/index']
-        ],
-        [
             'label' => 'Assortiment',
             'url' => ['/assortiment/index']
         ],
         [
+            'label' => 'Transacties',
+            'url' => ['/transacties/index']
+        ],
+        [
+            'label' => 'Turven',
+            'url' => ['/turven/index']
+        ],
+        [
             'label' => 'Overige',
             'items' => [
-                
-            [
-                'label' => 'Turven',
-                'url' => ['/turven/index']
-            ],
-            [
-                'label' => 'Transacties',
-                'url' => ['/transacties/index']
-            ],
-            [
-                'label' => 'Facturen',
-                'url' => ['/factuur/index']
-            ],
                 ['label' => 'Favorieten', 'url' => ['/favorieten-lijsten/index']],
-                ['label' => 'Betaling typs', 'url' => ['/betaling-type/index']],
-                ['label' => 'Turflijst', 'url' => ['/turflijst/index']],
                 ['label' => 'Bonnen','url' => ['/bonnen/index']],
             ],
         ],
