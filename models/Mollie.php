@@ -82,14 +82,28 @@ class Mollie extends Transacties
             ->andWhere(['not', ['mollie_customer_id' => null]])
             ->all();
         $count = 0;
+
+        echo 'volgende automatisch ophogen controleren:';
         foreach ($users as $user) {
             // Wanneer een user een pending transactie heeft, dan gaan we niet
             // een nieuwe transactie opstarten.
-            if ($user->getBalans() > $user->getProfile()->one()->limit_ophogen ||
-                !$mollie->checkUserMandates($user->mollie_customer_id) ||
-                $mollie->pendingTransactionsExists($user->id)) {
+            echo "\r\n";
+            echo '-->' . $user->getProfile()->one()->voornaam . " " . $user->getProfile()->one()->achternaam;
+            if ($user->getBalans() > $user->getProfile()->one()->limit_ophogen ) {
+                echo $user->getBalans();
+                echo $user->getProfile()->one()->limit_ophogen;
+                echo "--Balans is okey";
+                continue;                
+            }
+            if(!$mollie->checkUserMandates($user->mollie_customer_id)) {
+                echo "--Geen mandaat";
+                continue;                
+            }
+            if($mollie->pendingTransactionsExists($user->id)) {
+                echo "--Er loopt al een nog niet afgeronde incasso.";
                 continue;
             }
+            echo "\r\n";
             $mollie->transacties_user_id = $user->id;
             $mollie->omschrijving = 'Automatisch ophogen BisonBar met ' . number_format($user->mollie_bedrag, 2, ',', ' ') . ' Euro';
             $mollie->bedrag = $user->mollie_bedrag;
