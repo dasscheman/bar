@@ -162,6 +162,9 @@ class Factuur extends BarActiveRecord
                 !$user->getInvalidTransactionsNotInvoiced()->exists()) {
                 continue;
             }
+            
+            echo "\r\n";
+            echo '-->' . $user->getProfile()->one()->voornaam . " " . $user->getProfile()->one()->achternaam;
             $turvenModel = $user->getNewTurvenUsers();
             $turven = $turvenModel->orderBy(['datum'=>SORT_ASC])->one();
 
@@ -169,6 +172,8 @@ class Factuur extends BarActiveRecord
 
             if (isset($turven->datum) && $turven->datum < $fourWeeks) {
                 // Als de oudste turf meer dan 4 weken geleden is, dan gaan we een factuur maken.
+                echo "\r\n";
+                echo '--> Nieuwe turven';
                 $generate = true;
             }
 
@@ -177,11 +182,15 @@ class Factuur extends BarActiveRecord
             if (isset($transacties->datum) && $transacties->datum < $fourWeeks) {
                 // Als de oudste transactie meer dan 4 weken geleden is, dan gaan we een factuur maken.
                 $generate = true;
+                echo "\r\n";
+                echo '--> Nieuwe Transacties';
             }
             
             $facuur = new Factuur();
 
             if ($generate && $facuur->createFactuur($user)) {
+                echo "\r\n";
+                echo '--> Nieuwe Factuur aangemaakt';
                 $facuur->updateAfterCreateFactuur($user);
                 $count++;
             }
