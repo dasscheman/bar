@@ -17,7 +17,8 @@ use yii\helpers\Url;
         <br>
         Vanaf heden worden facturen elke 4 weken automatisch aangemaakt en verzonden.
         Voor jou verandert dat niets.
-        Behalve dat er een aanzienlijke kans is dat de betalingen die gedaan zijn naar die Bison rekening, nog niet meegenomen zijn in deze factuur.
+        Behalve dat er een aanzienlijke kans is dat de betalingen die gedaan zijn naar de Barrekening, nog niet meegenomen zijn in deze factuur.
+        Betalingen die gedaan zijn met IDEAL worden wel direct verwerkt.
         Die betalingen moeten namelijk met de hand verwerkt worden.
 
         <br>
