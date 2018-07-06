@@ -356,6 +356,21 @@ class User extends BaseUser
     /**
      * @return \yii\db\ActiveQuery
      */
+    public function getTransactiesUserNietGefactureerd()
+    {
+        return $this->hasMany(Transacties::className(), ['transacties_user_id' => 'id'])
+            ->where('transacties.status =:status_gecontroleerd OR transacties.status =:status_herberekend')
+            ->andWhere('ISNULL(deleted_at)')
+            ->params([
+                ':status_gecontroleerd' =>Transacties::STATUS_gecontroleerd,
+                ':status_herberekend' =>Transacties::STATUS_herberekend
+            ])
+            ->orderBy(['datum'=>SORT_ASC]);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
     public function getNewBijTransactiesUser()
     {
         $test  = BetalingType::find()->where(['bijaf'=>BetalingType::BIJAF_bij])->asArray()->all();

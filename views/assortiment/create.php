@@ -11,17 +11,9 @@ use yii\helpers\Html;
  * @var $model app\models\Assortiment
  */
 
-?>
-<div class="row">
-    <div class="col-md-12">
-        <div class="panel panel-default">
-            <div class="panel-heading">
-                <?= Html::encode('Assortiment toevoegen') ?>
-            </div>
-            <div class="panel-body">
-                <?php echo $this->render('/_alert') ?>
-                <?php echo $this->render('/_menu') ?>
-                <table class="table">
+
+
+$this->beginContent('../views/_beheer2.php');
                     <?php echo  $this->render('_form', ['model' => $model]); ?>
                 </table>
             </div>

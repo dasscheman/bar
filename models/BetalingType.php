@@ -161,6 +161,66 @@ class BetalingType extends BarActiveRecord
         return;
     }
 
+    public function getDeclaratieId()
+    {
+        $betaling = BetalingType::findOne(['omschrijving' => 'Declaratie']);
+
+        if (isset($betaling->type_id)) {
+            return $betaling->type_id;
+        }
+        return;
+    }
+
+    public function getBankAfId()
+    {
+        $betaling = BetalingType::findOne(['omschrijving' => 'Bankoverschrijving Af']);
+
+        if (isset($betaling->type_id)) {
+            return $betaling->type_id;
+        }
+        return;
+    }
+
+    public function getBankBijId()
+    {
+        $betaling = BetalingType::findOne(['omschrijving' => 'Bankoverschrijving Bij']);
+
+        if (isset($betaling->type_id)) {
+            return $betaling->type_id;
+        }
+        return;
+    }
+
+    public function getIzettleId()
+    {
+        $betaling = BetalingType::findOne(['omschrijving' => 'Izettle Pin betaling']);
+
+        if (isset($betaling->type_id)) {
+            return $betaling->type_id;
+        }
+        return;
+    }
+
+    public function getStatiegeldId()
+    {
+        $betaling = BetalingType::findOne(['omschrijving' => 'Statiegeld']);
+
+        if (isset($betaling->type_id)) {
+            return $betaling->type_id;
+        }
+        return;
+    }
+
+    public function getOmschrijving($id)
+    {
+        $betaling = BetalingType::findOne(['type_id' => $id]);
+
+        if (isset($betaling->omschrijving)) {
+            return $betaling->omschrijving;
+        }
+        return;
+    }
+
     public function getBankBetalingsType()
     {
         $betaling = BetalingType::find()

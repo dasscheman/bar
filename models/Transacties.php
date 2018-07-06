@@ -66,7 +66,7 @@ class Transacties extends BarActiveRecord
             [['bedrag', 'type_id', 'status', 'datum'], 'required'],
             [['transacties_user_id', 'bon_id', 'factuur_id', 'type_id', 'status', 'created_by', 'updated_by', 'mollie_status'], 'integer'],
             [['bedrag'], 'number'],
-            [['datum', 'created_at', 'updated_at', 'deleted_at'], 'safe'],
+            [['datum', 'created_at', 'updated_at', 'deleted_at', 'status'], 'safe'],
             [['omschrijving', 'mollie_id'], 'string', 'max' => 255],
             [['factuur_id'], 'exist', 'skipOnError' => true, 'targetClass' => Factuur::className(), 'targetAttribute' => ['factuur_id' => 'factuur_id']],
             [['type_id'], 'exist', 'skipOnError' => true, 'targetClass' => BetalingType::className(), 'targetAttribute' => ['type_id' => 'type_id']],
@@ -84,7 +84,7 @@ class Transacties extends BarActiveRecord
     {
         return [
             'transacties_id' => 'ID',
-            'transacties_user_id' => 'Transactie voor',
+            'transacties_user_id' => 'Voor',
             'all_related_transactions' => 'Gelinkte trans.',
             'factuur_id' => Yii::t('app', 'Factuur ID'),
             'omschrijving' => 'Omschrijving',

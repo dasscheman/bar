@@ -5,6 +5,7 @@
  */
 
 use kartik\grid\GridView;
+use yii\helpers\Html;
 use yii\widgets\Pjax;
 
 /* @var $this yii\web\View */
@@ -29,7 +30,12 @@ $pjax = false; //TRUE zorgt ervoor dat de columnen vertraagd verspringen, dat is
 <div class="panel-body">
 
     <?php
-    echo $this->render('/_alert');
+    echo $this->render('/_alert');    echo Html::a(
+        Yii::t('app', 'Betalingstype toevoegen'),
+        [ 'create'],
+        [ 'class' => 'btn btn-success namen']
+    );
+    ?> <br> <br> <?php
     Pjax::begin();
     echo GridView::widget([
         'id' => 'kv-grid-betaling-type',

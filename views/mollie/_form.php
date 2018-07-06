@@ -52,12 +52,12 @@ use app\models\User;
     if (!$user->automatische_betaling) {
         echo Html::encode('Je kunt je betalingen automatisch laten uitvoeren op het moment dat je tegoed onder 0 euro komt. '
                 . 'Je tegoed wordt dan verhoogd met het bedrag dat je hier invult. '
-                . 'Elke mail die je onvangt zal een link bevatten waarmee je eenvoudig automatisch verhogen uit kan zetten.');
+                . 'Elke mail die je onvangt zal een link bevatten waarmee je eenvoudig automatisch ophogen uit kan zetten.');
         echo $form->field($model, 'automatische_betaling')->checkbox();
     }
     
     echo $form->field($model, 'transacties_user_id')->hiddenInput(['value'=> $model->transacties_user_id])->label(false);
-    echo Html::submitButton(Yii::t('app', 'Save'), ['class' => 'btn btn-success btn-block']);
+    echo Html::submitButton(Yii::t('app', 'Betalen'), ['class' => 'btn btn-success btn-block']);
 
     ActiveForm::end();
     if ($user->automatische_betaling) {

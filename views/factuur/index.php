@@ -29,6 +29,12 @@ $toolbar = false;
 <div class="panel-body">
     <?php 
     echo $this->render('/_alert');
+    echo Html::a(
+        Yii::t('app', 'Factuur genereren'),
+        [ 'create'],
+        [ 'class' => 'btn btn-success namen']
+    );
+    ?> <br> <br> <?php
     Pjax::begin();
     echo GridView::widget([
         'id' => 'kv-grid-factuur',
@@ -47,6 +53,7 @@ $toolbar = false;
             'verzend_datum' => [
                 'attribute' => 'verzend_datum',
             ],
+            'created_at',
             'deleted_at',
             [
                 'class' => 'yii\grid\ActionColumn',

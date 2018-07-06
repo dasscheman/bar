@@ -4,6 +4,7 @@ namespace app\controllers;
 
 use Yii;
 use dektrium\user\filters\AccessRule;
+use app\models\BetalingType;
 use app\models\RelatedTransacties;
 use app\models\Transacties;
 use app\models\TransactiesSearch;
@@ -131,20 +132,46 @@ class TransactiesController extends Controller
     public function actionCreate()
     {
         $model = new Transacties();
-
         $this->layout = 'main-fluid';
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            if (isset(Yii::$app->request->post('Transacties')['all_related_transactions'])) {
-                Transacties::addRelatedTransactions($model->transacties_id, Yii::$app->request->post('Transacties')['all_related_transactions']);
+        if ($model->load(Yii::$app->request->post())) {
+            $model->status = Transacties::STATUS_gecontroleerd;
+            switch (Yii::$app->request->get('type')) {
+                case 'bankbij':
+                    $model->type_id = BetalingType::getBankBijId();
+                    break;
+                case 'izettle':
+                    $model->type_id = BetalingType::getIzettleId();
+                    $model->omschrijving = BetalingType::getOmschrijving($model->type_id) . ' ' .
+                        $model->getTransactiesUser()->one()->getProfile()->one()->voornaam . ' ' .
+                        $model->getTransactiesUser()->one()->getProfile()->one()->achternaam;
+                    break;
+                case 'statiegeld':
+                    $model->type_id = BetalingType::getStatiegeldId();
+                    $model->omschrijving = BetalingType::getOmschrijving($model->type_id) . ' ' .
+                        $model->getTransactiesUser()->one()->getProfile()->one()->voornaam . ' ' .
+                        $model->getTransactiesUser()->one()->getProfile()->one()->achternaam;
+                    break;
             }
-
+            if ($model->save()) {
+                if (isset(Yii::$app->request->post('Transacties')['all_related_transactions'])) {
+                    Transacties::addRelatedTransactions($model->transacties_id, Yii::$app->request->post('Transacties')['all_related_transactions']);
+                }
+            } else {
+                foreach ($model->errors as $key => $error) {
+                    Yii::$app->session->setFlash('warning', Yii::t('app', 'Fout met opslaan: ' . $key . ':' . $error[0]));
+                }
+                return $this->render('create', [
+                    'modelTransacties' => $model,
+                    'type' => Yii::$app->request->get()
+                ]);
+            }
             return $this->redirect(['view', 'id' => $model->transacties_id]);
-        } else {
-            $model->datum = date("Y-m-d");
-            return $this->render('create', [
-                'modelTransacties' => $model,
-            ]);
         }
+        $model->datum = date("Y-m-d");
+        return $this->render('create', [
+            'modelTransacties' => $model,
+            'type' => Yii::$app->request->get()
+        ]);
     }
 
     /**
@@ -159,6 +186,15 @@ class TransactiesController extends Controller
 
         $this->layout = 'main-fluid';
         if ($modelTransacties->load(Yii::$app->request->post())) {
+            $modelTransacties->status = Transacties::STATUS_gecontroleerd;
+            switch (Yii::$app->request->get('type')) {
+                case 'declaratie':
+                    $modelTransacties->type_id = BetalingType::getDeclaratieId();
+                    break;
+                case 'bankaf':
+                    $modelTransacties->type_id = BetalingType::getBankAfId();
+                    break;
+            }
             $image = UploadedFile::getInstance($modelBonnen, 'image_temp');
             if (!empty($image)) {
                 $modelBonnen->load(Yii::$app->request->post());

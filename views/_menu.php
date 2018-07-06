@@ -26,27 +26,7 @@ echo Nav::widget([
         ],
         [
             'label' => 'Overige',
-            'items' => [
-                ['label' => 'Favorieten', 'url' => ['/favorieten-lijsten/index']],
-                ['label' => 'Bonnen','url' => ['/bonnen/index']],
-            ],
-        ],
-        [
-            'label' => 'Toevoegen',
-            'items' => [
-                ['label' => 'Assortiment toevoegen', 'url' => ['/assortiment/create']],
-                ['label' => 'Bon invoeren', 'url' => ['/bonnen/create']],
-                ['label' => 'Declaratie toevoegen', 'url' => ['/transacties/create-declaratie']],
-                ['label' => 'Transactie toevoegen', 'url' => ['/transacties/create']],
-                ['label' => 'Turven toevoegen', 'url' => ['/turven/create']],
-                ['label' => 'Facturen genereren', 'url' => ['/factuur/create']],
-                ['label' => 'Turflijst Toevoegen', 'url' => ['/turflijst/create']],
-                ['label' => 'Voorraad toevoegen', 'url' => ['/inkoop/create']],
-                ['label' => 'Kosten toevoegen', 'url' => ['/kosten/create']],
-                ['label' => 'Prijslijst Toevoegen', 'url' => ['/prijslijst/create']],
-                ['label' => 'Betaling type maken', 'url' => ['/betaling-type/create']],
-                ['label' => 'Favorieten lijst maken', 'url' => ['/favorieten-lijsten/create']],
-            ],
+            'url' => ['/favorieten-lijsten/index']
         ],
     ],
 ]);

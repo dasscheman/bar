@@ -22,7 +22,11 @@ use app\models\Transacties;
 ?>
 
 <div class="transacties-form">
+    <div class="panel-heading">
+        <?= Html::encode($this->title) ?>
+    </div>
     <?php
+
     $form = ActiveForm::begin([
         'enableClientValidation' => true,
         'enableAjaxValidation'   => false,
@@ -34,38 +38,41 @@ use app\models\Transacties;
             'id' => 'transacties_user_id',
         ],
     ]);
-    echo $form->field($modelTransacties, 'omschrijving')->textInput();
+
+    if (Yii::$app->request->get('type') !== 'izettle' &&
+        Yii::$app->request->get('type') !== 'statiegeld') {
+        echo $form->field($modelTransacties, 'omschrijving')->textInput();
+    }
     echo $form->field($modelTransacties, 'bedrag')->widget(MaskMoney::classname());
-    echo $form->field($modelTransacties, 'type_id')->widget(Select2::className(), [
-        'data' => ArrayHelper::map(BetalingType::find()->all(), 'type_id', 'omschrijving'),
-        'options'   => [
-            'placeholder' => Yii::t('app', 'Selecteer betaling type'),
-            'id' => 'type_id',
-        ],
-    ]);
-    echo $form->field($modelTransacties, 'status')->widget(Select2::className(), [
-        'data' => $modelTransacties->getStatusOptions(),
-        'options' => [
-            'placeholder' => Yii::t('app', 'Selecteer status betaling'),
-            'id' => 'status'
-        ],
-    ]);
-    
-    echo $form->field($modelTransacties, 'all_related_transactions')->widget(Select2::classname(), [
-        'name' => 'all_related_transactions',
-        'value' => $modelTransacties->all_related_transactions,
-        'id' => $modelTransacties->transacties_id,
-        'data' => $modelTransacties->getTransactionsArray(),
-        'options' => [
-            'placeholder' => 'Filter as you type ...',
+
+    if (Yii::$app->request->get('type') === null) {
+        echo $form->field($modelTransacties, 'type_id')->widget(Select2::className(), [
+            'data' => ArrayHelper::map(BetalingType::find()->all(), 'type_id', 'omschrijving'),
+            'options'   => [
+                'placeholder' => Yii::t('app', 'Selecteer betaling type'),
+                'id' => 'type_id',
+            ],
+        ]);
+    }
+
+    if (Yii::$app->request->get('type') !== 'izettle' &&
+        Yii::$app->request->get('type') !== 'statiegeld') {
+        echo $form->field($modelTransacties, 'all_related_transactions')->widget(Select2::classname(), [
+            'name' => 'all_related_transactions',
+            'value' => $modelTransacties->all_related_transactions,
             'id' => $modelTransacties->transacties_id,
-            'class' => "form-control",
-            'multiple' => true,
-        ],
-        'pluginOptions' => [
-              'tags' => true,
-        ]
-    ]);
+            'data' => $modelTransacties->getTransactionsArray(),
+            'options' => [
+                'placeholder' => 'Filter as you type ...',
+                'id' => $modelTransacties->transacties_id,
+                'class' => "form-control",
+                'multiple' => true,
+            ],
+            'pluginOptions' => [
+                  'tags' => true,
+            ]
+        ]);
+    }
 
     echo $form->field($modelTransacties, 'datum')->widget(DatePicker::className(), [
         'model' => $modelTransacties,

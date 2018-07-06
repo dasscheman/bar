@@ -10,7 +10,7 @@ use kartik\detail\DetailView
 /* @var $this yii\web\View */
 /* @var $model app\models\Assortiment */;
 
-$this->beginContent('../views/_beheer.php');
+$this->beginContent('../views/_beheer1.php');
 ?>
 
 <div class="panel-body">

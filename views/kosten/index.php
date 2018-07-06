@@ -22,6 +22,12 @@ $toolbar = false;
 
 <div class="panel-body">
     <?php echo $this->render('/_alert');
+    echo Html::a(
+        Yii::t('app', 'Kosten toevoegen'),
+        [ 'create'],
+        [ 'class' => 'btn btn-success namen']
+    );
+    ?> <br> <br> <?php
     Pjax::begin();
     echo GridView::widget([
         'id' => 'kv-grid-kosten',
