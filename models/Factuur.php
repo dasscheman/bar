@@ -5,6 +5,8 @@ namespace app\models;
 use Yii;
 use app\models\BarActiveRecord;
 use app\models\User;
+use kartik\mpdf\Pdf;
+use DateTime;
 
 /**
  * This is the model class for table "factuur".
@@ -28,6 +30,9 @@ use app\models\User;
  */
 class Factuur extends BarActiveRecord
 {
+    public $new_bij_transacties;
+    public $new_af_transacties;
+    public $new_turven;
     /**
      * @inheritdoc
      */
@@ -143,7 +148,117 @@ class Factuur extends BarActiveRecord
         $this->naam = $username;
     }
 
-    public function updateAfterCreateFactuur($user, $new_bij_transacties, $new_af_transacties, $new_turven)
+    public function genereerFacturen()
+    {
+        $users = User::find()
+            ->where('ISNULL(blocked_at)')
+            ->all();
+        $count = 0;
+        foreach ($users as $user) {
+            $generate = false;
+            if (!$user->getNewAfTransactiesUser()->exists() &&
+                !$user->getNewBijTransactiesUser()->exists() &&
+                !$user->getNewTurvenUsers()->exists() &&
+                !$user->getInvalidTransactionsNotInvoiced()->exists()) {
+                continue;
+            }
+            $turvenModel = $user->getNewTurvenUsers();
+            $turven = $turvenModel->orderBy(['datum'=>SORT_ASC])->one();
+
+            $fourWeeks = Yii::$app->setupdatetime->storeFormat(strtotime("-4 week"), 'datetime');
+
+            if (isset($turven->datum) && $turven->datum < $fourWeeks) {
+                // Als de oudste turf meer dan 4 weken geleden is, dan gaan we een factuur maken.
+                $generate = true;
+            }
+
+            $transactiesModel = $user->getTransactiesUserNietGefactureerd();
+            $transacties = $transactiesModel->one();
+            if (isset($transacties->datum) && $transacties->datum < $fourWeeks) {
+                // Als de oudste transactie meer dan 4 weken geleden is, dan gaan we een factuur maken.
+                $generate = true;
+            }
+            
+            $facuur = new Factuur();
+
+            if ($generate && $facuur->createFactuur($user)) {
+                $facuur->updateAfterCreateFactuur($user);
+                $count++;
+            }
+        }
+        return $count;
+    }
+
+    public function createFactuur(User $user)
+    {
+        $this->setNewFactuurId();
+        $this->setNewFactuurName($user->username . '_' . $this->factuur_id);
+
+        $this->new_bij_transacties = $user->getNewBijTransactiesUser()->all();
+        $this->new_af_transacties = $user->getNewAfTransactiesUser()->all();
+        $new_invalid_transacties = $user->getInvalidTransactionsNotInvoiced()->all();
+        $this->new_turven = $user->getNewTurvenUsers()->all();
+        $sum_new_bij_transacties = $user->getSumNewBijTransactiesUser();
+        $sum_new_af_transacties = $user->getSumNewAfTransactiesUser();
+        $sum_new_turven = $user->getSumNewTurvenUsers();
+
+        $vorig_openstaand =  $user->getSumOldBijTransactiesUser() - $user->getSumOldTurvenUsers() - $user->getSumOldAfTransactiesUser();
+        $nieuw_openstaand = $vorig_openstaand - $sum_new_turven + $sum_new_bij_transacties - $sum_new_af_transacties;
+
+        $content = Yii::$app->controller->renderPartial(
+            '/factuur/factuur_template',
+            [
+                'user' => $user,
+                'new_bij_transacties' => $this->new_bij_transacties,
+                'new_af_transacties' => $this->new_af_transacties,
+                'new_invalid_transacties' => $new_invalid_transacties,
+                'new_turven' => $this->new_turven,
+                'sum_new_bij_transacties' => $sum_new_bij_transacties,
+                'sum_new_af_transacties' => $sum_new_af_transacties,
+                'sum_new_turven' => $sum_new_turven,
+                'vorig_openstaand' => $vorig_openstaand,
+                'nieuw_openstaand' => $nieuw_openstaand
+            ]
+        );
+
+        // setup kartik\mpdf\Pdf component
+        $pdf = new Pdf([
+            // set to use core fonts only
+            'mode' => Pdf::MODE_CORE,
+            'format' => Pdf::FORMAT_A4,
+            'marginLeft' => 20,
+            'marginRight' => 15,
+            'marginTop' => 48,
+            'marginBottom' => 25,
+            'marginHeader' => 10,
+            'marginFooter' => 10,
+            'defaultFont' => 'arial',
+            'filename' =>  Yii::getAlias('@app') . '/web/uploads/facture/'. $this->naam . '.pdf',
+            // portrait orientation
+            'orientation' => Pdf::FORMAT_A4,
+            // stream to browser inline
+//                    'destination' => Pdf::DEST_BROWSER,
+            'destination' => Pdf::DEST_FILE,
+            // your html content input
+            'content' => $content,
+            // format content from your own css file if needed or use the
+            // enhanced bootstrap css built by Krajee for mPDF formatting
+            'cssFile' => 'css/factuur.css',
+             // set mPDF properties on the fly
+            'options' => [
+                'title' => $this->naam . '.pdf',
+                'subject' => $this->naam . '.pdf',
+                //    'keywords' => 'krajee, grid, export, yii2-grid, pdf'
+            ],
+        ]);
+
+        if ($pdf->render() === '') {
+            return false;
+        }
+        return true;
+    }
+
+    public function updateAfterCreateFactuur(User $user)
     {
         $this->ontvanger = $user->id;
         $this->pdf = $this->naam . '.pdf';
@@ -154,7 +269,7 @@ class Factuur extends BarActiveRecord
                 $dbTransaction->rollBack();
                 return false;
             }
-            foreach ($new_bij_transacties as $new_bij_transactie) {
+            foreach ($this->new_bij_transacties as $new_bij_transactie) {
                 if (empty($new_bij_transactie)) {
                     break;
                 }
@@ -165,7 +280,7 @@ class Factuur extends BarActiveRecord
                     return false;
                 }
             }
-            foreach ($new_af_transacties as $new_af_transactie) {
+            foreach ($this->new_af_transacties as $new_af_transactie) {
                 if (empty($new_af_transactie)) {
                     break;
                 }
@@ -176,7 +291,7 @@ class Factuur extends BarActiveRecord
                     return false;
                 }
             }
-            foreach ($new_turven as $turf) {
+            foreach ($this->new_turven as $turf) {
                 if (empty($turf)) {
                     break;
                 }

@@ -13,6 +13,12 @@ use yii\helpers\Url;
 		Hallo <?php echo  $user->profile->voornaam; ?>,<br><br>
 
 		hierbij ontvangt je de factuur voor de Bison bar. In de bijlage zie je een gedetaileerd overzicht.
+        <br>
+        <br>
+        Vanaf heden worden facturen elke 4 weken automatisch aangemaakt en verzonden.
+        Voor jou verandert dat niets.
+        Behalve dat er een aanzienlijke kans is dat de betalingen die gedaan zijn naar die Bison rekening, nog niet meegenomen zijn in deze factuur.
+        Die betalingen moeten namelijk met de hand verwerkt worden.
 
         <br>
         Vanaf 1 maart is het niet meeer mogelijk om meer dan 20 euro rood te staan. Sta je meer dan 20 euro rood,

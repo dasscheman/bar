@@ -17,7 +17,7 @@ use app\models\Transacties;
                     <td style="width: 75%;">
                     </td>
                     <td style="width: 25%; color: #444444;">
-                        <img style="width: 10%;" src="images/Logo_Bison.jpg" alt="Logo"><br>
+                        <img style="width: 10%;" src="web/images/Logo_Bison.jpg" alt="Logo"><br>
                         Bison bar
                     </td>
                 </tr>
