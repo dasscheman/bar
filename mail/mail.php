@@ -18,8 +18,8 @@ use yii\helpers\Url;
         Vanaf heden worden facturen elke 4 weken automatisch aangemaakt en verzonden.
         Voor jou verandert dat niets.
         Behalve dat er een aanzienlijke kans is dat de betalingen die gedaan zijn naar de Barrekening, nog niet meegenomen zijn in deze factuur.
-        Betalingen die gedaan zijn met IDEAL worden wel direct verwerkt.
         Die betalingen moeten namelijk met de hand verwerkt worden.
+        Betalingen die gedaan zijn met IDEAL worden wel direct verwerkt.
 
         <br>
         Vanaf 1 maart is het niet meeer mogelijk om meer dan 20 euro rood te staan. Sta je meer dan 20 euro rood,

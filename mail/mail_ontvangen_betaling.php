@@ -28,7 +28,7 @@ use yii\helpers\Url;
           </tr>
           <tr>
             <td>Bedrag</td>
-            <td><?php echo  $transactie->bedrag; ?></td>
+            <td><?php echo number_format($transactie->bedrag, 2, ',', ' '); ?> €</td>
           </tr>
           <tr>
             <td>Betalingstype</td>
