@@ -356,6 +356,23 @@ class User extends BaseUser
     /**
      * @return \yii\db\ActiveQuery
      */
+    public function pendingTransactionExists()
+    {        
+        $data = $this->hasMany(Transacties::className(), ['transacties_user_id' => 'id'])
+            ->where('transacties.status =:status_ingevoerd AND transacties.mollie_status =:mollie_status_pending')
+            ->andWhere('ISNULL(deleted_at)')
+            ->params([
+                ':status_ingevoerd' =>Transacties::STATUS_ingevoerd,
+                ':mollie_status_pending' =>Transacties::MOLLIE_STATUS_pending
+            ])
+            ->exists();
+        
+        return $data;
+    }
+    
+    /**
+     * @return \yii\db\ActiveQuery
+     */
     public function getTransactiesUserNietGefactureerd()
     {
         return $this->hasMany(Transacties::className(), ['transacties_user_id' => 'id'])
@@ -690,6 +707,12 @@ class User extends BaseUser
         $user = User::findOne($id);
         // Zet de default limiet
         $limiet = -20;
+        
+        if ($user->pendingTransactionExists()) {
+            // Als er een pending transactie is, dan krijgt de gebruiker het 
+            // voordeel van de twijfel en wordt het limit niet verder gecontroleerd.
+            return true;
+        }
 
         if ($user->profile->limit_hard !== null) {
             $limiet = $user->profile->limit_hard;
