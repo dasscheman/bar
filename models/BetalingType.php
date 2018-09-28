@@ -144,7 +144,7 @@ class BetalingType extends BarActiveRecord
     public function getIdealId()
     {
         $betaling = BetalingType::findOne(['omschrijving' => 'Ideal']);
-        
+
         if (isset($betaling->type_id)) {
             return $betaling->type_id;
         }
@@ -154,14 +154,84 @@ class BetalingType extends BarActiveRecord
     public function getIdealTerugbetalingId()
     {
         $betaling = BetalingType::findOne(['omschrijving' => 'Ideal terugbetaling']);
-        
+
         if (isset($betaling->type_id)) {
             return $betaling->type_id;
         }
         return;
     }
 
-    public function getDeclaratieId()
+    public function getPinId()
+    {
+        $betaling = BetalingType::findOne(['omschrijving' => 'Pin betaling']);
+
+        if (isset($betaling->type_id)) {
+            return $betaling->type_id;
+        }
+        return;
+    }
+
+    public function getDeclaratieUitbetaalsId()
+    {
+        $betaling = BetalingType::findOne(['omschrijving' => 'Uitbetaling declaratie']);
+
+        if (isset($betaling->type_id)) {
+            return $betaling->type_id;
+        }
+        return;
+    }
+
+    public function getIzettleUitbetalingId()
+    {
+        $betaling = BetalingType::findOne(['omschrijving' => 'Uitbetaling Izettle']);
+
+        if (isset($betaling->type_id)) {
+            return $betaling->type_id;
+        }
+        return;
+    }
+
+    public function getMollieUitbetalingId()
+    {
+        $betaling = BetalingType::findOne(['omschrijving' => 'Uitbetaling Mollie']);
+
+        if (isset($betaling->type_id)) {
+            return $betaling->type_id;
+        }
+        return;
+    }
+
+    public function getIzettleKosotenId()
+    {
+        $betaling = BetalingType::findOne(['omschrijving' => 'Kosten Izettle']);
+
+        if (isset($betaling->type_id)) {
+            return $betaling->type_id;
+        }
+        return;
+    }
+
+    public function getIngKostenId()
+    {
+        $betaling = BetalingType::findOne(['omschrijving' => 'Kosten ING']);
+
+        if (isset($betaling->type_id)) {
+            return $betaling->type_id;
+        }
+        return;
+    }
+
+    public function getMollieKostenId()
+    {
+        $betaling = BetalingType::findOne(['omschrijving' => 'Kosten Mollie']);
+
+        if (isset($betaling->type_id)) {
+            return $betaling->type_id;
+        }
+        return;
+    }
+
+    public function getDeclaratieInvoerId()
     {
         $betaling = BetalingType::findOne(['omschrijving' => 'Declaratie']);
 
@@ -191,7 +261,7 @@ class BetalingType extends BarActiveRecord
         return;
     }
 
-    public function getIzettleId()
+    public function getIzettleInvoerId()
     {
         $betaling = BetalingType::findOne(['omschrijving' => 'Izettle Pin betaling']);
 
@@ -223,11 +293,20 @@ class BetalingType extends BarActiveRecord
 
     public function getBankBetalingsType()
     {
-        $betaling = BetalingType::find()
-                ->where('omschrijving = "Bankoverschrijving Bij" OR omschrijving = "Bankoverschrijving Af"')
-                ->asArray()
-                ->all();
+        $bank_types = [
+            'Bankoverschrijving Bij',
+            'Bankoverschrijving Af',
+            'Uitbetaling Izettle',
+            'Uitbetaling Mollie',
+            'Uitbetaling declaratie',
+            'Kosten ING',
+            'Pin betaling'
+        ];
 
+        $betaling = BetalingType::find()
+            ->where(['in', 'omschrijving', $bank_types])
+            ->asArray()
+            ->all();
         if ($betaling !== null) {
             return ArrayHelper::getColumn($betaling, 'type_id');
         }

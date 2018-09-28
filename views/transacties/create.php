@@ -7,30 +7,48 @@
 use yii\helpers\Html;
 
 /**
-/* @var $this yii\web\View
+ * @var $this yii\web\View
  * @var $model app\models\Transacties
  */
 
 $this->beginContent('../views/_beheer2.php');
     switch (Yii::$app->request->get('type')) {
-        case 'declaratie':
-            $this->title = 'Declaratie toevoegen';
-            echo  $this->render('_form-declaratie', ['modelTransacties' => $modelTransacties, 'modelBonnen' => $modelBonnen]);
+        case 'pin':
+            $this->title = 'Betaling met pinpas';
             break;
-        case 'bankaf':
-            $this->title = 'Bankafschrijving toevoegen';
-            echo  $this->render('_form-declaratie', ['modelTransacties' => $modelTransacties, 'modelBonnen' => $modelBonnen]);
+        case 'bankbij_gebruiker':
+            $this->title = 'Bankoverschrijving van gebruiker';
             break;
-        case 'bankbij':
-            $this->title = 'Bankbijschrijving toevoegen';
-            echo  $this->render('_form', ['modelTransacties' => $modelTransacties]);
+        case 'izettle_invoer':
+            $this->title = 'Invoer van Izettle pin betaling';
             break;
-        case 'izettle':
-            $this->title = 'Izettle pin betaling toevoegen';
-            echo  $this->render('_form', ['modelTransacties' => $modelTransacties]);
+        case 'statiegeld':
+            $this->title = 'Statiegeld ontvangen';
+            break;
+        case 'declaratie_invoer':
+            $this->title = 'Declaratie invoeren';
+            break;
+        case 'declaratie_uitbetaling':
+            $this->title = 'Declaratie uitbetalen';
+            break;
+        case 'izettle_uitbetaling':
+            $this->title = 'Izettle uitbetalen';
+            break;
+        case 'mollie_uitbetaling':
+            $this->title = 'Mollie uitbetalen';
+            break;
+        case 'izettle_kosten':
+            $this->title = 'Izettle kosten';
+            break;
+        case 'ing_kosten':
+            $this->title = 'ING kosten';
+            break;
+        case 'mollie_kosten':
+            $this->title = 'Mollie kosten';
             break;
         default:
             $this->title = 'Transactie toevoegen';
-            echo  $this->render('_form', ['modelTransacties' => $modelTransacties]);
     }
+echo  $this->render('_form', ['modelTransacties' => $modelTransacties, 'modelBonnen' => $modelBonnen]);
+
 $this->endContent();

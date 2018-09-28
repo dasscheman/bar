@@ -32,41 +32,6 @@ $toolbar = false;
 <div class="panel-body">
     <?php
     echo $this->render('/_alert');
-    if (Yii::$app->controller->action->id == 'bank') {
-        echo Html::a(
-            Yii::t('app', 'Betaling Af'),
-            [ 'create-declaratie', 'type' => 'bankaf'],
-            [ 'class' => 'btn btn-success namen']
-        );
-        echo Html::a(
-            Yii::t('app', 'Betaling Bij'),
-            [ 'create', 'type' => 'bankbij'],
-            [ 'class' => 'btn btn-success namen']
-        );
-    }
-    if (Yii::$app->controller->action->id == 'index') {
-        echo Html::a(
-            Yii::t('app', 'Declaratie toevoegen'),
-            [ 'create-declaratie', 'type' => 'declaratie'],
-            [ 'class' => 'btn btn-success namen']
-        );
-        echo Html::a(
-            Yii::t('app', 'Izettle pin betaling'),
-            [ 'create', 'type' => 'izettle'],
-            [ 'class' => 'btn btn-success namen']
-        );
-        echo Html::a(
-            Yii::t('app', 'Statiegeld ontvangen'),
-            [ 'create', 'type' => 'statiegeld'],
-            [ 'class' => 'btn btn-success namen']
-        );
-        echo Html::a(
-            Yii::t('app', 'Transactie toevoegen'),
-            [ 'create'],
-            [ 'class' => 'btn btn-success namen']
-        );
-    }
-    ?> <br> <br> <?php
     Pjax::begin();
     echo GridView::widget([
         'id' => 'kv-grid-transacties',
@@ -75,6 +40,9 @@ $toolbar = false;
         'rowOptions'=>function ($model) {
             if (!$model->checkBon()) {
                 return ['class' => 'danger'];
+            }
+            if (!$model->checkBon()) {
+                return ['class' => 'info'];
             }
         },
         'layout'       => "{items}\n{pager}",

@@ -64,6 +64,9 @@ class Transacties extends BarActiveRecord
     {
         return [
             [['bedrag', 'type_id', 'status', 'datum'], 'required'],
+            [['transacties_user_id'], 'required', 'when' => function() {
+                return Yii::$app->request->get('type') == 'izettle_invoer';
+            }],
             [['transacties_user_id', 'bon_id', 'factuur_id', 'type_id', 'status', 'created_by', 'updated_by', 'mollie_status'], 'integer'],
             [['bedrag'], 'number'],
             [['datum', 'created_at', 'updated_at', 'deleted_at', 'status'], 'safe'],
@@ -296,7 +299,7 @@ class Transacties extends BarActiveRecord
         $arrayRestuls = ArrayHelper::map($result, 'transacties_id', 'transactionOmschrijving');
         return $arrayRestuls;
     }
-    
+
     public function addRelatedTransactions($transaction_id, $all_related_transactions= [])
     {
         $transactionsOld = RelatedTransacties::find()
@@ -321,6 +324,26 @@ class Transacties extends BarActiveRecord
             }
         }
     }
+
+
+    public function checkFactuur(){
+        $betaling = BetalingType::find()
+                ->where('omschrijving = "Declaratie" OR omschrijving = "Bankoverschrijving Bij"')
+                ->asArray()
+                ->all();
+
+        if (!in_array($this->type_id, $betalingArray)) {
+            return true;
+        }
+
+        if($this->getFactuur()!==null){
+            return true;
+        }
+        return false;
+    }
+
+
+
     public function checkBon()
     {
         $betaling = BetalingType::find()

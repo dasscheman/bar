@@ -4,6 +4,7 @@ namespace app\models;
 
 use Yii;
 use app\models\BarActiveRecord;
+use yii\helpers\ArrayHelper;
 
 /**
  * This is the model class for table "bonnen".
@@ -93,7 +94,7 @@ class Bonnen extends BarActiveRecord
     public function getInkoperUser()
     {
         return $this->hasOne(User::className(), ['id' => 'inkoper_user_id']);
-    } 
+    }
 
     /**
      * @return \yii\db\ActiveQuery
@@ -201,4 +202,18 @@ class Bonnen extends BarActiveRecord
         return "unknown status ({$this->soort})";
     }
 
+    /**
+    * Retrieves a list of users
+    * @return array an of available relatedtransactions.'.
+    */
+    public function getBonnenArray()
+    {
+        $result = Bonnen::find()->all();
+        $arrayRestuls = ArrayHelper::map($result, 'bon_id',
+            function($model) {
+                return $model['omschrijving'].' ('.$model['bedrag'] . ')';
+            }
+        );
+        return $arrayRestuls;
+    }
 }

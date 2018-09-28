@@ -17,6 +17,7 @@ use app\models\User;
 use yii\helpers\ArrayHelper;
 use kartik\widgets\DatePicker;
 use app\models\BetalingType;
+use app\models\Transacties;
 
 ?>
 
@@ -24,6 +25,7 @@ use app\models\BetalingType;
     <div class="panel-heading">
         <?= Html::encode($this->title) ?>
     </div>
+
     <?php
     $form = ActiveForm::begin([
         'enableClientValidation' => true,
@@ -32,28 +34,27 @@ use app\models\BetalingType;
         'options'=> ['enctype'=>'multipart/form-data'],
     ]);
 
-    echo $form->field($modelTransacties, 'transacties_user_id')->widget(Select2::className(), [
-        'data' => ArrayHelper::map(User::find()->all(), 'id', 'username'),
-        'options'   => [
-            'placeholder' => Yii::t('app', 'Selecteer gebruiker'),
-            'id' => 'transacties_user_id',
-        ],
-    ]);
-    echo $form->field($modelTransacties, 'omschrijving')->textInput();
+        echo $form->field($modelTransacties, 'transacties_user_id')->widget(Select2::className(), [
+            'data' => ArrayHelper::map(User::find()->all(), 'id', 'username'),
+            'options'   => [
+                'placeholder' => Yii::t('app', 'Selecteer gebruiker'),
+                'id' => 'transacties_user_id',
+            ],
+        ]);
 
-    echo $form->field($modelBonnen, 'image_temp')->fileInput();
-    echo Html::encode('Huidige bon: ' . $modelBonnen->image);
+        echo $form->field($modelTransacties, 'omschrijving')->textInput();
 
-    echo $form->field($modelBonnen, 'soort')->widget(Select2::className(), [
-        'data' => $modelBonnen->getSoortOptions(),
-        'options' => [
-            'placeholder' => Yii::t('app', 'Selecteer soort betaling'),
-            'id' => 'soort'
-        ],
-    ]);
+        echo $form->field($modelBonnen, 'image_temp')->fileInput();
+        echo Html::encode('Huidige bon: ' . $modelBonnen->image);
 
-    if (Yii::$app->request->get('type') === 'bankaf') {
-        echo $form->field($modelTransacties, 'all_related_transactions')->widget(Select2::classname(), [
+        echo $form->field($modelBonnen, 'soort')->widget(Select2::className(), [
+            'data' => $modelBonnen->getSoortOptions(),
+            'options' => [
+                'placeholder' => Yii::t('app', 'Selecteer soort betaling'),
+                'id' => 'soort'
+            ],
+        ]);
+echo $form->field($modelTransacties, 'all_related_transactions')->widget(Select2::classname(), [
             'name' => 'all_related_transactions',
             'value' => $modelTransacties->all_related_transactions,
             'id' => $modelTransacties->transacties_id,
@@ -65,12 +66,19 @@ use app\models\BetalingType;
                 'multiple' => true,
             ],
             'pluginOptions' => [
-                  'tags' => true,
+                'tags' => true,
             ]
         ]);
-    }
 
     echo $form->field($modelTransacties, 'bedrag')->widget(MaskMoney::classname());
+
+        echo $form->field($modelTransacties, 'type_id')->widget(Select2::className(), [
+            'data' => ArrayHelper::map(BetalingType::find()->all(), 'type_id', 'omschrijving'),
+            'options'   => [
+                'placeholder' => Yii::t('app', 'Selecteer betaling type'),
+                'id' => 'type_id',
+            ],
+        ]);
 
     echo $form->field($modelTransacties, 'datum')->widget(DatePicker::className(), [
         'model' => $modelTransacties,

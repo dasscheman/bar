@@ -43,7 +43,7 @@ class TransactiesController extends Controller
                 'rules' => [
                     [
                         'allow' => true,
-                        'actions' => ['index', 'delete', 'create', 'create-declaratie', 'update', 'view', 'bank'],
+                        'actions' => ['index', 'delete', 'create', 'update', 'view', 'bank'],
                         'roles' =>  ['admin', 'beheerder'],
                     ],
                     [
@@ -136,22 +136,47 @@ class TransactiesController extends Controller
         if ($model->load(Yii::$app->request->post())) {
             $model->status = Transacties::STATUS_gecontroleerd;
             switch (Yii::$app->request->get('type')) {
-                case 'bankbij':
+                case 'pin':
+                    $model->type_id = BetalingType::getPinId();
+                    break;
+                case 'bankbij_gebruiker':
                     $model->type_id = BetalingType::getBankBijId();
                     break;
-                case 'izettle':
-                    $model->type_id = BetalingType::getIzettleId();
-                    $model->omschrijving = BetalingType::getOmschrijving($model->type_id) . ' ' .
-                        $model->getTransactiesUser()->one()->getProfile()->one()->voornaam . ' ' .
-                        $model->getTransactiesUser()->one()->getProfile()->one()->achternaam;
+                case 'izettle_invoer':
+                    $model->type_id = BetalingType::getIzettleInvoerId();
                     break;
                 case 'statiegeld':
                     $model->type_id = BetalingType::getStatiegeldId();
-                    $model->omschrijving = BetalingType::getOmschrijving($model->type_id) . ' ' .
-                        $model->getTransactiesUser()->one()->getProfile()->one()->voornaam . ' ' .
-                        $model->getTransactiesUser()->one()->getProfile()->one()->achternaam;
+                    break;
+                case 'declaratie_invoer':
+                    $model->type_id = BetalingType::getDeclaratieInvoerId();
+                    break;
+                case 'declaratie_uitbetaling':
+                    $model->type_id = BetalingType::getDeclaratieUitbetaalsId();
+                    break;
+                case 'izettle_uitbetaling':
+                    $model->type_id = BetalingType::getIzettleUitbetalingId();
+                    break;
+                case 'mollie_uitbetaling':
+                    $model->type_id = BetalingType::getMollieUitbetalingId();
+                    break;
+                case 'izettle_kosten':
+                    $model->type_id = BetalingType::getIzettleKosotenId();
+                    break;
+                case 'ing_kosten':
+                    $model->type_id = BetalingType::getIngKostenId();
+                    break;
+                case 'mollie_kosten':
+                    $model->type_id = BetalingType::getMollieKostenId();
                     break;
             }
+
+            if($model->transacties_user_id !== null) {
+                $model->omschrijving = BetalingType::getOmschrijving($model->type_id) . ' ' .
+                $model->getTransactiesUser()->one()->getProfile()->one()->voornaam . ' ' .
+                $model->getTransactiesUser()->one()->getProfile()->one()->achternaam;
+            }
+
             if ($model->save()) {
                 if (isset(Yii::$app->request->post('Transacties')['all_related_transactions'])) {
                     Transacties::addRelatedTransactions($model->transacties_id, Yii::$app->request->post('Transacties')['all_related_transactions']);
@@ -167,9 +192,12 @@ class TransactiesController extends Controller
             }
             return $this->redirect(['view', 'id' => $model->transacties_id]);
         }
+
+        $modelBonnen = new Bonnen();
         $model->datum = date("Y-m-d");
         return $this->render('create', [
             'modelTransacties' => $model,
+            'modelBonnen' => $modelBonnen,
             'type' => Yii::$app->request->get()
         ]);
     }
@@ -179,57 +207,75 @@ class TransactiesController extends Controller
      * If creation is successful, the browser will be redirected to the 'view' page.
      * @return mixed
      */
-    public function actionCreateDeclaratie()
-    {
-        $modelTransacties = new Transacties();
-        $modelBonnen = new Bonnen();
-
-        $this->layout = 'main-fluid';
-        if ($modelTransacties->load(Yii::$app->request->post())) {
-            $modelTransacties->status = Transacties::STATUS_gecontroleerd;
-            switch (Yii::$app->request->get('type')) {
-                case 'declaratie':
-                    $modelTransacties->type_id = BetalingType::getDeclaratieId();
-                    break;
-                case 'bankaf':
-                    $modelTransacties->type_id = BetalingType::getBankAfId();
-                    break;
-            }
-            $image = UploadedFile::getInstance($modelBonnen, 'image_temp');
-            if (!empty($image)) {
-                $modelBonnen->load(Yii::$app->request->post());
-                // store the source file name
-                $modelBonnen->image = date('Y-m-d H:i:s') . '-' . $image->name;
-                $modelBonnen->omschrijving = $modelTransacties->omschrijving;
-                $modelBonnen->type = Bonnen::TYPE_declaratie;
-                $modelBonnen->datum = $modelTransacties->datum;
-                $modelBonnen->bedrag = $modelTransacties->bedrag;
-
-                $path = Yii::$app->params['bonnen_path'] . $modelBonnen->image;
-                if ($modelBonnen->save()) {
-                    $image->saveAs($path);
-                } else {
-                    foreach ($modelBonnen->errors as $key => $error) {
-                        Yii::$app->session->setFlash('warning', Yii::t('app', 'Fout met opslaan: ' . $key . ':' . $error[0]));
-                    }
-                }
-                $modelTransacties->bon_id = $modelBonnen->bon_id;
-            }
-            if ($modelTransacties->save()) {
-                return $this->redirect(['view', 'id' => $modelTransacties->transacties_id]);
-            } else {
-                foreach ($modelBonnen->errors as $key => $error) {
-                    Yii::$app->session->setFlash('warning', Yii::t('app', 'Fout met opslaan: ' . $key . ':' . $error[0]));
-                }
-            }
-        }
-
-        $modelTransacties->datum = date("Y-m-d");
-        return $this->render('create', [
-            'modelTransacties' => $modelTransacties,
-            'modelBonnen' => $modelBonnen
-        ]);
-    }
+    // public function actionCreateWithBon()
+    // {
+    //     $modelTransacties = new Transacties();
+    //     $modelBonnen = new Bonnen();
+    //
+    //     $this->layout = 'main-fluid';
+    //     if ($modelTransacties->load(Yii::$app->request->post())) {
+    //         $modelTransacties->status = Transacties::STATUS_gecontroleerd;
+    //         switch (Yii::$app->request->get('type')) {
+    //             case 'declaratie':
+    //                 $modelTransacties->type_id = BetalingType::getDeclaratieId();
+    //                 break;
+    //             case 'bankaf':
+    //                 $modelTransacties->type_id = BetalingType::getBankAfId();
+    //                 break;
+    //                 case 'bankbij':
+    //                     $model->type_id = BetalingType::getBankBijId();
+    //                     break;
+    //                 case 'izettle':
+    //                     $model->type_id = BetalingType::getIzettleId();
+    //                     $model->omschrijving = BetalingType::getOmschrijving($model->type_id) . ' ' .
+    //                         $model->getTransactiesUser()->one()->getProfile()->one()->voornaam . ' ' .
+    //                         $model->getTransactiesUser()->one()->getProfile()->one()->achternaam;
+    //                     break;
+    //                 case 'statiegeld':
+    //                     $model->type_id = BetalingType::getS->getSoortOptions()tatiegeldId();
+    //                     $model->omschrijving = BetalingType::getOmschrijving($model->type_id) . ' ' .
+    //                         $model->getTransactiesUser()->one()->getProfile()->one()->voornaam . ' ' .
+    //                         $model->getTransactiesUser()->one()->getProfile()->one()->achternaam;
+    //                     break;
+    //         }
+    //         $image = UploadedFile::getInstance($modelBonnen, 'image_temp');
+    //         if (!empty($image)) {
+    //             $modelBonnen->load(Yii::$app->request->post());
+    //             // store the source file name
+    //             $modelBonnen->image = date('Y-m-d H:i:s') . '-' . $image->name;
+    //             $modelBonnen->omschrijving = $modelTransacties->omschrijving;
+    //             $modelBonnen->type = Bonnen::TYPE_declaratie;
+    //             $modelBonnen->datum = $modelTransacties->datum;
+    //             $modelBonnen->bedrag = $modelTransacties->bedrag;
+    //
+    //             $path = Yii::$app->params['bonnen_path'] . $modelBonnen->image;
+    //             if ($modelBonnen->save()) {
+    //                 $image->saveAs($path);
+    //             } else {
+    //                 foreach ($modelBonnen->errors as $key => $error) {
+    //                     Yii::$app->session->setFlash('warning', Yii::t('app', 'Fout met opslaan: ' . $key . ':' . $error[0]));
+    //                 }
+    //             }
+    //             $modelTransacties->bon_id = $modelBonnen->bon_id;
+    //         }
+    //         if ($modelTransacties->save()) {
+    //             if (isset(Yii::$app->request->post('Transacties')['all_related_transactions'])) {
+    //                 Transacties::addRelatedTransactions($model->transacties_id, Yii::$app->request->post('Transacties')['all_related_transactions']);
+    //             }
+    //             return $this->redirect(['view', 'id' => $modelTransacties->transacties_id]);
+    //         } else {
+    //             foreach ($modelBonnen->errors as $key => $error) {
+    //                 Yii::$app->session->setFlash('warning', Yii::t('app', 'Fout met opslaan: ' . $key . ':' . $error[0]));
+    //             }
+    //         }
+    //     }
+    //
+    //     $modelTransacties->datum = date("Y-m-d");
+    //     return $this->render('create', [
+    //         'modelTransacties' => $modelTransacties,
+    //         'modelBonnen' => $modelBonnen
+    //     ]);
+    // }
 
     /**
      * Updates an existing Transacties model.
@@ -241,11 +287,13 @@ class TransactiesController extends Controller
     {
         $modelTransacties = $this->findModel($id);
         $modelBonnen = $modelTransacties->bon;
+        if($modelBonnen == null) {
+            $modelBonnen =new Bonnen;
+        }
         $modelTransacties->setAllRelatedTransactions();
         $this->layout = 'main-fluid';
         if ($modelTransacties->load(Yii::$app->request->post())) {
             $image = null;
-
             if ($modelBonnen !== null) {
                 $image = UploadedFile::getInstance($modelBonnen, 'image_temp');
             }
