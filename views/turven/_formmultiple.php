@@ -14,7 +14,7 @@ use kartik\widgets\ActiveForm;
 use kartik\helpers\Html;
 use yii\helpers\ArrayHelper;
 use app\models\User;
-use app\models\Assortiment;
+use app\models\Eenheid;
 use app\models\Turflijst;
 
 ?>
@@ -54,13 +54,13 @@ use app\models\Turflijst;
 
     foreach ($models as $index => $model) { ?>
         <div class="form-group">
-            <?php echo Html::activeLabel($model, "[$index]assortiment_id", ['class'=>'col-sm-2 control-label']) ?>
+            <?php echo Html::activeLabel($model, "[$index]eenheid_id", ['class'=>'col-sm-2 control-label']) ?>
             <div class="col-sm-5">
-                <?php echo $form->field($model, "[$index]assortiment_id", ['showLabels'=>false])->widget(Select2::className(), [
-                    'data' => ArrayHelper::map(Assortiment::find()->all(), 'assortiment_id', 'name'),
+                <?php echo $form->field($model, "[$index]eenheid_id", ['showLabels'=>false])->widget(Select2::className(), [
+                    'data' => ArrayHelper::map(Eenheid::find()->all(), 'eenheid_id', 'name'),
                     'options'   => [
-                        'placeholder' => Yii::t('app', 'Selecteer assortiment item'),
-                        'id' => $index . 'assortiment_id',
+                        'placeholder' => Yii::t('app', 'Selecteer eenheid item'),
+                        'id' => $index . 'eenheid_id',
                     ],
                 ]); ?>
             </div>

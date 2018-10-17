@@ -4,28 +4,14 @@
  * Bar App de Bison by daan@biolgenkantoor.nl
  */
 
-use yii\helpers\Html;
+ use yii\helpers\Html;
 
-/* @var $this yii\web\View */
-/* @var $model app\models\Prijslijst */
+ /* @var $this yii\web\View */
+ /* @var $model app\models\Inkoop */
 
-?>
-<div class="row">
-    <div class="col-md-12">
-        <div class="panel panel-default">
-            <div class="panel-heading">
-                <?= Html::encode('Prijslijst bijwerken') ?>
-            </div>
-            <div class="panel-body">
+ $this->beginContent('../views/_beheer1.php');
 
-                <?php echo $this->render('/_alert') ?>
-                <?php echo $this->render('/_menu') ?>
-                <table class="table">
-                    <?= $this->render('_form', [
-                        'model' => $model,
-                    ]) ?>
-                </table>
-            </div>
-        </div>
-    </div>
-</div>
+ echo $this->render('_form', [
+     'model' => $model,
+ ]);
+ $this->endContent();

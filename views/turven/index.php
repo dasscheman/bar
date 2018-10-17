@@ -50,10 +50,10 @@ $toolbar = false;
                 },
             ],
             [
-                'attribute'=>'assortiment_name',
+                'attribute'=>'eenheid_name',
                 'format' => 'raw',
                 'value'=>function ($model) {
-                    return Html::a($model->assortiment->name, ['assortiment/view', 'id' => $model->assortiment_id]);
+                    return Html::a($model->eenheid->name, ['assortiment/view', 'id' => $model->eenheid->assortiment_id]);
                 },
             ],
             'datum' => [

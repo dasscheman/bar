@@ -52,11 +52,11 @@ use app\models\Turflijst;
         ],
     ]);
 
-    echo $form->field($model, "assortiment_id", ['showLabels'=>true])->widget(Select2::className(), [
-        'data' => ArrayHelper::map(Assortiment::find()->all(), 'assortiment_id', 'name'),
+    echo $form->field($model, "eenheid_id", ['showLabels'=>true])->widget(Select2::className(), [
+        'data' => ArrayHelper::map(Assortiment::find()->all(), 'eenheid_id', 'name'),
         'options'   => [
             'placeholder' => Yii::t('app', 'Selecteer assortiment item'),
-            'id' => 'assortiment_id',
+            'id' => 'eenheid_id',
         ],
     ]);
 

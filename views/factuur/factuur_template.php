@@ -17,7 +17,7 @@ use app\models\Transacties;
                     <td style="width: 75%;">
                     </td>
                     <td style="width: 25%; color: #444444;">
-                        <img style="width: 10%;" src="web/images/Logo_Bison.jpg" alt="Logo"><br>
+                        <img style="width: 10%;" src="images/Logo_Bison.jpg" alt="Logo"><br>
                         Bison bar
                     </td>
                 </tr>
@@ -111,7 +111,7 @@ use app\models\Transacties;
                         <td align="center"><?php echo $new_turf->aantal ?></td>
                         <td class="cost">-<?php echo number_format($new_turf->getPrijslijst()->one()->prijs, 2, ',', ' ') ?> &euro;</td>
                         <td align="center"><?php echo empty($new_turf->datum)? $new_turf->turflijst->volgnummer: Yii::$app->setupdatetime->displayFormat($new_turf->datum, 'php:d-M-Y') ?></td>
-                        <td align="left"><?php echo $new_turf->getAssortiment()->one()->name
+                        <td align="left"><?php echo $new_turf->getEenheid()->one()->name
                         . ($new_turf->status === Turven::STATUS_herberekend?' (herberkening)':'')?></td>
                         <td class="cost">-<?php echo number_format($new_turf->totaal_prijs, 2, ',', ' ') ?> &euro;</td>
                         <td class="cost"></td>
@@ -220,7 +220,7 @@ use app\models\Transacties;
                     ?>
                     <tr>
                         <td align="center"><?php echo $new_invalid_transactie->transacties_id ?></td>
-                        <td align="center"><?php 
+                        <td align="center"><?php
                             echo $new_invalid_transactie->statusText;
                     if (isset($new_invalid_transactie->mollie_status)) {
                         echo ' (';

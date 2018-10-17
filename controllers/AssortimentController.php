@@ -60,7 +60,6 @@ class AssortimentController extends Controller
     {
         $searchModel = new AssortimentSearch();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
-
         $this->layout = 'main-fluid';
         return $this->render('beheer', [
             'searchModel' => $searchModel,
@@ -129,7 +128,7 @@ class AssortimentController extends Controller
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
             return $this->redirect(['view', 'id' => $model->assortiment_id]);
         }
-        
+
         return $this->render('update', [
             'model' => $model,
         ]);

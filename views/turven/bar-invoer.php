@@ -21,17 +21,17 @@ use app\models\User;
             <div class="panel-body">
                 <?php
                 echo $this->render('/_alert');
-                foreach ($assortDataProvider->getModels() as $assortItem) {
-                    if (isset($count[$assortItem->assortiment_id])) {
-                        $labelName = $assortItem->name . ' <span class="bold-red">' . $count[$assortItem->assortiment_id] . '</span>';
+                foreach ($prijslijstDataProvider->getModels() as $item) {
+                    if (isset($count[$item->eenheid_id])) {
+                        $labelName = $item->getEenheid()->one()->name . ' <span class="bold-red">' . $count[$item->eenheid_id] . '</span>';
                     } else {
-                        $labelName = $assortItem->name;
+                        $labelName = $item->getEenheid()->one()->name;
                     }
                     echo Html::a(
                         $labelName,
                         [
                             'barinvoer',
-                            'assortiment_id' => $assortItem->assortiment_id,
+                            'prijslijst_id' => $item->eenheid_id,
                             'count' => $count,
                             'user_id' => $user_id,
                             'actie' => 'toevoegen',
@@ -64,7 +64,7 @@ use app\models\User;
                 'barinvoer',
                 '#' => $tab
             ],
-            [ 
+            [
                 'class' => 'btn-lg btn-danger',
                 'data' => [
                     'confirm' => 'Je turven zijn niet opgeslagen',
@@ -72,4 +72,3 @@ use app\models\User;
             ]
         );
         echo $this->render('/user/overzicht', ['model' => $model]); ?>
-       

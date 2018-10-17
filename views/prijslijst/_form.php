@@ -9,7 +9,7 @@ use kartik\select2\Select2;
 use kartik\money\MaskMoney;
 use yii\widgets\ActiveForm;
 use yii\helpers\Html;
-use app\models\Assortiment;
+use app\models\Eenheid;
 use yii\helpers\ArrayHelper;
 
 /* @var $this yii\web\View */
@@ -18,12 +18,7 @@ use yii\helpers\ArrayHelper;
 
 ?>
 
-<?php
-//     $form->field($model, 'assortiment_id')->textInput();
-//
-//    $form->field($model, 'prijs')->textInput(['maxlength' => true]) ;?>
-
-<div class="assortiment-form">
+<div class="prijslijst-form">
     <?php
 
     $form = ActiveForm::begin([
@@ -32,11 +27,11 @@ use yii\helpers\ArrayHelper;
         'enableAjaxValidation'   => false,
     ]);
 
-    echo $form->field($model, 'assortiment_id')->widget(Select2::className(), [
-        'data' => ArrayHelper::map(Assortiment::find()->all(), 'assortiment_id', 'name'),
+    echo $form->field($model, 'eenheid_id')->widget(Select2::className(), [
+        'data' => ArrayHelper::map(Eenheid::find()->all(), 'eenheid_id', 'name'),
         'options'   => [
-            'placeholder' => Yii::t('app', 'Selecteer assortiment item'),
-            'id' => 'assortiment_id',
+            'placeholder' => Yii::t('app', 'Selecteer eenheid item'),
+            'id' => 'eenheid_id',
         ],
     ]);
 

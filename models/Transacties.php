@@ -146,6 +146,22 @@ class Transacties extends BarActiveRecord
     /**
      * @return \yii\db\ActiveQuery
      */
+    public function getInkoop()
+    {
+        return $this->hasMany(Inkoop::className(), ['transacties_id' => 'transacties_id']);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getKosten()
+    {
+        return $this->hasMany(Kosten::className(), ['transacties_id' => 'transacties_id']);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
     public function getFactuur()
     {
         return $this->hasOne(Factuur::className(), ['factuur_id' => 'factuur_id']);

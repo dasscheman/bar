@@ -37,7 +37,6 @@ use yii\helpers\Html;
 
     echo $form->field($model, 'alcohol')->checkbox();
     echo $form->field($model, 'change_stock_auto')->checkbox();
-    echo $form->field($model, 'volume')->textInput();
     echo $form->field($model, 'status')->widget(Select2::className(), [
         'data' => $model->getStatusOptions(),
         'options' => [

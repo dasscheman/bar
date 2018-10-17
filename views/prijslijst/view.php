@@ -38,7 +38,7 @@ use yii\widgets\DetailView;
                         'model' => $model,
                         'attributes' => [
                             'prijslijst_id',
-                            'assortiment_id:datetime',
+                            'eenheid_id',
                             'prijs',
                             'from',
                             'to',

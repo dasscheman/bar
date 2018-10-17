@@ -12,10 +12,10 @@ use yii\helpers\Html;
 
 <div class="knoppen">
     <?php
-    foreach ($modelsAssort as $assortItem) {
+    foreach ($modelsPrijslijst as $item) {
         echo Html::a(
-            $assortItem->name,
-            [ '/turven/rondje', 'assortiment_id' => $assortItem->assortiment_id ],
+            $item->getEenheid()->one()->name,
+            [ '/turven/rondje', 'prijslijst_id' => $item->prijslijst_id ],
             [ 'class' => 'btn-lg btn-info namen' ]
         );
     } ?>

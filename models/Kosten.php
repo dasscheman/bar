@@ -81,6 +81,14 @@ class Kosten extends BarActiveRecord
     {
         return $this->hasOne(Bonnen::className(), ['bon_id' => 'bon_id']);
     }
+    
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getTransactie()
+    {
+        return $this->hasOne(Transacties::className(), ['transacties_id' => 'transacties_id']);
+    }
 
     /**
      * @return \yii\db\ActiveQuery

@@ -28,7 +28,7 @@ use app\models\UserSearch;
                 [
                     'label' => '<i class="glyphicon glyphicon-refresh"></i> Rondje',
                     'content' => $this->render('/turven/_form_rondje', [
-                        'modelsAssort' => $assortDataProvider->getModels(),
+                        'modelsPrijslijst' => $prijslijstDataProvider->getModels(),
                         'modelsUsers' => $userDataProvider->getModels(),
                     ]),
                 ],

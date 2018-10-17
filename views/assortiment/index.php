@@ -92,12 +92,12 @@ $pjax = false; //TRUE zorgt ervoor dat de columnen vertraagd verspringen, dat is
                     '1' => 'Ja'
                 ],
             ],
-            'volume',
             'prijs' => [
                 'attribute' => 'prijs',
                 'value' => function ($model) {
-                    if (isset($model->getPrijs()->one()->prijs)) {
-                        return number_format($model->getPrijs()->one()->prijs, 2, ',', ' ') . ' €';
+                    if ($model->getEenheid()->one() !== null&&
+                        $model->getEenheid()->one()->getCurrentPrijslijst()->one()->prijs !== null) {
+                        return number_format($model->getEenheid()->one()->getCurrentPrijslijst()->one()->prijs, 2, ',', ' ') . ' €';
                     }
                     return 'geen prijs';
                 }
@@ -105,14 +105,14 @@ $pjax = false; //TRUE zorgt ervoor dat de columnen vertraagd verspringen, dat is
             'totaal' => [
                 'attribute' => 'totaal',
                 'value' => function ($model) {
-                    return $model->getTotaalTurven();
+                    return $model->getTurven()->sum('aantal');
                 }
             ],
             'opbrengst' => [
                 'attribute' => 'opbrengst',
                 'value' => function ($model) {
-                    if (null !== $model->getOpbrengstTurven()) {
-                        return number_format($model->getOpbrengstTurven(), 2, ',', ' ') . ' €';
+                    if (null !== $model->getTurven()->sum('totaal_prijs')) {
+                        return number_format($model->getTurven()->sum('totaal_prijs'), 2, ',', ' ') . ' €';
                     }
                     return 'geen prijs';
                 }

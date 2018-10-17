@@ -40,12 +40,16 @@ use yii\bootstrap\Nav;
                             'url' => ['/assortiment/index']
                         ],
                         [
-                            'label' => 'Actueel',
-                            'url' => ['/inkoop/index-actueel']
+                            'label' => 'Eenheid',
+                            'url' => ['/eenheid/index']
                         ],
                         [
-                            'label' => 'Alles',
+                            'label' => 'Inkoop',
                             'url' => ['/inkoop/index']
+                        ],
+                        [
+                            'label' => 'Afschrijving',
+                            'url' => ['/afschrijving/index']
                         ],
                         [
                             'label' => 'Kosten',
@@ -55,7 +59,7 @@ use yii\bootstrap\Nav;
                             'label' => 'Prijslijst',
                             'url' => ['/prijslijst/index']
                         ],
-                  
+
                     ],
                 ]) ?>
             </div>

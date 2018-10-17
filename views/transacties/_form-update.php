@@ -13,11 +13,12 @@ use kartik\money\MaskMoney;
 use kartik\select2\Select2;
 use yii\widgets\ActiveForm;
 use yii\helpers\Html;
-use app\models\User;
 use yii\helpers\ArrayHelper;
 use kartik\widgets\DatePicker;
 use app\models\BetalingType;
+use app\models\Bonnen;
 use app\models\Transacties;
+use app\models\User;
 
 ?>
 
@@ -44,6 +45,23 @@ use app\models\Transacties;
 
         echo $form->field($modelTransacties, 'omschrijving')->textInput();
 
+        echo $form->field($modelBonnen, 'bon_id')->widget(Select2::className(), [
+            'data' => ArrayHelper::map(
+                Bonnen::find()->orderBy(['bon_id' => SORT_DESC])->all(),
+                'bon_id',
+                function($modelBonnen, $defaultValue) {
+
+                    return $modelBonnen['omschrijving']. ' (' . $modelBonnen->bon_id .')';
+                }
+            ),
+            'options'   => [
+                'placeholder' => Yii::t('app', 'Selecteer transactie'),
+                'id' => 'transacties_id',
+            ],
+            'pluginOptions' => [
+                'allowClear' => true
+            ],
+        ]);
         echo $form->field($modelBonnen, 'image_temp')->fileInput();
         echo Html::encode('Huidige bon: ' . $modelBonnen->image);
 
@@ -54,7 +72,7 @@ use app\models\Transacties;
                 'id' => 'soort'
             ],
         ]);
-echo $form->field($modelTransacties, 'all_related_transactions')->widget(Select2::classname(), [
+        echo $form->field($modelTransacties, 'all_related_transactions')->widget(Select2::classname(), [
             'name' => 'all_related_transactions',
             'value' => $modelTransacties->all_related_transactions,
             'id' => $modelTransacties->transacties_id,

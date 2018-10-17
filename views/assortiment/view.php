@@ -14,7 +14,7 @@ $this->beginContent('../views/_beheer1.php');
 ?>
 
 <div class="panel-body">
-    <?php 
+    <?php
     echo $this->render('/_alert'); ?>
     <div class="view">
         <?php
@@ -39,7 +39,6 @@ $this->beginContent('../views/_beheer1.php');
                     'soort',
                     'alcohol',
                     'change_stock_auto',
-                    'volume',
                     'status',
                     'created_at',
                     'created_by',

@@ -37,11 +37,10 @@ AppAsset::register($this);
     ]);
 
     $graph_menu[] = ['label' => 'Overzicht', 'url' => ['/site/totaal']];
-    $graph_menu[] = ['label' => 'Rendement', 'url' => ['/site/rendement']];
-    foreach (Assortiment::getAssortimentMerken() as $merk) {
-        $graph_menu[] = ['label' => $merk->merk, 'url' =>  ['/site/per-merk', 'merk' => $merk->merk ]];
+    foreach (Assortiment::find()->all() as $assortiment) {
+        $graph_menu[] = ['label' => $assortiment->name, 'url' =>  ['/site/assortiment', 'assortiment_id' => $assortiment->assortiment_id ]];
     }
-    
+
     echo Nav::widget([
         'options' => ['class' => 'navbar-nav navbar-right'],
         'items' => [
@@ -49,7 +48,6 @@ AppAsset::register($this);
             Yii::$app->user->can('gebruiker') ? ['label' => 'Grafieken',
                 'items' => $graph_menu
             ]:'',
-            Yii::$app->user->can('beheerder') ? ['label' => 'Voorraad', 'url' => ['/inkoop/overzicht-actueel']]:'',
             Yii::$app->user->can('beheerder') ? ['label' => 'Beheerder',
                 'items' => [
                     [

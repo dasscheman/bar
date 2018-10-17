@@ -57,7 +57,7 @@ use app\models\Transacties;
                     $attributes[] = [
                         'columns' => [
                             [
-                                'label' =>$turf->aantal . ' ' . $turf->assortiment->name
+                                'label' =>$turf->aantal . ' ' . $turf->prijslijst->eenheid->name
                                 . ($turf->status === Turven::STATUS_herberekend?' (herberkening)':''),
                                 'value' =>  empty($turf->datum)? 'Turflijjst: ' . $turf->turflijst->volgnummer: Yii::$app->setupdatetime->displayFormat($turf->datum, 'datetime'),
                                 'displayOnly'=>true,
@@ -295,7 +295,7 @@ use app\models\Transacties;
                 'rowOptions'=>['class'=>'info'],
                 'groupOptions'=>['class'=>'text-right']
             ];
-            
+
             echo DetailView::widget([
                 'model' => $model,
                 'attributes' => $attributes,

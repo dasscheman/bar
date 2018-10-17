@@ -20,7 +20,6 @@ class AssortimentSearch extends Assortiment
         return [
             [['assortiment_id', 'alcohol', 'status', 'created_by', 'updated_by', 'change_stock_auto'], 'integer'],
             [['name', 'merk', 'soort', 'created_at', 'updated_at'], 'safe'],
-            [['volume'], 'number'],
         ];
     }
 
@@ -64,7 +63,6 @@ class AssortimentSearch extends Assortiment
             'assortiment_id' => $this->assortiment_id,
             'alcohol' => $this->alcohol,
             'change_stock_auto' => $this->change_stock_auto,
-            'volume' => $this->volume,
             'status' => $this->status,
             'created_at' => $this->created_at,
             'created_by' => $this->created_by,
@@ -112,7 +110,6 @@ class AssortimentSearch extends Assortiment
             'assortiment_id' => $this->assortiment_id,
             'alcohol' => $this->alcohol,
             'change_stock_auto' => $this->change_stock_auto,
-            'volume' => $this->volume,
             'status' => $this->status,
             'created_at' => $this->created_at,
             'created_by' => $this->created_by,

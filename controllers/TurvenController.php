@@ -3,19 +3,19 @@
 namespace app\controllers;
 
 use Yii;
-use dektrium\user\filters\AccessRule;
-use app\models\User;
-use app\models\Assortiment;
-use app\models\AssortimentSearch;
+use app\models\Eenheid;
+use app\models\Prijslijst;
+use app\models\PrijslijstSearch;
 use app\models\Turven;
 use app\models\TurvenSearch;
 use app\models\Transacties;
+use app\models\User;
+use app\models\UserSearch;
+use dektrium\user\filters\AccessRule;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
 use yii\filters\AccessControl;
-use app\models\Prijslijst;
-use app\models\UserSearch;
 
 /**
  * TurvenController implements the CRUD actions for Turven model.
@@ -85,20 +85,20 @@ class TurvenController extends Controller
     {
         $count = [];
 
-        $assortSearchModel = new AssortimentSearch();
-        $assortDataProvider = $assortSearchModel->searchAvailable(Yii::$app->request->queryParams);
+        $prijslijstSearchModel = new PrijslijstSearch();
+        $prijslijstDataProvider = $prijslijstSearchModel->searchAvailable(Yii::$app->request->queryParams);
         if (Yii::$app->request->get('user_id') !== null) {
             $user_id = Yii::$app->request->get('user_id');
             if (Yii::$app->request->get('count') !== null) {
                 $count = Yii::$app->request->get('count');
             }
 
-            if (Yii::$app->request->get('assortiment_id') !== null) {
-                $assortiment_id = Yii::$app->request->get('assortiment_id');
-                if (isset($count[$assortiment_id])) {
-                    $count[$assortiment_id]++;
+            if (Yii::$app->request->get('prijslijst_id') !== null) {
+                $prijslijst_id = Yii::$app->request->get('prijslijst_id');
+                if (isset($count[$prijslijst_id])) {
+                    $count[$prijslijst_id]++;
                 } else {
-                    $count[$assortiment_id] = 1;
+                    $count[$prijslijst_id] = 1;
                 }
             }
 
@@ -107,11 +107,12 @@ class TurvenController extends Controller
                 Turven::saveBarInvoer($user_id, $count)) {
                 $message = 'Volgende turven zijn toegevoegd bij ' . User::getUserDisplayName($user_id) . ': ';
                 $i = 0;
-                foreach ($count as $assort_id => $aantal) {
+                foreach ($count as $eenheid_id => $aantal) {
+
                     if ($i === 0) {
-                        $message .= $aantal . ' ' . Assortiment::getAssortimentName($assort_id);
+                        $message .= $aantal . ' ' . Eenheid::findOne($eenheid_id)->name;
                     } else {
-                        $message .= ', ' . $aantal . ' ' . Assortiment::getAssortimentName($assort_id);
+                        $message .= ', ' . $aantal . ' ' . Eenheid::findOne($eenheid_id)->name;
                     }
                     $i++;
                 }
@@ -128,8 +129,8 @@ class TurvenController extends Controller
                 Yii::$app->session->setFlash('warning', Yii::t('app', 'Wat errug, betalen pannenkoek! Vanaf 1 maart kun je niet meer turven als je meer dan 20 euro in het rood staat.'));
             }
             return $this->render('bar-invoer', [
-                'assortSearchModel' => $assortSearchModel,
-                'assortDataProvider' => $assortDataProvider,
+                'prijslijstSearchModel' => $prijslijstSearchModel,
+                'prijslijstDataProvider' => $prijslijstDataProvider,
                 'count' => $count,
                 'user_id' => $user_id,
                 'model' => User::findOne($user_id),
@@ -142,16 +143,16 @@ class TurvenController extends Controller
         return $this->render('/user/gebruiker-selecteren', [
             'userSearchModel' => $userSearchModel,
             'userDataProvider' => $userDataProvider,
-            'assortSearchModel' => $assortSearchModel,
-            'assortDataProvider' => $assortDataProvider,
+            'prijslijstSearchModel' => $prijslijstSearchModel,
+            'prijslijstDataProvider' => $prijslijstDataProvider,
         ]);
     }
-    
+
     public function actionRondje()
     {
         $userSearchModel = new UserSearch();
         $userDataProvider = $userSearchModel->search(Yii::$app->request->queryParams);
-        $assortiment_id = Yii::$app->request->get('assortiment_id');
+        $prijslijst_id = Yii::$app->request->get('prijslijst_id');
 
         if (Yii::$app->request->get('users') === null) {
             $users = [];
@@ -160,8 +161,8 @@ class TurvenController extends Controller
         }
 
         if (Yii::$app->request->get('actie') === 'opslaan' &&
-            Turven::saveRondje($users, $assortiment_id)) {
-            $message = 'Eén ' . Assortiment::getAssortimentName($assortiment_id) . ' voor: ';
+            Turven::saveRondje($users, $prijslijst_id)) {
+            $message = 'Eén ' . Prijslijst::getDisplayName($prijslijst_id) . ' voor: ';
             $i = 0;
             foreach ($users as $user_id) {
                 if ($i === 0) {
@@ -192,7 +193,7 @@ class TurvenController extends Controller
 
         return $this->render('rondje', [
             'models' => $userDataProvider->getModels(),
-            'assortiment_id' => $assortiment_id,
+            'prijslijst_id' => $prijslijst_id,
             'users' => $users
         ]);
     }
@@ -227,7 +228,7 @@ class TurvenController extends Controller
             $dbTransaction = Yii::$app->db->beginTransaction();
             try {
                 foreach ($models as $model) {
-                    if (empty($model->assortiment_id)) {
+                    if (empty($model->eenheid_id)) {
                         continue;
                     }
 
@@ -239,16 +240,16 @@ class TurvenController extends Controller
                     }
 
                     if (empty($model->datum)) {
-                        $prijslijst = Prijslijst::determinePrijslijstTurflijstIdBased($model->assortiment_id, $model->turflijst_id);
+                        $prijslijst = Prijslijst::determinePrijslijstTurflijstIdBased($model->eenheid_id, $model->turflijst_id);
                     } elseif (empty($model->turflijst_id)) {
-                        $prijslijst = Prijslijst::determinePrijslijstDateBased($model->assortiment_id, $model->datum);
+                        $prijslijst = Prijslijst::determinePrijslijstDateBased($model->eenheid_id, $model->datum);
                     }
 
                     if (!$prijslijst) {
                         if (empty($model->turflijst_id)) {
-                            Yii::$app->session->setFlash('warning', Yii::t('app', 'Er is geen geldige turflijst voor ' . $model->getAssortiment()->one()->name));
+                            Yii::$app->session->setFlash('warning', Yii::t('app', 'Er is geen geldige turflijst voor ' . $model->getEenheid()->one()->name));
                         } else {
-                            Yii::$app->session->setFlash('warning', Yii::t('app', 'Er is geen geldige prijs voor ' . $model->getAssortiment()->one()->name));
+                            Yii::$app->session->setFlash('warning', Yii::t('app', 'Er is geen geldige prijs voor ' . $model->geteenheid()->one()->name));
                         }
                         return $this->render('create', [
                             'models' => $models,

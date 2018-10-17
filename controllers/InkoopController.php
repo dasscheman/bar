@@ -35,7 +35,7 @@ class InkoopController extends Controller
                     'class' => AccessRule::className(),
                 ],
                 // We will override the default rule config with the new AccessRule class
-                'only' => ['index', 'index-actueel', 'voorraad-bij-werken', 'overzicht-actueel', 'view', 'create', 'update', 'verbruikt', 'afgeschreven', 'delete'],
+                'only' => ['index', 'index-actueel', 'overzicht-actueel', 'view', 'create', 'update', 'verbruikt', 'afgeschreven', 'delete'],
                 'rules' => [
                     [
                         'allow' =>  true,
@@ -236,21 +236,6 @@ class InkoopController extends Controller
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
         ]);
-    }
-
-    /**
-     * Updates an existing Inkoop model.
-     * If update is successful, the browser will be redirected to the 'view' page.
-     * @param integer $id
-     * @return mixed
-     */
-    public function actionVoorraadBijWerken($assortiment_id, $omschrijving, $status)
-    {
-        Inkoop::voorraadBijWerken($assortiment_id, 1, $status, $omschrijving);
-
-        Yii::$app->session->setFlash('success', Yii::t('app', 'Item is uit de voorraad gehaald.'));
-
-        return $this->redirect(['overzicht-actueel']);
     }
 
     /**

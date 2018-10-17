@@ -14,7 +14,7 @@ $this->title = 'Overzicht ' . $labels['titel'];
         echo HighCharts::widget([
             'clientOptions' => [
                 'chart' => [
-                        'type' => 'column'
+                        'type' => 'area'
                 ],
                 'plotOptions' => [
                     'column' => [
@@ -40,8 +40,9 @@ $this->title = 'Overzicht ' . $labels['titel'];
             echo HighCharts::widget([
                 'clientOptions' => [
                     'chart' => [
-                            'type' => 'column'
+                            'zoomType' => 'xy'
                     ],
+
                     'plotOptions' => [
                         'column' => [
                             'stacking' => 'normal'
@@ -53,14 +54,22 @@ $this->title = 'Overzicht ' . $labels['titel'];
                     'xAxis' => [
                         'categories' => $maanden
                     ],
-                    'yAxis' => [
+                    'yAxis' => [[
+
                         'title' => [
                             'text' => $labels['y_axis']
-                        ]
+                        ], ],[
+                        'title' => [
+                            'text' => '%'
+                        ],
+                        'max' => 120,
+                        'opposite' => true
+                    ]
                     ],
                     'series' => $seriesVolume
                 ]
             ]);
+            ?><i>Drank dat over de datum is geraakt wordt niet meegeteld in het rendement </i> <?php
         }
         ?>
     </p>

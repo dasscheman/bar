@@ -19,7 +19,7 @@ use yii\widgets\ActiveForm;
 
     <?= $form->field($model, 'turflijst_id') ?>
 
-    <?= $form->field($model, 'assortiment_id') ?>
+    <?= $form->field($model, 'eenheid_id') ?>
 
     <?= $form->field($model, 'prijzen_id') ?>
 

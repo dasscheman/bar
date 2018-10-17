@@ -46,7 +46,7 @@ $toolbar = false;
                 'format' => 'raw',
                 'filter'=> ArrayHelper::map(Assortiment::find()->asArray()->all(), 'assortiment_id', 'name'),
                 'value'=>function ($model) {
-                    return Html::a($model->getAssortiment()->one()->name, ['assortiment/view', 'id' => $model->assortiment_id]);
+                    return Html::a($model->getEenheid()->one()->name, ['assortiment/view', 'id' => $model->getEenheid()->one()->assortiment_id]);
                 },
              ],
             'prijs',

@@ -21,7 +21,6 @@ use app\models\Bonnen;
         'enableAjaxValidation'   => false,
     ]);
 
-    echo $form->field($model, 'omschrijving')->textarea();
     echo $form->field($model, 'assortiment_id')->widget(Select2::className(), [
         'data' => ArrayHelper::map(Assortiment::find()->all(), 'assortiment_id', 'name'),
         'options'   => [

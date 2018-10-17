@@ -37,7 +37,6 @@ $toolbar = false;
         'filterModel' => $searchModel,
         'layout'       => "{items}\n{pager}",
         'columns' => [
-            'omschrijving',
             [
                 'attribute'=>'assortiment_name',
                 'format' => 'raw',
@@ -64,13 +63,6 @@ $toolbar = false;
                 'filter'=> Inkoop::getTypeOptions(),
                 'value' => function ($model) {
                     return $model->getTypeText();
-                },
-            ],
-            'status' => [
-                'attribute' => 'status',
-                'filter'=> Inkoop::getStatusOptions(),
-                'value' => function ($model) {
-                    return $model->getStatusText();
                 },
             ],
             [
@@ -125,4 +117,3 @@ $toolbar = false;
     ]);
     Pjax::end();?>
 </div>
-     

@@ -5,7 +5,7 @@
  */
 
 use yii\helpers\Html;
-use app\models\Assortiment;
+use app\models\Prijslijst;
 
 /* @var $this yii\web\View */
 /* @var $model app\models\Turven */
@@ -14,7 +14,7 @@ use app\models\Assortiment;
     <div class="col-md-12">
         <div class="panel panel-default">
             <div class="panel-heading">
-                <?= Html::encode(Assortiment::getAssortimentName($assortiment_id) . ' turven voor de volgende gebruikers:') ?>
+                <?= Html::encode(Prijslijst::getDisplayName($prijslijst_id) . ' turven voor de volgende gebruikers:') ?>
             </div>
         <div class="panel-body">
             <?php
@@ -28,7 +28,7 @@ use app\models\Assortiment;
                             'rondje',
                             'remove' => $user->id,
                             'users' => $users,
-                            'assortiment_id' => $assortiment_id],
+                            'prijslijst_id' => $prijslijst_id],
                         [ 'class' => 'btn-lg btn-info namen' ]
                     );
                 }
@@ -38,7 +38,7 @@ use app\models\Assortiment;
                 'Opslaan',
                 [
                     'rondje',
-                    'assortiment_id' => $assortiment_id,
+                    'prijslijst_id' => $prijslijst_id,
                     'users' => $users,
                     'actie' => 'opslaan',
                 ],
@@ -81,7 +81,7 @@ use app\models\Assortiment;
                         'rondje',
                         'user_id' => $user->id,
                         'users' => $users,
-                        'assortiment_id' => $assortiment_id],
+                        'prijslijst_id' => $prijslijst_id],
                     [ 'class' => 'btn-lg btn-success namen' ]
                 );
             }

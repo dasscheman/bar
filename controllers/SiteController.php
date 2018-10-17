@@ -4,6 +4,7 @@ namespace app\controllers;
 
 use Yii;
 
+use app\models\Afschrijving;
 use app\models\Assortiment;
 use app\models\ContactForm;
 use app\models\Inkoop;
@@ -28,7 +29,7 @@ class SiteController extends Controller
                 'only' => ['logout'],
                 'rules' => [
                     [
-                        'actions' => ['logout', 'totaal', 'testmail', 'rendement', 'per-merk'],
+                        'actions' => ['logout', 'totaal', 'testmail', 'rendement', 'assortiment'],
                         'allow' => true,
                         'roles' => ['@'],
                     ],
@@ -132,7 +133,7 @@ class SiteController extends Controller
         $series = [];
 
         $kosteTypes = Kosten::getTypeOptions();
-        while ($i < 4) {
+        while ($i < 12) {
             $date = date("Ymd", strtotime("-$i months"));
             $maanden[] = date("M-Y", strtotime("-$i months"));
             $inkomsten[date("M", strtotime("-$i months"))] = (float) Turven::find()
@@ -143,13 +144,11 @@ class SiteController extends Controller
             $uitgavenDrank[date("M", strtotime("-$i months"))] = (float) Inkoop::find()
                     ->where('month(datum) = month(' . $date . ')')
                     ->andWhere('year(datum) = year(' . $date . ')')
-                    ->andWhere('status = ' . Inkoop::STATUS_verkocht)
                     ->sum('totaal_prijs');
 
-            $afschrijvingDrank[date("M", strtotime("-$i months"))] = (float) Inkoop::find()
+            $afschrijvingDrank[date("M", strtotime("-$i months"))] = (float) Afschrijving::find()
                     ->where('month(datum) = month(' . $date . ')')
                     ->andWhere('year(datum) = year(' . $date . ')')
-                    ->andWhere('status = ' . Inkoop::STATUS_afgeschreven)
                     ->sum('totaal_prijs');
 
             foreach ($kosteTypes as $key => $kostenType) {
@@ -168,7 +167,7 @@ class SiteController extends Controller
         foreach ($uitgavenMateriaal as $key => $value) {
             $series[] = ['name' => $key, 'data' => array_values($value), 'stack' => 'uitgaven'];
         }
-     
+
         return $this->render('totaal', [
             'maanden' => $maanden,
             'series' => $series,
@@ -179,97 +178,37 @@ class SiteController extends Controller
        *
        * @return string
        */
-    public function actionPerMerk()
+    public function actionAssortiment()
     {
-        $i = 0;
+        $aantalMaanden = 12;
+        $i =0;
         $maanden = [];
-        $seriesGeld = [];
-        $seriesVolume = [];
-        $verkoop = [];
-        $inkomsten = [];
-
-        $assortiments = Assortiment::find()
-            ->where('merk =:merk')
-            ->params([':merk' => Yii::$app->request->get('merk')])
-            ->all();
-
-        while ($i < 6) {
-            $date = date("Ymd", strtotime("-$i months"));
-            $maanden[] = date("M", strtotime("-$i months"));
-            foreach ($assortiments as $assortiment) {
-                //Financieel overzicht per merk.
-                $inkomsten_temp = $assortiment->getSumMonthlyTurven($date);
-                if (isset($inkomsten[date("M", strtotime("-$i months"))])) {
-                    $inkomsten[date("M", strtotime("-$i months"))] = $inkomsten[date("M", strtotime("-$i months"))] + $inkomsten_temp;
-                } else {
-                    $inkomsten[date("M", strtotime("-$i months"))] = $inkomsten_temp;
-                }
-
-                $uitgaven_temp = $assortiment->getSumMonthlyVerkocht($date);
-                if (isset($uitgaven[date("M", strtotime("-$i months"))])) {
-                    $uitgaven[date("M", strtotime("-$i months"))] = $uitgaven[date("M", strtotime("-$i months"))] + $uitgaven_temp;
-                } else {
-                    $uitgaven[date("M", strtotime("-$i months"))] = $uitgaven_temp;
-                }
-
-                // Volume verkoop
-                if (!$assortiment->change_stock_auto) {
-                    $turven_temp = $assortiment->getvolumeMonthlyTurven($date);
-                } else {
-                    $turven_temp = $assortiment->getCountMonthlyTurven($date);
-                }
-
-                if (isset($turven[date("M", strtotime("-$i months"))])) {
-                    $turven[date("M", strtotime("-$i months"))] = $turven[date("M", strtotime("-$i months"))] + $turven_temp;
-                } else {
-                    $turven[date("M", strtotime("-$i months"))] = $turven_temp;
-                }
-                
-                if (!$assortiment->change_stock_auto) {
-                    $verkoop_temp = $assortiment->getVolumeMonthlyVerkocht($date);
-                } else {
-                    $verkoop_temp = $assortiment->getCountMonthlyVerkocht($date);
-                }
-
-                if (isset($verkoop[date("M", strtotime("-$i months"))])) {
-                    $verkoop[date("M", strtotime("-$i months"))] = $verkoop[date("M", strtotime("-$i months"))] + $verkoop_temp;
-                } else {
-                    $verkoop[date("M", strtotime("-$i months"))] = $verkoop_temp;
-                }
-
-                if (!$assortiment->change_stock_auto) {
-                    $verlies_temp = $assortiment->getVolumeMonthlyLoss($date);
-                } else {
-                    $verlies_temp = $assortiment->getCountMonthlyLoss($date);
-                }
-
-                if (isset($verlies[date("M", strtotime("-$i months"))])) {
-                    $verlies[date("M", strtotime("-$i months"))] = $verlies[date("M", strtotime("-$i months"))] + $verlies_temp;
-                } else {
-                    $verlies[date("M", strtotime("-$i months"))] = $verlies_temp;
-                }
-
-                if (!$assortiment->change_stock_auto) {
-                    $y_axis = 'Liter';
-                } else {
-                    $y_axis = 'Aantal';
-                }
-            }
+        while ($i < $aantalMaanden) {
+            $maanden[] = date("M-Y", strtotime("-$i months"));
             $i++;
         }
-        $seriesGeld[] = ['name' => 'Inkomsten Drank', 'data' => array_values($inkomsten), 'stack' => 'inkomsten'];
-        $seriesGeld[] = ['name' => 'Uitgaven Drank', 'data' => array_values($uitgaven), 'stack' => 'uitgaven'];
+        $id = (int) Yii::$app->request->get('assortiment_id');
+        $assortiment = Assortiment::findOne($id);
 
-        $seriesVolume[] = ['name' => 'Turven Drank', 'data' => array_values($turven), 'stack' => 'turven'];
-        $seriesVolume[] = ['name' => 'Inkoop Drank', 'data' => array_values($verkoop), 'stack' => 'verkocht'];
-        $seriesVolume[] = ['name' => 'Afgeschreven Drank', 'data' => array_values($verlies), 'stack' => 'turven'];
-     
+        if ($assortiment->change_stock_auto) {
+            $seriesVolume = $assortiment->getAantalSerie($aantalMaanden);
+        } else {
+            $seriesVolume = $assortiment->getVolumeSerie($aantalMaanden);
+        }
+        $seriesGeld = $assortiment->getGeldSerie($aantalMaanden);
+
+        if (!$assortiment->change_stock_auto) {
+            $y_axis = 'Liter';
+        } else {
+            $y_axis = 'Aantal';
+        }
+
         return $this->render('grafieken', [
-            'maanden' => $maanden,
+            'maanden' => array_reverse($maanden),
             'seriesGeld' => $seriesGeld,
             'seriesVolume' => $seriesVolume,
             'labels' => [
-                'titel' => Yii::$app->request->get('merk'),
+                'titel' => $assortiment->name,
                 'y_axis' => $y_axis
             ]
         ]);
@@ -291,7 +230,7 @@ class SiteController extends Controller
             if ($merk->merk == null) {
                 continue;
             }
-       
+
             $assortiments = Assortiment::find()
                     ->where('merk =:merk')
                     ->params([':merk' => $merk->merk])
@@ -349,7 +288,7 @@ class SiteController extends Controller
                 } else {
                     $turven_year = $turven_year_temp;
                 }
-                
+
                 $inkoop_year_temp = $assortiment->getVolumeInkoopPeriod($start_year, $end_year);
 
                 if (isset($inkoop_year)) {

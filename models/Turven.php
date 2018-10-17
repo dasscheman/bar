@@ -9,27 +9,26 @@ use app\models\Assortiment;
 /**
  * This is the model class for table "turven".
  *
- * @property integer $turven_id
- * @property integer $turflijst_id
- * @property integer $assortiment_id
- * @property integer $prijslijst_id
+ * @property int $turven_id
+ * @property int $turflijst_id
+ * @property int $prijslijst_id
+ * @property int $eenheid_id
  * @property string $datum
- * @property integer $consumer_user_id
- * @property integer $aantal
+ * @property int $consumer_user_id
+ * @property int $aantal
  * @property string $totaal_prijs
- * @property integer $type
- * @property integer $status
- * @property integer $factuur_id
+ * @property int $type
+ * @property int $status
+ * @property int $factuur_id
  * @property string $created_at
- * @property integer $created_by
+ * @property int $created_by
  * @property string $updated_at
- * @property integer $updated_by
+ * @property int $updated_by
  * @property string $deleted_at
  *
  * @property Factuur $factuur
- * @property Assortiment $assortiment
  * @property User $consumerUser
- * @property User $createdBy
+ * @property User $createdBy\
  * @property Prijslijst $prijslijst
  * @property Turflijst $turflijst
  * @property User $updatedBy
@@ -54,10 +53,10 @@ class Turven extends BarActiveRecord
     public function rules()
     {
         return [
-            [['assortiment_id', 'consumer_user_id', 'aantal', 'totaal_prijs', 'type', 'status'], 'required'],
-            [['turflijst_id', 'assortiment_id', 'prijslijst_id', 'factuur_id', 'consumer_user_id', 'aantal', 'type', 'status', 'created_by', 'updated_by'], 'integer'],
+            [['consumer_user_id', 'aantal', 'totaal_prijs', 'type', 'status', 'eenheid_id'], 'required'],
+            [['turflijst_id', 'prijslijst_id', 'eenheid_id', 'factuur_id', 'consumer_user_id', 'aantal', 'type', 'status', 'created_by', 'updated_by'], 'integer'],
             [['totaal_prijs'], 'number'],
-            [['datum', 'created_at', 'updated_at', 'deleted_at'], 'safe'],
+            [['datum', 'created_at', 'updated_at', 'deleted_at', 'eenheid_id'], 'safe'],
             ['prijslijst_id', 'required','when' => function ($model) {
                 return empty($model->datum);
             }],
@@ -65,7 +64,6 @@ class Turven extends BarActiveRecord
                 return empty($model->prijslijst_id);
             }],
             [['factuur_id'], 'exist', 'skipOnError' => true, 'targetClass' => Factuur::className(), 'targetAttribute' => ['factuur_id' => 'factuur_id']],
-            [['assortiment_id'], 'exist', 'skipOnError' => true, 'targetClass' => Assortiment::className(), 'targetAttribute' => ['assortiment_id' => 'assortiment_id']],
             [['consumer_user_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::className(), 'targetAttribute' => ['consumer_user_id' => 'id']],
             [['created_by'], 'exist', 'skipOnError' => true, 'targetClass' => User::className(), 'targetAttribute' => ['created_by' => 'id']],
             [['turflijst_id'], 'exist', 'skipOnError' => true, 'targetClass' => Turflijst::className(), 'targetAttribute' => ['turflijst_id' => 'turflijst_id']],
@@ -82,7 +80,6 @@ class Turven extends BarActiveRecord
         return [
             'turven_id' => 'Turven ID',
             'turflijst_id' => 'Turflijst ID',
-            'assortiment_id' => 'Assortiment ID',
             'prijslijst_id' => Yii::t('app', 'Prijslijst ID'),
             'consumer_user_id' => 'Consumer User ID',
             'aantal' => 'Aantal',
@@ -109,9 +106,9 @@ class Turven extends BarActiveRecord
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getAssortiment()
+    public function getEenheid()
     {
-        return $this->hasOne(Assortiment::className(), ['assortiment_id' => 'assortiment_id']);
+        return $this->hasOne(Eenheid::className(), ['eenheid_id' => 'eenheid_id']);
     }
 
     /**
@@ -216,21 +213,21 @@ class Turven extends BarActiveRecord
         $date = Yii::$app->setupdatetime->storeFormat(time(), 'datetime');
         $dbTransaction = Yii::$app->db->beginTransaction();
         try {
-            foreach ($invoer_items as $assort_id => $count) {
+            foreach ($invoer_items as $eenheid_id => $count) {
                 $model = new Turven();
-                $model->assortiment_id = $assort_id;
+                $model->eenheid_id = $eenheid_id;
                 $model->aantal = $count;
                 $model->datum = $date;
                 $model->consumer_user_id = $user_id;
                 $model->status = TURVEN::STATUS_gecontroleerd;
                 $model->type = TURVEN::TYPE_losse_verkoop;
 
-                $assortiment = Assortiment::findOne($assort_id);
-                $prijslijst = $assortiment->getPrijs()->one();
-                if (!$prijslijst) {
-                    Yii::$app->session->setFlash('warning', Yii::t('app', 'Er is geen geldige prijs voor ' . Assortiment::getAssortimentName($assort_id)));
+                $eenheid = Eenheid::findOne($eenheid_id);
+                if (!$eenheid) {
+                    Yii::$app->session->setFlash('warning', Yii::t('app', 'Er is geen geldige eenheid voor ' . $eenheid_id));
                     return false;
                 }
+                $prijslijst = $eenheid->getCurrentPrijslijst()->one();
                 $model->prijslijst_id = $prijslijst->prijslijst_id;
                 $model->totaal_prijs = $count * $prijslijst->prijs;
 
@@ -240,9 +237,6 @@ class Turven extends BarActiveRecord
                         Yii::$app->session->setFlash('warning', Yii::t('app', 'Kan turven niet opslaan:' . $error[0]));
                     }
                     return false;
-                }
-                if ($assortiment->change_stock_auto) {
-                    Inkoop::voorraadBijWerken($assort_id, $count, Inkoop::STATUS_verkocht);
                 }
             }
             $dbTransaction->commit();
@@ -261,21 +255,22 @@ class Turven extends BarActiveRecord
         try {
             foreach ($users as $user) {
                 $model = new Turven();
-                $model->assortiment_id = $invoer_item;
+                $model->eenheid_id = $invoer_item;
                 $model->aantal = $count;
                 $model->datum = $date;
                 $model->consumer_user_id = $user;
                 $model->status = TURVEN::STATUS_gecontroleerd;
                 $model->type = TURVEN::TYPE_rondje;
 
-                $assortiment = Assortiment::findOne($invoer_item);
-                $prijslijst = $assortiment->getPrijs()->one();
-                if (!$prijslijst) {
-                    Yii::$app->session->setFlash('warning', Yii::t('app', 'Er is geen geldige prijs voor ' . Assortiment::getAssortimentName($invoer_item)));
+                $eenheid = Eenheid::findOne($invoer_item);
+                if (!$eenheid) {
+                    Yii::$app->session->setFlash('warning', Yii::t('app', 'Er is geen geldige eenheid voor ' . $eenheid_id));
                     return false;
                 }
+
+                $prijslijst = $eenheid->getCurrentPrijslijst()->one();
                 $model->prijslijst_id = $prijslijst->prijslijst_id;
-                $model->totaal_prijs = $prijslijst->prijs;
+                $model->totaal_prijs = $count * $prijslijst->prijs;
 
                 if (!$model->save()) {
                     $dbTransaction->rollBack();
@@ -283,10 +278,6 @@ class Turven extends BarActiveRecord
                         Yii::$app->session->setFlash('warning', Yii::t('app', 'Kan turven niet opslaan:' . $error[0]));
                     }
                     return false;
-                }
-
-                if ($assortiment->change_stock_auto) {
-                    Inkoop::voorraadBijWerken($invoer_item, $count, Inkoop::STATUS_verkocht);
                 }
             }
             $dbTransaction->commit();

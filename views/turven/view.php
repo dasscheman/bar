@@ -39,7 +39,7 @@ use yii\widgets\DetailView;
                         'attributes' => [
                             'turven_id',
                             'turflijst_id',
-                            'assortiment_id',
+                            'eenheid_id',
                             'consumer_user_id',
                             'aantal',
                             'totaal_prijs',

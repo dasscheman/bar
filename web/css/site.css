@@ -116,12 +116,12 @@ a.desc:after {
 
 .namen{
     margin-right: 10px;
-    /*margin-bottom: 10px;*/    
+    /*margin-bottom: 10px;*/
     margin-top: 10px;
     font-size: 20px;
     display: inline-block;
-} 
- 
+}
+
 .disabled {
     margin-top: -7px;
     height: 46px;
@@ -149,6 +149,7 @@ a.desc:after {
 .assortiment-form,
 .betaling-type-form,
 .bonnen-form,
+.eenheid-form,
 .factuur-form,
 .favorieten-form,
 .inkoop-form,
