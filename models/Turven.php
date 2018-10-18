@@ -210,6 +210,7 @@ class Turven extends BarActiveRecord
 
     public function saveBarInvoer($user_id, $invoer_items)
     {
+        Yii::$app->cache->flush();
         $date = Yii::$app->setupdatetime->storeFormat(time(), 'datetime');
         $dbTransaction = Yii::$app->db->beginTransaction();
         try {
@@ -249,6 +250,7 @@ class Turven extends BarActiveRecord
 
     public function saveRondje($users, $invoer_item)
     {
+        Yii::$app->cache->flush();
         $count = 1;
         $date = Yii::$app->setupdatetime->storeFormat(time(), 'datetime');
         $dbTransaction = Yii::$app->db->beginTransaction();
