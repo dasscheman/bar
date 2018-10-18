@@ -4,6 +4,7 @@ namespace app\models;
 
 use Yii;
 use app\models\BarActiveRecord;
+use app\models\BetalingType;
 use yii\helpers\ArrayHelper;
 
 /**
@@ -64,8 +65,8 @@ class Transacties extends BarActiveRecord
     {
         return [
             [['bedrag', 'type_id', 'status', 'datum'], 'required'],
-            [['transacties_user_id'], 'required', 'when' => function() {
-                return Yii::$app->request->get('type') == 'izettle_invoer';
+            [['transacties_user_id'], 'required', 'when' => function($model) {
+                return BetalingType::getIzettleInvoerId()==$model->type_id;
             }],
             [['transacties_user_id', 'bon_id', 'factuur_id', 'type_id', 'status', 'created_by', 'updated_by', 'mollie_status'], 'integer'],
             [['bedrag'], 'number'],
