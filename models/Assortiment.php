@@ -107,46 +107,80 @@ class Assortiment extends BarActiveRecord
 
     public function getSumMaandAfschrijving($date)
     {
-        return (float) $this->getMaandAfschrijving($date)
-            ->sum('totaal_prijs');
+        $db = self::getDb();
+        $data = $db->cache(function ($db) use ($date){
+            return (float) $this->getMaandAfschrijving($date)
+                ->sum('totaal_prijs');
+
+        });
+        return $data;
     }
 
     public function getVolumeMaandAfschrijving($date)
     {
-        return (float) $this->getMaandAfschrijving($date)
-            ->sum('totaal_volume');
+        $db = self::getDb();
+        $data = $db->cache(function ($db) use ($date){
+            return (float) $this->getMaandAfschrijving($date)
+                ->sum('totaal_volume');
+
+        });
+        return $data;
     }
 
     public function getVolumeTotMaandAfschrijving($date)
     {
-        return (float) $this->getTotaalTotMaandAfschrijving($date)
-            ->sum('totaal_volume');
+        $db = self::getDb();
+        $data = $db->cache(function ($db) use ($date){
+            return (float) $this->getTotaalTotMaandAfschrijving($date)
+                ->sum('totaal_volume');
+
+        });
+        return $data;
     }
 
     public function getVolumeTotMaandOverdatum($date)
     {
-        return (float) $this->getTotaalTotMaandAfschrijving($date)
-            ->andWhere('type = ' . Afschrijving::TYPE_overdatum)
-            ->sum('totaal_volume');
+        $db = self::getDb();
+        $data = $db->cache(function ($db) use ($date){
+            return (float) $this->getTotaalTotMaandAfschrijving($date)
+                ->andWhere('type = ' . Afschrijving::TYPE_overdatum)
+                ->sum('totaal_volume');
+
+        });
+        return $data;
     }
 
     public function getCountMaandAfschrijving($date)
     {
-        return (int) $this->getMaandAfschrijving($date)
+        $db = self::getDb();
+        $data = $db->cache(function ($db) use ($date){
+            return (int) $this->getMaandAfschrijving($date)
             ->sum('aantal');
+        });
+        return $data;
     }
 
     public function getCountTotMaandAfschrijving($date)
     {
-        return (int) $this->getTotaalTotMaandAfschrijving($date)
-            ->sum('aantal');
+        $db = self::getDb();
+        $data = $db->cache(function ($db) use ($date){
+            return (int) $this->getTotaalTotMaandAfschrijving($date)
+                ->sum('aantal');
+
+        });
+        return $data;
     }
 
     public function getCountTotMaandOverdatum($date)
     {
-        return (int) $this->getTotaalTotMaandAfschrijving($date)
-            ->andWhere('type = ' . Afschrijving::TYPE_overdatum)
-            ->sum('aantal');
+        $db = self::getDb();
+        $data = $db->cache(function ($db) use ($date){
+            return (int) $this->getTotaalTotMaandAfschrijving($date)
+                ->andWhere('type = ' . Afschrijving::TYPE_overdatum)
+                ->sum('aantal');
+
+        });
+        return $data;
     }
 
     /**
@@ -170,7 +204,11 @@ class Assortiment extends BarActiveRecord
      */
     public function getEenheid()
     {
-        return $this->hasMany(Eenheid::className(), ['assortiment_id' => 'assortiment_id']);
+        $db = self::getDb();
+        $data = $db->cache(function ($db) {
+            return $this->hasMany(Eenheid::className(), ['assortiment_id' => 'assortiment_id']);
+        });
+        return $data;
     }
 
     /**
@@ -198,32 +236,56 @@ class Assortiment extends BarActiveRecord
 
     public function getSumMaandInkoop($date)
     {
-        return (float) $this->getMaandInkoop($date)
-            ->sum('totaal_prijs');
+        $db = self::getDb();
+        $data = $db->cache(function ($db) use ($date){
+            return (float) $this->getMaandInkoop($date)
+                ->sum('totaal_prijs');
+
+        });
+        return $data;
     }
 
     public function getSumTotMaandInkoop($date)
     {
-        return (float) $this->getTotaalTotMaandInkoop($date)
-            ->sum('totaal_prijs');
+        $db = self::getDb();
+        $data = $db->cache(function ($db) use ($date){
+            return (float) $this->getTotaalTotMaandInkoop($date)
+                ->sum('totaal_prijs');
+
+        });
+        return $data;
     }
 
     public function getVolumeMaandInkoop($date)
     {
-        return (float) $this->getMaandInkoop($date)
-            ->sum('totaal_volume');
+        $db = self::getDb();
+        $data = $db->cache(function ($db) use ($date){
+            return (float) $this->getMaandInkoop($date)
+                ->sum('totaal_volume');
+        });
+        return $data;
     }
 
     public function getVolumeTotMaandInkoop($date)
     {
-        return (float) $this->getTotaalTotMaandInkoop($date)
+        $db = self::getDb();
+        $data = $db->cache(function ($db) use ($date){
+            return (float) $this->getTotaalTotMaandInkoop($date)
             ->sum('totaal_volume');
+
+        });
+        return $data;
     }
 
     public function getCountTotMaandInkoop($date)
     {
-        return (float) $this->getTotaalTotMaandInkoop($date)
-            ->sum('aantal');
+        $db = self::getDb();
+        $data = $db->cache(function ($db) use ($date){
+            return (float) $this->getTotaalTotMaandInkoop($date)
+                ->sum('aantal');
+
+        });
+        return $data;
     }
 
     /**
@@ -231,8 +293,13 @@ class Assortiment extends BarActiveRecord
      */
     public function getTotaalInkoop()
     {
-        return (float) $this->getInkoop()
+        $db = self::getDb();
+        $data = $db->cache(function ($db) {
+            return (float) $this->getInkoop()
             ->sum('totaal_prijs');
+
+        });
+        return $data;
     }
 
     /**
@@ -338,14 +405,23 @@ class Assortiment extends BarActiveRecord
 
     public function getSumMaandInkomen($date)
     {
-        return (float) $this->getMaandTurven($date)
-            ->sum('totaal_prijs');
+        $db = self::getDb();
+        $data = $db->cache(function ($db) use ($date){
+            return (float) $this->getMaandTurven($date)
+                ->sum('totaal_prijs');
+
+        });
+        return $data;
     }
 
     public function getSumTotMaandInkomen($date)
     {
-        return (float) $this->getTotaalTotMaandTurven($date)
-            ->sum('totaal_prijs');
+        $db = self::getDb();
+        $data = $db->cache(function ($db) use ($date){
+            return (float) $this->getTotaalTotMaandTurven($date)
+                ->sum('totaal_prijs');
+        });
+        return $data;
     }
 
     public function getVolumeMaandTurven($date)
@@ -360,22 +436,40 @@ class Assortiment extends BarActiveRecord
     public function getVolumeTotMaandTurven($date)
     {
         $volume = 0;
-        foreach ($this->getTotaalTotMaandTurven($date)->all() as $turf) {
-            $volume += $turf->getEenheid()->one()->volume * $turf->aantal / 1000;
+        $db = self::getDb();
+        $turven = $db->cache(function ($db) use ($date){
+            return $this->getTotaalTotMaandTurven($date)->all();
+        });
+        
+        foreach ($turven as $turf) {
+            $db = self::getDb();
+            $eenheid = $db->cache(function ($db) use ($turf){
+                return $turf->getEenheid()->one();
+
+            });
+            $volume += $eenheid->volume * $turf->aantal / 1000;
         }
         return (float) $volume;
     }
 
     public function getCountMaandTurven($date)
     {
-        return (int) $this->getMaandTurven($date)
-            ->sum('aantal');
+        $db = self::getDb();
+        $data = $db->cache(function ($db) use ($date){
+            return (int) $this->getMaandTurven($date)
+                ->sum('aantal');
+        });
+        return $data;
     }
 
     public function getCountTotMaandTurven($date)
     {
-        return (int) $this->getTotaalTotMaandTurven($date)
+        $db = self::getDb();
+        $data = $db->cache(function ($db) use($date) {
+            return (int) $this->getTotaalTotMaandTurven($date)
             ->sum('aantal');
+        });
+        return $data;
     }
 
     public function getVolumeInkoopPeriod($start_date, $end_date)

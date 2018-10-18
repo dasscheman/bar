@@ -281,7 +281,7 @@ class User extends BaseUser
     {
         return $this->hasMany(Kosten::className(), ['updated_by' => 'id']);
     }
-    
+
     /**
      * @return \yii\db\ActiveQuery
      */
@@ -320,7 +320,7 @@ class User extends BaseUser
     {
         return $this->hasMany(RelatedTransacties::className(), ['created_by' => 'id']);
     }
- 
+
     /**
      * @return \yii\db\ActiveQuery
      */
@@ -357,7 +357,7 @@ class User extends BaseUser
      * @return \yii\db\ActiveQuery
      */
     public function pendingTransactionExists()
-    {        
+    {
         $data = $this->hasMany(Transacties::className(), ['transacties_user_id' => 'id'])
             ->where('transacties.status =:status_ingevoerd AND transacties.mollie_status =:mollie_status_pending')
             ->andWhere('ISNULL(deleted_at)')
@@ -366,10 +366,10 @@ class User extends BaseUser
                 ':mollie_status_pending' =>Transacties::MOLLIE_STATUS_pending
             ])
             ->exists();
-        
+
         return $data;
     }
-    
+
     /**
      * @return \yii\db\ActiveQuery
      */
@@ -444,7 +444,10 @@ class User extends BaseUser
      */
     public function getSumNewBijTransactiesUser()
     {
-        $test  = BetalingType::find()->where(['bijaf'=>BetalingType::BIJAF_bij])->asArray()->all();
+        $db = self::getDb();
+        $test = $db->cache(function ($db) {
+            return BetalingType::find()->where(['bijaf'=>BetalingType::BIJAF_bij])->asArray()->all();
+        });
         $ids = ArrayHelper::getColumn($test, 'type_id');
 
         return $this->hasMany(Transacties::className(), ['transacties_user_id' => 'id'])
@@ -463,7 +466,11 @@ class User extends BaseUser
      */
     public function getSumNewAfTransactiesUser()
     {
-        $test  = BetalingType::find()->where(['bijaf'=>BetalingType::BIJAF_af])->asArray()->all();
+        $db = self::getDb();
+        $test = $db->cache(function ($db) {
+            return BetalingType::find()->where(['bijaf'=>BetalingType::BIJAF_af])->asArray()->all();
+        });
+
         $ids = ArrayHelper::getColumn($test, 'type_id');
 
         return $this->hasMany(Transacties::className(), ['transacties_user_id' => 'id'])
@@ -482,7 +489,10 @@ class User extends BaseUser
      */
     public function getSumOldBijTransactiesUser()
     {
-        $test  = BetalingType::find()->where(['bijaf'=>BetalingType::BIJAF_bij])->asArray()->all();
+        $db = self::getDb();
+        $test = $db->cache(function ($db) {
+            return BetalingType::find()->where(['bijaf'=>BetalingType::BIJAF_bij])->asArray()->all();
+        });
         $ids = ArrayHelper::getColumn($test, 'type_id');
 
         return $this->hasMany(Transacties::className(), ['transacties_user_id' => 'id'])
@@ -497,7 +507,10 @@ class User extends BaseUser
      */
     public function getSumOldAfTransactiesUser()
     {
-        $test  = BetalingType::find()->where(['bijaf'=>BetalingType::BIJAF_af])->asArray()->all();
+        $db = self::getDb();
+        $test = $db->cache(function ($db) {
+            return BetalingType::find()->where(['bijaf'=>BetalingType::BIJAF_af])->asArray()->all();
+        });
         $ids = ArrayHelper::getColumn($test, 'type_id');
 
         return $this->hasMany(Transacties::className(), ['transacties_user_id' => 'id'])
@@ -551,14 +564,17 @@ class User extends BaseUser
      */
     public function getSumNewTurvenUsers()
     {
-        return $this->hasMany(Turven::className(), ['consumer_user_id' => 'id'])
-            ->where('turven.status =:status_gecontroleerd OR turven.status =:status_herberekend')
-            ->andWhere('ISNULL(deleted_at)')
-            ->params([
-                ':status_gecontroleerd' =>Turven::STATUS_gecontroleerd,
-                ':status_herberekend' =>Turven::STATUS_herberekend
-            ])
-            ->sum('totaal_prijs');
+        $db = self::getDb();
+        return $db->cache(function ($db) {
+            return $this->hasMany(Turven::className(), ['consumer_user_id' => 'id'])
+                ->where('turven.status =:status_gecontroleerd OR turven.status =:status_herberekend')
+                ->andWhere('ISNULL(deleted_at)')
+                ->params([
+                    ':status_gecontroleerd' =>Turven::STATUS_gecontroleerd,
+                    ':status_herberekend' =>Turven::STATUS_herberekend
+                ])
+                ->sum('totaal_prijs');
+        });
     }
 
     /**
@@ -566,10 +582,14 @@ class User extends BaseUser
      */
     public function getSumOldTurvenUsers()
     {
-        return $this->hasMany(Turven::className(), ['consumer_user_id' => 'id'])
+        $db = self::getDb();
+        return $db->cache(function ($db) {
+            return $this->hasMany(Turven::className(), ['consumer_user_id' => 'id'])
             ->where(['>=', 'turven.status',  Transacties::STATUS_factuur_gegenereerd])
             ->andWhere('ISNULL(deleted_at)')
             ->sum('totaal_prijs');
+        });
+
     }
 
     /**
@@ -664,7 +684,7 @@ class User extends BaseUser
     {
         return md5($password);
     }
-        
+
     /**
      * Validates password
      *
@@ -695,7 +715,7 @@ class User extends BaseUser
 
         return false;
     }
-    
+
     /**
      * Controleer limieten
      *
@@ -707,9 +727,9 @@ class User extends BaseUser
         $user = User::findOne($id);
         // Zet de default limiet
         $limiet = -20;
-        
+
         if ($user->pendingTransactionExists()) {
-            // Als er een pending transactie is, dan krijgt de gebruiker het 
+            // Als er een pending transactie is, dan krijgt de gebruiker het
             // voordeel van de twijfel en wordt het limit niet verder gecontroleerd.
             return true;
         }
