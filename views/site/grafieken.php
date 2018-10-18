@@ -11,6 +11,10 @@ $this->title = 'Overzicht ' . $labels['titel'];
     <h1><?= Html::encode($this->title) ?></h1>
     <p>
         <?php
+        echo Html::a('3 Maanden', ['/site/assortiment', 'assortiment_id' => $assortiment_id, 'aantal_maanden' => 3], ['class'=>'btn btn-primary namen']);
+        echo Html::a('6 Maanden', ['/site/assortiment', 'assortiment_id' => $assortiment_id, 'aantal_maanden' => 6], ['class'=>'btn btn-primary namen']);
+        echo Html::a('12 Maanden', ['/site/assortiment', 'assortiment_id' => $assortiment_id, 'aantal_maanden' => 12], ['class'=>'btn btn-primary namen']);
+
         echo HighCharts::widget([
             'clientOptions' => [
                 'chart' => [

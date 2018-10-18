@@ -29,7 +29,7 @@ class SiteController extends Controller
                 'only' => ['logout'],
                 'rules' => [
                     [
-                        'actions' => ['logout', 'totaal', 'testmail', 'rendement', 'assortiment'],
+                        'actions' => ['logout', 'totaal', 'testmail', 'rendement', 'assortiment', 'cache-flush'],
                         'allow' => true,
                         'roles' => ['@'],
                     ],
@@ -180,7 +180,7 @@ class SiteController extends Controller
        */
     public function actionAssortiment()
     {
-        $aantalMaanden = 12;
+        $aantalMaanden = (int) Yii::$app->request->get('aantal_maanden');
         $i =0;
         $maanden = [];
         while ($i < $aantalMaanden) {
@@ -204,6 +204,7 @@ class SiteController extends Controller
         }
 
         return $this->render('grafieken', [
+            'assortiment_id' => $assortiment->assortiment_id,
             'maanden' => array_reverse($maanden),
             'seriesGeld' => $seriesGeld,
             'seriesVolume' => $seriesVolume,
@@ -342,5 +343,11 @@ class SiteController extends Controller
         if ($exception !== null) {
             return $this->render('error', ['exception' => $exception]);
         }
+    }
+
+    public function actionCacheFlush()
+    {
+        Yii::$app->cache->flush();
+        return $this->redirect(['/']);
     }
 }

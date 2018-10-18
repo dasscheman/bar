@@ -217,6 +217,7 @@ class TurvenController extends Controller
      */
     public function actionCreate()
     {
+        Yii::$app->cache->flush();
         $models = [new Turven()];
         for ($i = 1; $i < 5; $i++) {
             $models[] = new Turven();
@@ -287,6 +288,7 @@ class TurvenController extends Controller
      */
     public function actionUpdate($id)
     {
+        Yii::$app->cache->flush();
         $model = $this->findModel($id);
 
         $this->layout = 'main-fluid';
@@ -307,6 +309,7 @@ class TurvenController extends Controller
      */
     public function actionDelete($id)
     {
+        Yii::$app->cache->flush();
         $model = $this->findModel($id);
         $factuur = $model->getFactuur()->one();
 

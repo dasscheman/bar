@@ -38,7 +38,7 @@ AppAsset::register($this);
 
     $graph_menu[] = ['label' => 'Overzicht', 'url' => ['/site/totaal']];
     foreach (Assortiment::find()->all() as $assortiment) {
-        $graph_menu[] = ['label' => $assortiment->name, 'url' =>  ['/site/assortiment', 'assortiment_id' => $assortiment->assortiment_id ]];
+        $graph_menu[] = ['label' => $assortiment->name, 'url' =>  ['/site/assortiment', 'assortiment_id' => $assortiment->assortiment_id, 'aantal_maanden' => 3]];
     }
 
     echo Nav::widget([
@@ -64,8 +64,8 @@ AppAsset::register($this);
 //                    ],
                 ]
             ]:'',
-//            ['label' => 'About', 'url' => ['/site/about']],
-//            ['label' => 'Contact', 'url' => ['/site/contact']],
+//          ['label' => 'About', 'url' => ['/site/about']],
+            ['label' => 'Cach Flush', 'url' => ['/site/cache-flush']],
             Yii::$app->user->isGuest ? (
                 ['label' => 'Login', 'url' => ['/user/security/login']]
             ) : (

@@ -32,7 +32,7 @@ class CronController extends Controller
     {
         // called every two minutes
         // */2 * * * * ~/sites/www/yii2/yii cron/day
-
+        Yii::$app->cache->flush();
         $time_start = microtime(true);
         $aantal = Factuur::genereerFacturen();
         echo 'Er zijn '.($aantal).' facturen aangemaakt.';
