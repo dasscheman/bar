@@ -247,7 +247,6 @@ class TransactiesController extends Controller
         $modelTransacties->setAllRelatedTransactions();
         $this->layout = 'main-fluid';
         if ($modelTransacties->load(Yii::$app->request->post())) {
-            dd(Yii::$app->request->post('Bonnen'));
             $image = null;
             if ($modelBonnen !== null) {
                 $image = UploadedFile::getInstance($modelBonnen, 'image_temp');
