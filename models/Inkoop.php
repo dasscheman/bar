@@ -33,10 +33,6 @@ class Inkoop extends BarActiveRecord
     const TYPE_fles = 2;
     const TYPE_pet_fles = 3;
 
-    const STATUS_voorraad = 1;
-    const STATUS_verkocht = 2;
-    const STATUS_afgeschreven = 3;
-
     public $totaal_aantal;
     /**
      * @inheritdoc
@@ -136,8 +132,8 @@ class Inkoop extends BarActiveRecord
 
     /**
      *
-     * Retrieves a list of statussen
-     * @return array an array of available statussen.
+     * Retrieves a list of typen
+     * @return array an array of available types.
      */
     public function getTypeOptions()
     {
@@ -148,7 +144,7 @@ class Inkoop extends BarActiveRecord
         ];
     }
     /**
-     * @return string the status text display
+     * @return string the type text display
      */
     public function getTypeText()
     {
@@ -156,6 +152,6 @@ class Inkoop extends BarActiveRecord
         if (isset($typeOptions[$this->type])) {
             return $typeOptions[$this->type];
         }
-        return "unknown status ({$this->type})";
+        return "unknown type ({$this->type})";
     }
 }

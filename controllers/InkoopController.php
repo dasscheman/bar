@@ -132,32 +132,15 @@ class InkoopController extends Controller
             $bon = Bonnen::findOne($model->bon_id);
             $model->datum = $bon->datum;
             $count = $model->aantal;
-            $dbTransaction = Yii::$app->db->beginTransaction();
-            try {
-                for ($i = 1; $i <= $count; $i++) {
-                    $modelTemp = new Inkoop();
-                    $modelTemp->attributes = $model->attributes;
-                    $modelTemp->aantal = 1;
-                    $modelTemp->status = Inkoop::STATUS_voorraad;
-                    if (!$modelTemp->save()) {
-                        foreach ($modelTemp->errors as $key => $error) {
-                            Yii::$app->session->setFlash('warning', Yii::t('app', 'Fout met opslaan: ' . $key . ':' . $error[0]));
-                        }
-
-                        $dbTransaction->rollBack();
-                        return $this->render('create', [
-                            'model' => $model,
-                        ]);
-                    }
+            if (!$model->save()) {
+                foreach ($model->errors as $key => $error) {
+                    Yii::$app->session->setFlash('warning', Yii::t('app', 'Fout met opslaan: ' . $key . ':' . $error[0]));
                 }
-                $dbTransaction->commit();
-            } catch (\Exception $e) {
-                Yii::$app->session->setFlash('warning', Yii::t('app', 'Je kunt deze inkoop niet opslaan'));
             }
             $searchModel = new InkoopSearch();
             $dataProvider = $searchModel->searchActueel(Yii::$app->request->queryParams);
 
-            return $this->render('index-actueel', [
+            return $this->render('beheer', [
                 'searchModel' => $searchModel,
                 'dataProvider' => $dataProvider,
             ]);
