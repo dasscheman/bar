@@ -497,6 +497,7 @@ class User extends BaseUser
 
         return $this->hasMany(Transacties::className(), ['transacties_user_id' => 'id'])
             ->where(['>=', 'transacties.status',  Transacties::STATUS_factuur_gegenereerd])
+            ->andWhere(['!=', 'transacties.status',  Transacties::STATUS_herberekend])
             ->andWhere(['in', 'transacties.type_id', $ids])
             ->andWhere('ISNULL(deleted_at)')
             ->sum('bedrag');
@@ -515,6 +516,7 @@ class User extends BaseUser
 
         return $this->hasMany(Transacties::className(), ['transacties_user_id' => 'id'])
             ->where(['>=', 'transacties.status', Transacties::STATUS_factuur_gegenereerd])
+            ->andWhere(['!=', 'transacties.status',  Transacties::STATUS_herberekend])
             ->andWhere(['in', 'transacties.type_id', $ids])
             ->andWhere('ISNULL(deleted_at)')
             ->sum('bedrag');
@@ -586,6 +588,7 @@ class User extends BaseUser
         return $db->cache(function ($db) {
             return $this->hasMany(Turven::className(), ['consumer_user_id' => 'id'])
             ->where(['>=', 'turven.status',  Transacties::STATUS_factuur_gegenereerd])
+            ->andWhere(['!=', 'turven.status',  Transacties::STATUS_herberekend])
             ->andWhere('ISNULL(deleted_at)')
             ->sum('totaal_prijs');
         });
