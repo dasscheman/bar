@@ -35,58 +35,58 @@ use app\models\User;
         'options'=> ['enctype'=>'multipart/form-data'],
     ]);
 
-        echo $form->field($modelTransacties, 'transacties_user_id')->widget(Select2::className(), [
-            'data' => ArrayHelper::map(User::find()->all(), 'id', 'username'),
-            'options'   => [
-                'placeholder' => Yii::t('app', 'Selecteer gebruiker'),
-                'id' => 'transacties_user_id',
-            ],
-        ]);
+    echo $form->field($modelTransacties, 'transacties_user_id')->widget(Select2::className(), [
+        'data' => ArrayHelper::map(User::find()->all(), 'id', 'username'),
+        'options'   => [
+            'placeholder' => Yii::t('app', 'Selecteer gebruiker'),
+            'id' => 'transacties_user_id',
+        ],
+        'pluginOptions' => ['allowClear' => true],
+    ]);
 
-        echo $form->field($modelTransacties, 'omschrijving')->textInput();
+    echo $form->field($modelTransacties, 'omschrijving')->textInput();
 
-        echo $form->field($modelBonnen, 'bon_id')->widget(Select2::className(), [
-            'data' => ArrayHelper::map(
-                Bonnen::find()->orderBy(['bon_id' => SORT_DESC])->all(),
-                'bon_id',
-                function($modelBonnen, $defaultValue) {
+    echo $form->field($modelBonnen, 'bon_id')->widget(Select2::className(), [
+        'data' => ArrayHelper::map(
+            Bonnen::find()->orderBy(['bon_id' => SORT_DESC])->all(),
+            'bon_id',
+            function ($modelBonnen, $defaultValue) {
+                return $modelBonnen['omschrijving']. ' (' . $modelBonnen->bon_id .')';
+            }
+        ),
+        'options'   => [
+            'placeholder' => Yii::t('app', 'Selecteer transactie'),
+            'id' => 'transacties_id',
+        ],
+        'pluginOptions' => [
+            'allowClear' => true
+        ],
+    ]);
+    echo $form->field($modelBonnen, 'image_temp')->fileInput();
+    echo Html::encode('Huidige bon: ' . $modelBonnen->image);
 
-                    return $modelBonnen['omschrijving']. ' (' . $modelBonnen->bon_id .')';
-                }
-            ),
-            'options'   => [
-                'placeholder' => Yii::t('app', 'Selecteer transactie'),
-                'id' => 'transacties_id',
-            ],
-            'pluginOptions' => [
-                'allowClear' => true
-            ],
-        ]);
-        echo $form->field($modelBonnen, 'image_temp')->fileInput();
-        echo Html::encode('Huidige bon: ' . $modelBonnen->image);
-
-        echo $form->field($modelBonnen, 'soort')->widget(Select2::className(), [
-            'data' => $modelBonnen->getSoortOptions(),
-            'options' => [
-                'placeholder' => Yii::t('app', 'Selecteer soort betaling'),
-                'id' => 'soort'
-            ],
-        ]);
-        echo $form->field($modelTransacties, 'all_related_transactions')->widget(Select2::classname(), [
-            'name' => 'all_related_transactions',
-            'value' => $modelTransacties->all_related_transactions,
+    echo $form->field($modelBonnen, 'soort')->widget(Select2::className(), [
+        'data' => $modelBonnen->getSoortOptions(),
+        'options' => [
+            'placeholder' => Yii::t('app', 'Selecteer soort betaling'),
+            'id' => 'soort'
+        ],
+    ]);
+    echo $form->field($modelTransacties, 'all_related_transactions')->widget(Select2::classname(), [
+        'name' => 'all_related_transactions',
+        'value' => $modelTransacties->all_related_transactions,
+        'id' => $modelTransacties->transacties_id,
+        'data' => $modelTransacties->getTransactionsArray(),
+        'options' => [
+            'placeholder' => 'Filter as you type ...',
             'id' => $modelTransacties->transacties_id,
-            'data' => $modelTransacties->getTransactionsArray(),
-            'options' => [
-                'placeholder' => 'Filter as you type ...',
-                'id' => $modelTransacties->transacties_id,
-                'class' => "form-control",
-                'multiple' => true,
-            ],
-            'pluginOptions' => [
-                'tags' => true,
-            ]
-        ]);
+            'class' => "form-control",
+            'multiple' => true,
+        ],
+        'pluginOptions' => [
+            'tags' => true,
+        ]
+    ]);
 
     echo $form->field($modelTransacties, 'bedrag')->widget(MaskMoney::classname());
 
