@@ -5,6 +5,7 @@ namespace app\controllers;
 use Yii;
 use dektrium\user\filters\AccessRule;
 use app\models\BetalingType;
+use app\models\Bonnen;
 use app\models\RelatedTransacties;
 use app\models\Transacties;
 use app\models\TransactiesSearch;
@@ -12,7 +13,6 @@ use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
 use yii\filters\AccessControl;
-use app\models\Bonnen;
 use yii\web\UploadedFile;
 
 /**
@@ -138,6 +138,7 @@ class TransactiesController extends Controller
             switch (Yii::$app->request->get('type')) {
                 case 'pin':
                     $model->type_id = BetalingType::getPinId();
+                    $redirect = ['transacties/bank'];
                     break;
                 case 'bankbij_gebruiker':
                     $model->type_id = BetalingType::getBankBijId();
@@ -178,8 +179,36 @@ class TransactiesController extends Controller
             }
 
             if ($model->save()) {
+                $modelBon = new Bonnen();
+
+
+                if ($modelBon->load(Yii::$app->request->post())) {
+
+                    // get the uploaded file instance. for multiple file uploads
+                    // the following data will return an array
+                    $image = UploadedFile::getInstance($modelBon, 'image_temp');
+                    // store the source file name
+                    $modelBon->image = date('Y-m-d H:i:s') . '-' . $image->name;
+                    $modelBon->bedrag = $model->bedrag;
+                    $modelBon->datum = $model->datum;
+                    $modelBon->type = Bonnen::TYPE_pin_betaling;
+                    $modelBon->omschrijving = $model->omschrijving;
+                    $path = Yii::$app->params['bonnen_path'] . $modelBon->image;
+                    if ($modelBon->save()) {
+                        $image->saveAs($path);
+                        $model->bon_id = $modelBon->bon_id;
+                        $model->save();
+                    } else {
+                        foreach ($modelBon->errors as $key => $error) {
+                            Yii::$app->session->setFlash('warning', Yii::t('app', 'Fout met opslaan van de Bon: ' . $key . ':' . $error[0]));
+                        }
+                    }
+                }
                 if (isset(Yii::$app->request->post('Transacties')['all_related_transactions'])) {
                     Transacties::addRelatedTransactions($model->transacties_id, Yii::$app->request->post('Transacties')['all_related_transactions']);
+                }
+                if(!isset($redirect)) {
+                    $redirect = ['view', 'id' => $model->transacties_id];
                 }
             } else {
                 foreach ($model->errors as $key => $error) {
@@ -190,7 +219,7 @@ class TransactiesController extends Controller
                     'type' => Yii::$app->request->get()
                 ]);
             }
-            return $this->redirect(['view', 'id' => $model->transacties_id]);
+            return $this->redirect($redirect);
         }
 
         $modelBonnen = new Bonnen();

@@ -100,7 +100,7 @@ use app\models\Transacties;
             ],
         ]);
     }
-    if(Yii::$app->request->get('type') == null) {
+    if(Yii::$app->request->get('type') == null || Yii::$app->request->get('type') == 'pin') {
         echo $form->field($modelTransacties, 'omschrijving')->textInput();
     }
     if (Yii::$app->request->get('type') == null ||
