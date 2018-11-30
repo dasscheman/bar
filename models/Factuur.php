@@ -162,7 +162,7 @@ class Factuur extends BarActiveRecord
                 !$user->getInvalidTransactionsNotInvoiced()->exists()) {
                 continue;
             }
-            
+
             echo "\r\n";
             echo '-->' . $user->getProfile()->one()->voornaam . " " . $user->getProfile()->one()->achternaam;
             $turvenModel = $user->getNewTurvenUsers();
@@ -185,7 +185,7 @@ class Factuur extends BarActiveRecord
                 echo "\r\n";
                 echo '--> Nieuwe Transacties';
             }
-            
+
             $facuur = new Factuur();
 
             if ($generate && $facuur->createFactuur($user)) {
@@ -325,17 +325,32 @@ class Factuur extends BarActiveRecord
     public function verzendFacturen()
     {
         $aantal = 0;
-        $facturen = Factuur::find()->where('ISNULL(verzend_datum) and ISNULL(deleted_at)')->all();
+        $verkoopData = array();
+        $aantalmaanden = 3;
+        foreach (Assortiment::find()->all() as $assortiment) {
+            $i = 0;
+            $count = 0;
+            while ($i <= $aantalmaanden) {
+                $date = date("Ymd", strtotime("-$i months"));
+                $count = $assortiment->getMaandTurven($date)->count() + $count;
+                $i++;
+            }
+            if ($count < 10) {
+                continue;
+            }
+            $verkoopData[$assortiment->name] = $assortiment->getVolumeSerie($aantalmaanden);
+        }
 
+        $facturen = Factuur::find()->where('ISNULL(verzend_datum) and ISNULL(deleted_at)')->all();
         foreach ($facturen as $factuur) {
             if ($aantal > 50) {
                 return $aantal;
             }
             $user = User::findOne($factuur->ontvanger);
 
-//            Yii::$app->mailer->htmlLayout('layouts/html');
             $message = Yii::$app->mailer->compose('mail', [
                     'user' => $user,
+                    'verkoopData' => $verkoopData
                 ])
                 ->setFrom('bar@debison.nl')
                 ->setTo($user->email)
@@ -394,7 +409,7 @@ class Factuur extends BarActiveRecord
             Yii::error($e->getMessage());
         }
     }
-    
+
     /*
      * Delete factuur based on id.
      * this is mostly used when a transaction is changed which is allready invoiced.

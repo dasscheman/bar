@@ -4,6 +4,7 @@ namespace app\commands;
 
 use Yii;
 use yii\console\Controller;
+use app\models\Assortiment;
 use app\models\Factuur;
 use app\models\Turven;
 use app\models\Transacties;
