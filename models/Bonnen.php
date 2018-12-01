@@ -55,7 +55,15 @@ class Bonnen extends BarActiveRecord
     public function rules()
     {
         return [
-            [['omschrijving', 'image', 'type', 'datum', 'bedrag', 'soort'], 'required'],
+            [['omschrijving', 'image', 'type', 'datum', 'bedrag'], 'required'],
+            [['soort'], 'required', 'when' => function($model) {
+                if (Yii::$app->controller->id == 'transacties' &&
+                    Yii::$app->controller->action->id =='update') {
+                        return false;
+                }
+                return true;
+            }, 'enableClientValidation' => false
+            ],
             [['type', 'created_by', 'updated_by', 'inkoper_user_id', 'soort'], 'integer'],
             [['datum', 'created_at', 'updated_at'], 'safe'],
             [['bedrag'], 'number'],

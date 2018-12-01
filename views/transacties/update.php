@@ -1,44 +1,54 @@
 <?php
 
 /*
- * This file is part of the Dektrium project.
- *
- * (c) Dektrium project <http://github.com/dektrium>
- *
- * For the full copyright and license information, please view the LICENSE.md
- * file that was distributed with this source code.
- */
-
-/**
- * @var $model dektrium\rbac\models\Role
- * @var $this  yii\web\View
- */
-
-/*
  * Bar App de Bison by daan@biolgenkantoor.nl
  */
 
 use yii\helpers\Html;
-use yii\widgets\DetailView;
 
-/* @var $this yii\web\View */
-/* @var $model app\models\Assortiment */
+/**
+ * @var $this yii\web\View
+ * @var $model app\models\Transacties
+ */
 
-?>
-<div class="row">
-    <div class="col-md-12">
-        <div class="panel panel-default">
-            <div class="panel-heading">
-                <?php echo  Html::encode('Transacties bijwerken'); ?>
-            </div>
-            <div class="panel-body">
-                <?php echo $this->render('/_alert') ?>
-                <?php echo $this->render('/_menu') ?>
-                <table class="table">
-                    <?php
-                        echo  $this->render('_form-update', ['modelTransacties' => $modelTransacties, 'modelBonnen' => $modelBonnen]); ?>
-                </table>
-            </div>
-        </div>
-    </div>
-</div>
+$this->beginContent('../views/_beheer2.php');
+    switch (Yii::$app->request->get('type')) {
+        case 'pin':
+            $this->title = 'Betaling met pinpas';
+            break;
+        case 'bankbij_gebruiker':
+            $this->title = 'Bankoverschrijving van gebruiker';
+            break;
+        case 'izettle_invoer':
+            $this->title = 'Invoer van Izettle pin betaling';
+            break;
+        case 'statiegeld':
+            $this->title = 'Statiegeld ontvangen';
+            break;
+        case 'declaratie_invoer':
+            $this->title = 'Declaratie invoeren';
+            break;
+        case 'declaratie_uitbetaling':
+            $this->title = 'Declaratie uitbetalen';
+            break;
+        case 'izettle_uitbetaling':
+            $this->title = 'Izettle uitbetalen';
+            break;
+        case 'mollie_uitbetaling':
+            $this->title = 'Mollie uitbetalen';
+            break;
+        case 'izettle_kosten':
+            $this->title = 'Izettle kosten';
+            break;
+        case 'ing_kosten':
+            $this->title = 'ING kosten';
+            break;
+        case 'mollie_kosten':
+            $this->title = 'Mollie kosten';
+            break;
+        default:
+            $this->title = 'Transactie toevoegen';
+    }
+echo  $this->render('_form-update', ['modelTransacties' => $modelTransacties, 'modelBonnen' => $modelBonnen]);
+
+$this->endContent();

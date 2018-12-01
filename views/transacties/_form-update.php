@@ -64,7 +64,6 @@ use app\models\User;
     ]);
     echo $form->field($modelBonnen, 'image_temp')->fileInput();
     echo Html::encode('Huidige bon: ' . $modelBonnen->image);
-
     echo $form->field($modelBonnen, 'soort')->widget(Select2::className(), [
         'data' => $modelBonnen->getSoortOptions(),
         'options' => [
@@ -87,16 +86,14 @@ use app\models\User;
             'tags' => true,
         ]
     ]);
-
     echo $form->field($modelTransacties, 'bedrag')->widget(MaskMoney::classname());
-
-        echo $form->field($modelTransacties, 'type_id')->widget(Select2::className(), [
-            'data' => ArrayHelper::map(BetalingType::find()->all(), 'type_id', 'omschrijving'),
-            'options'   => [
-                'placeholder' => Yii::t('app', 'Selecteer betaling type'),
-                'id' => 'type_id',
-            ],
-        ]);
+    echo $form->field($modelTransacties, 'type_id')->widget(Select2::className(), [
+        'data' => ArrayHelper::map(BetalingType::find()->all(), 'type_id', 'omschrijving'),
+        'options'   => [
+            'placeholder' => Yii::t('app', 'Selecteer betaling type'),
+            'id' => 'type_id',
+        ],
+    ]);
 
     echo $form->field($modelTransacties, 'datum')->widget(DatePicker::className(), [
         'model' => $modelTransacties,
