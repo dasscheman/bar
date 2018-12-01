@@ -46,12 +46,12 @@ use app\models\User;
 
     echo $form->field($modelTransacties, 'omschrijving')->textInput();
 
-    echo $form->field($modelBonnen, 'bon_id')->widget(Select2::className(), [
+    echo $form->field($modelTransacties, 'bon_id')->widget(Select2::className(), [
         'data' => ArrayHelper::map(
             Bonnen::find()->orderBy(['bon_id' => SORT_DESC])->all(),
             'bon_id',
             function ($modelBonnen, $defaultValue) {
-                return $modelBonnen['omschrijving']. ' (' . $modelBonnen->bon_id .')';
+                return $modelBonnen['omschrijving']. ' (nr.' . $modelBonnen->bon_id .' €' . $modelBonnen->bedrag. ')';
             }
         ),
         'options'   => [

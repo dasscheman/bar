@@ -38,12 +38,7 @@ $toolbar = false;
         'dataProvider' => $dataProvider,
         'filterModel'  => $searchModel,
         'rowOptions'=>function ($model) {
-            if (!$model->checkBon()) {
-                return ['class' => 'danger'];
-            }
-            if (!$model->checkBon()) {
-                return ['class' => 'info'];
-            }
+                return ['class' => $model->getRowClass()];
         },
         'layout'       => "{items}\n{pager}",
         'columns' => [

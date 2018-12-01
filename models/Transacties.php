@@ -359,26 +359,33 @@ class Transacties extends BarActiveRecord
         return false;
     }
 
-
-
-    public function checkBon()
+    /**
+    * Returns the class for the gridview
+    */
+    public function getRowClass()
     {
-        $betaling = BetalingType::find()
-                ->where('omschrijving = "Declaratie" OR omschrijving = "Bankoverschrijving Af"')
-                ->asArray()
-                ->all();
-
-        if ($betaling !== null) {
-            $betalingArray = ArrayHelper::getColumn($betaling, 'type_id');
+        $class = 'info';
+        switch ($this->getType()->one()->omschrijving) {
+            case 'Pin betaling':
+                if (!isset($this->bon_id)) {
+                    $class = 'danger';
+                    break;
+                }
+                $class = '';
+            case 'Declaratie':
+                if (!isset($this->bon_id)) {
+                    $class = 'danger';
+                    break;
+                }
+            case 'Bankoverschrijving Af':
+                if (!isset($this->bon_id)) {
+                    $class = 'danger';
+                    break;
+                }
+            case 'Bankoverschrijving Bij':
+                $class = '';
+                break;
         }
-
-        if (!in_array($this->type_id, $betalingArray)) {
-            return true;
-        }
-
-        if (isset($this->bon_id)) {
-            return true;
-        }
-        return false;
+        return $class;
     }
 }
