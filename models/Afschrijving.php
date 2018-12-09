@@ -44,7 +44,10 @@ class Afschrijving extends BarActiveRecord
     public function rules()
     {
         return [
-            [['assortiment_id', 'datum', 'totaal_prijs', 'type'], 'required'],
+            [['assortiment_id', 'datum', 'type'], 'required'],
+
+            [['totaal_prijs'], 'required', 'enableClientValidation' => false
+            ],
             [['assortiment_id', 'aantal', 'type', 'created_by', 'updated_by'], 'integer'],
             [['datum', 'created_at', 'updated_at'], 'safe'],
             [['volume', 'totaal_prijs'], 'number'],
@@ -63,10 +66,10 @@ class Afschrijving extends BarActiveRecord
             'afschrijving_id' => 'Afschrijving ID',
             'assortiment_id' => 'Assortiment ID',
             'datum' => 'Datum',
-            'volume' => 'Volume per stuk',
+            'volume' => 'Volume per stuk (liters)',
             'aantal' => 'Aantal',
             'totaal_prijs' => 'Totaal Prijs',
-            'totaal_volume' => 'Totaal Volume',
+            'totaal_volume' => 'Totaal Volume (liters)',
             'created_at' => 'Created At',
             'created_by' => 'Created By',
             'updated_at' => 'Updated At',

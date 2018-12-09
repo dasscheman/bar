@@ -48,6 +48,11 @@ class AfschrijvingSearch extends Afschrijving
 
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
+            'sort' => [
+                'defaultOrder' => [
+                    'datum' => SORT_DESC,
+                ]
+            ]
         ]);
 
         $this->load($params);

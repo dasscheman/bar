@@ -242,7 +242,7 @@ class TransactiesController extends Controller
         $modelTransacties = $this->findModel($id);
         $modelBonnen = $modelTransacties->bon;
         if($modelBonnen == null) {
-            $modelBonnen =new Bonnen;
+            $modelBonnen = new Bonnen;
         }
         $modelTransacties->setAllRelatedTransactions();
         $this->layout = 'main-fluid';

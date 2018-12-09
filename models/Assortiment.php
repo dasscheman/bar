@@ -4,6 +4,7 @@ namespace app\models;
 
 use Yii;
 use app\models\BarActiveRecord;
+use yii\helpers\ArrayHelper;
 
 /**
  * This is the model class for table "assortiment".
@@ -377,6 +378,20 @@ class Assortiment extends BarActiveRecord
         return false;
     }
 
+    /**
+     * Get the assortiment name based on id
+     *
+     * @param int $id Assortiment id.
+     * @return string Name of assortiment.
+     */
+    public function getAssortimentNameOptions()
+    {
+        if (($model = self::find()) !== null) {
+            return ArrayHelper::map($model->asArray()->all(), 'assortiment_id', 'name');
+        }
+        return false;
+    }
+
     public function getTurven()
     {
         $eenheid_ids = [];
@@ -440,7 +455,7 @@ class Assortiment extends BarActiveRecord
         $turven = $db->cache(function ($db) use ($date){
             return $this->getTotaalTotMaandTurven($date)->all();
         });
-        
+
         foreach ($turven as $turf) {
             $db = self::getDb();
             $eenheid = $db->cache(function ($db) use ($turf){
@@ -626,5 +641,27 @@ class Assortiment extends BarActiveRecord
         $seriesGeld[] = ['name' => 'Uitgaven Drank', 'data' => array_reverse(array_values($uitgaven)), 'stack' => 'uitgaven'];
         $seriesGeld[] = ['name' => 'Inkomsten Drank', 'data' => array_reverse(array_values($inkomsten)), 'stack' => 'inkomsten'];
         return $seriesGeld;
+    }
+
+    /**
+    * Berekend een gemiddelde liter prijs over de inkoop van afgelopen 6 maanden.
+    */
+    public function gemiddeldePrijsPerLiter(){
+        $aantalMaanden = 6;
+        $i = 0;
+        $prijs = 0;
+        $volume = 0;
+        while ($i < $aantalMaanden) {
+            $date = date("Ymd", strtotime("-$i months"));
+
+            $prijs = $this->getSumMaandInkoop($date) + $prijs;
+            $volume = $this->getVolumeMaandInkoop($date) + $volume;
+            $i++;
+        }
+
+        if(!$prijs > 0 || !$volume > 0) {
+            return 0;
+        }
+        return (float) $prijs/$volume;
     }
 }

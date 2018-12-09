@@ -5,6 +5,7 @@ namespace app\controllers;
 use Yii;
 use app\models\Afschrijving;
 use app\models\AfschrijvingSearch;
+use app\models\Assortiment;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
@@ -67,8 +68,23 @@ class AfschrijvingController extends Controller
     {
         $model = new Afschrijving();
 
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->afschrijving_id]);
+        if ($model->load(Yii::$app->request->post())) {
+            if(empty($model->totaal_volume)) {
+                $model->totaal_volume = $model->aantal * $model->volume;
+            }
+            $modelAssortiment = Assortiment::findOne($model->assortiment_id);
+            $model->totaal_prijs = round((float) $model->totaal_volume * (float) $modelAssortiment->gemiddeldePrijsPerLiter(), 2);
+
+            if($model->save()) {
+                $searchModel = new AfschrijvingSearch();
+                $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
+
+                $this->layout = 'main-fluid';
+                return $this->render('beheer', [
+                    'searchModel' => $searchModel,
+                    'dataProvider' => $dataProvider,
+                ]);
+            }
         }
 
         $this->layout = 'main-fluid';
