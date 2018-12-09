@@ -273,7 +273,7 @@ class TransactiesController extends Controller
                 if (isset(Yii::$app->request->post('Transacties')['all_related_transactions'])) {
                     Transacties::addRelatedTransactions($modelTransacties->transacties_id, Yii::$app->request->post('Transacties')['all_related_transactions']);
                 }
-                return $this->redirect(['view', 'id' => $modelTransacties->transacties_id]);
+                return $this->redirect(['transacties/bank']);
             } else {
                 foreach ($modelTransacties->errors as $key => $error) {
                     Yii::$app->session->setFlash('warning', Yii::t('app', 'Fout met opslaan: ' . $key . ':' . $error[0]));

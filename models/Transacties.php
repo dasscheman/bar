@@ -66,8 +66,12 @@ class Transacties extends BarActiveRecord
         return [
             [['bedrag', 'type_id', 'status', 'datum'], 'required'],
             [['transacties_user_id'], 'required', 'when' => function($model) {
-                return BetalingType::getIzettleInvoerId()==$model->type_id;
-            }],
+                if( BetalingType::getIzettleInvoerId() == $model->type_id ||
+                    BetalingType::getPinId() == $model->type_id) {
+                    return false;
+                }
+                return true;
+            }, 'enableClientValidation' => false],
             [['transacties_user_id', 'bon_id', 'factuur_id', 'type_id', 'status', 'created_by', 'updated_by', 'mollie_status'], 'integer'],
             [['bedrag'], 'number'],
             [['datum', 'created_at', 'updated_at', 'deleted_at', 'status'], 'safe'],
@@ -370,6 +374,14 @@ class Transacties extends BarActiveRecord
             return $class;
         }
         switch ($this->getType()->one()->omschrijving) {
+            case 'Izettle Pin betaling':
+                if(!$this->getParentTransacties()->exists() &&
+                   !$this->getChildTransacties()->exists()) {
+                    $class = 'danger';
+                    break;
+                }
+                $class = '';
+                break;
             case 'Ideal':
                 if (!isset($this->mollie_status)) {
                     $class = 'danger';

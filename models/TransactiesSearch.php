@@ -13,7 +13,7 @@ use app\models\Transacties;
 class TransactiesSearch extends Transacties
 {
     public $displayname;
-    
+
     /**
      * @inheritdoc
      */
@@ -47,13 +47,13 @@ class TransactiesSearch extends Transacties
         $betalings_type_bank = BetalingType::getBankBetalingsType();
 
         $query = Transacties::find()
-                ->where(['not in', 'type_id', $betalings_type_bank]);
+            ->where(['not in', 'type_id', $betalings_type_bank]);
 
         // add conditions that should always apply here
         $query->joinWith(['transactiesUser.profile']);
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
-            'sort'=> ['defaultOrder' => ['updated_at'=>SORT_DESC]],
+            'sort'=> ['defaultOrder' => ['datum'=>SORT_DESC]],
         ]);
 
         $dataProvider->sort->attributes['displayname'] =
@@ -100,7 +100,7 @@ class TransactiesSearch extends Transacties
     public function searchBank($params)
     {
         $betalings_type_bank = BetalingType::getBankBetalingsType();
-    
+
         $query = Transacties::find()
                 ->where(['in', 'type_id', $betalings_type_bank]);
 
@@ -108,7 +108,7 @@ class TransactiesSearch extends Transacties
         $query->joinWith(['transactiesUser.profile']);
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
-            'sort'=> ['defaultOrder' => ['updated_at'=>SORT_DESC]],
+            'sort'=> ['defaultOrder' => ['datum'=>SORT_DESC]],
         ]);
 
         $dataProvider->sort->attributes['displayname'] =
