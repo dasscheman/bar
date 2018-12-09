@@ -382,7 +382,7 @@ class Transacties extends BarActiveRecord
                     $class = 'danger';
                     break;
                 }
-                if ($this->mollie_status != MOLLIE_STATUS_paid) {
+                if ($this->mollie_status != Transacties::MOLLIE_STATUS_paid) {
                     $class = 'warning';
                     break;
                 }
