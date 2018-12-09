@@ -161,3 +161,7 @@ a.desc:after {
     padding-left: 29%;
     padding-right: 29%;
 }
+
+.deleted{
+    opacity: 0.4;
+}

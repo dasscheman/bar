@@ -365,6 +365,10 @@ class Transacties extends BarActiveRecord
     public function getRowClass()
     {
         $class = 'info';
+        if (isset($this->deleted_at)) {
+            $class = 'deleted';
+            return $class;
+        }
         switch ($this->getType()->one()->omschrijving) {
             case 'Ideal':
                 if (!isset($this->mollie_status)) {
