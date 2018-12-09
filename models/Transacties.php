@@ -67,7 +67,8 @@ class Transacties extends BarActiveRecord
             [['bedrag', 'type_id', 'status', 'datum'], 'required'],
             [['transacties_user_id'], 'required', 'when' => function($model) {
                 if( BetalingType::getIzettleInvoerId() == $model->type_id ||
-                    BetalingType::getPinId() == $model->type_id) {
+                    BetalingType::getPinId() == $model->type_id ||
+                    BetalingType::getMollieUitbetalingId() == $model->type_id) {
                     return false;
                 }
                 return true;
