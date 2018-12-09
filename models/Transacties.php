@@ -377,6 +377,15 @@ class Transacties extends BarActiveRecord
                     $class = 'danger';
                     break;
                 }
+            case 'Ideal':
+                if (!isset($this->mollie_status)) {
+                    $class = 'danger';
+                    break;
+                }
+                if ($this->mollie_status != MOLLIE_STATUS_paid) {
+                    $class = 'warning';
+                    break;
+                }
             case 'Bankoverschrijving Af':
                 if (!isset($this->bon_id)) {
                     $class = 'danger';
