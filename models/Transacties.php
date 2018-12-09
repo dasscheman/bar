@@ -366,17 +366,6 @@ class Transacties extends BarActiveRecord
     {
         $class = 'info';
         switch ($this->getType()->one()->omschrijving) {
-            case 'Pin betaling':
-                if (!isset($this->bon_id)) {
-                    $class = 'danger';
-                    break;
-                }
-                $class = '';
-            case 'Declaratie':
-                if (!isset($this->bon_id)) {
-                    $class = 'danger';
-                    break;
-                }
             case 'Ideal':
                 if (!isset($this->mollie_status)) {
                     $class = 'danger';
@@ -386,11 +375,17 @@ class Transacties extends BarActiveRecord
                     $class = 'warning';
                     break;
                 }
+                $class = '';
+                break;
+            case 'Pin betaling':
+            case 'Declaratie':
             case 'Bankoverschrijving Af':
                 if (!isset($this->bon_id)) {
                     $class = 'danger';
                     break;
                 }
+                $class = '';
+                break;
             case 'Bankoverschrijving Bij':
                 $class = '';
                 break;
