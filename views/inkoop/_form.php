@@ -15,6 +15,11 @@ use app\models\Bonnen;
 ?>
 
 <div class="inkoop-form">
+    <div class="panel-heading">
+        <?= Html::encode($this->title) ?>
+    </div>
+    Hier kun je voorraad toevoegen.
+    <br><br>
     <?php
     $form = ActiveForm::begin([
         'enableClientValidation' => true,

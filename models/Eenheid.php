@@ -56,7 +56,7 @@ class Eenheid extends BarActiveRecord
     {
         return [
             'eenheid_id' => 'Eenheid ID',
-            'assortiment_id' => 'Assortiment ID',
+            'assortiment_id' => 'Assortiment naam',
             'name' => 'Name',
             'volume' => 'Volume (ml)',
             'created_at' => 'Created At',

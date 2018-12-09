@@ -11,6 +11,7 @@
 
  $this->beginContent('../views/_beheer1.php');
 
+ $this->title = 'Assortiment toevoegen';
  echo $this->render('_form', [
      'model' => $model,
  ]);

@@ -14,6 +14,12 @@ use app\models\Bonnen;
 ?>
 
 <div class="kosten-form">
+    <div class="panel-heading">
+        <?= Html::encode($this->title) ?>
+    </div>
+    Hier kun je kosten toevoegen.
+    Kosten is alles behalve de consumpties. Dus bankkosten, bar accessoires ect.
+    <br><br>
     <?php
     $form = ActiveForm::begin([
         'enableClientValidation' => true,

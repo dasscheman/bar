@@ -32,6 +32,7 @@ class Inkoop extends BarActiveRecord
     const TYPE_fust = 1;
     const TYPE_fles = 2;
     const TYPE_pet_fles = 3;
+    const TYPE_blik = 4;
 
     public $totaal_aantal;
     /**
@@ -66,7 +67,7 @@ class Inkoop extends BarActiveRecord
     {
         return [
             'inkoop_id' => 'Inkoop ID',
-            'assortiment_id' => 'Assortiment ID',
+            'assortiment_id' => 'Assortiment naam',
             'bon_id' => 'Bon ID',
             'datum' => 'Datum',
             'volume' => 'Volume per stuk (l)',
@@ -141,6 +142,7 @@ class Inkoop extends BarActiveRecord
             self::TYPE_fust => Yii::t('app', 'Fust'),
             self::TYPE_fles => Yii::t('app', 'Fles'),
             self::TYPE_pet_fles => Yii::t('app', 'Petfles'),
+            self::TYPE_blik => Yii::t('app', 'Blik'),
         ];
     }
     /**

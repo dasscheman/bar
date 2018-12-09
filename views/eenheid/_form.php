@@ -14,10 +14,14 @@ use yii\widgets\ActiveForm;
  * @var $this  yii\web\View
  * @var $model app\models\Eenheid
  */
-
 ?>
-
 <div class="eenheid-form">
+    <div class="panel-heading">
+        <?= Html::encode($this->title) ?>
+    </div>
+    Je kunt hier een eenheid toevoegen, dat gebruik je om het volume van een consumptie de definieren.
+    Je kunt hiermee ook voor dezelfde assortiment items verschillende glazen/volumes definieren.
+    <br><br>
     <?php
 
     $form = ActiveForm::begin([

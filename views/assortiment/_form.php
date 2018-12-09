@@ -16,6 +16,13 @@ use yii\helpers\Html;
 ?>
 
 <div class="assortiment-form">
+    <div class="panel-heading">
+        <?= Html::encode($this->title) ?>
+    </div>
+    Hier kun je assortiment toevoegen.
+    Als je een bestaande assortiment maar met een ander glas (inhoud) wilt toevoegen,
+    dan moet je een eenheid toevoegen.
+    <br><br>
     <?php
 
     $form = ActiveForm::begin([
