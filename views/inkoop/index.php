@@ -3,6 +3,7 @@
 use yii\helpers\Html;
 use kartik\grid\GridView;
 use yii\widgets\Pjax;
+use app\models\Assortiment;
 use app\models\Inkoop;
 
 /* @var $this yii\web\View */
@@ -24,12 +25,6 @@ $toolbar = false;
 <div class="panel-body">
     <?php
     echo $this->render('/_alert');
-    echo Html::a(
-        Yii::t('app', 'Voorraad toevoegen'),
-        [ 'create'],
-        [ 'class' => 'btn btn-success namen']
-    );
-    ?> <br> <br> <?php
     Pjax::begin();
     echo GridView::widget([
         'id' => 'kv-grid-inkoop',
@@ -42,6 +37,13 @@ $toolbar = false;
                 'format' => 'raw',
                 'value'=>function ($model) {
                     return Html::a($model->assortiment->name, ['assortiment/view', 'id' => $model->assortiment_id]);
+                },
+            ],
+            'assortiment' => [
+                'filter' => Assortiment::getAssortimentNameOptions(),
+                'attribute' => 'assortiment_id',
+                'value' => function ($model) {
+                    return $model->assortiment->name;
                 },
             ],
             'datum' => [
@@ -69,35 +71,7 @@ $toolbar = false;
                 'class' => 'yii\grid\ActionColumn',
                 'headerOptions' => ['style' => 'width:15%'],
                 'header'=>'Actions',
-                'template' => '{update} {view} {delete} {verbruikt} {afschrijven}',
-                'buttons' => [
-                    'verbruikt' => function ($url, $model) {
-                        return Html::a(
-                            '<span class="glyphicon glyphicon-shopping-cart"></span>',
-                            [
-                                'inkoop/verbruikt',
-                                'id' => $model->inkoop_id,
-                            ],
-                            [
-                                'title' => 'Noteer als verbruikt',
-                                'class'=>'btn btn-primary btn-xs',
-                            ]
-                        );
-                    },
-                    'afschrijven' => function ($url, $model) {
-                        return Html::a(
-                            '<span class="glyphicon glyphicon-exclamation-sign"></span>',
-                            [
-                                'inkoop/afschrijven',
-                                'id' => $model->inkoop_id,
-                            ],
-                            [
-                                'title' => 'Schrijf Voorraad af',
-                                'class'=>'btn btn-primary btn-xs',
-                            ]
-                        );
-                    },
-                ],
+                'template' => '{update} {view} {delete}',
             ],
         ],
 

@@ -19,6 +19,16 @@ use yii\helpers\ArrayHelper;
 ?>
 
 <div class="assortiment-form">
+    <div class="panel-heading">
+        <?= Html::encode($this->title) ?>
+    </div>
+    Hier kun je afschrijvingen toevoegen.
+    Type 'Afgeschreven' wordt meegerekend in de berekening van het rendement.
+    Type 'Over datum' wordt niet meegerekend in het rendement.
+    Als je een bedorven fust wilt invoeren, kun je een schatting geven van hoeveel
+    liter er nog in zat. De applicatie maakt een schatting van de prijs op basis
+    van de inkoop in de afgelopen 6 maanden.
+    <br><br>
     <?php
 
     $form = ActiveForm::begin([
@@ -58,9 +68,6 @@ use yii\helpers\ArrayHelper;
 
     echo $form->field($model, 'volume')->textInput();
     echo $form->field($model, 'aantal')->textInput();
-    echo $form->field($model, 'totaal_volume')->textInput();
-    echo $form->field($model, 'totaal_prijs')->textInput();
-
     echo Html::submitButton(Yii::t('rbac', 'Save'), ['class' => 'btn btn-success btn-block']);
 
     ActiveForm::end();?>

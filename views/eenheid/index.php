@@ -31,12 +31,6 @@ $pjax = false; //TRUE zorgt ervoor dat de columnen vertraagd verspringen, dat is
 <div class="panel-body">
     <?php
     echo $this->render('/_alert');
-    echo Html::a(
-        Yii::t('app', 'Eenheid toevoegen'),
-        [ 'create'],
-        [ 'class' => 'btn btn-success namen']
-    );
-    ?> <br> <br> <?php
     Pjax::begin();
     echo GridView::widget([
         'id' => 'kv-grid-assortiment',
@@ -47,7 +41,8 @@ $pjax = false; //TRUE zorgt ervoor dat de columnen vertraagd verspringen, dat is
             'name',
             'volume',
             'assortiment' => [
-                'attribute' => 'assortiment',
+                'filter' => Assortiment::getAssortimentNameOptions(),
+                'attribute' => 'assortiment_id',
                 'value' => function ($model) {
                     return $model->assortiment->name;
                 },

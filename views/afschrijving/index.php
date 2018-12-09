@@ -8,6 +8,7 @@ use kartik\grid\GridView;
 use yii\helpers\Html;
 use yii\widgets\Pjax;
 use app\models\Assortiment;
+use app\models\Afschrijving;
 
 /**
  * @var \yii\web\View $this
@@ -31,12 +32,6 @@ $pjax = false; //TRUE zorgt ervoor dat de columnen vertraagd verspringen, dat is
 <div class="panel-body">
     <?php
     echo $this->render('/_alert');
-    echo Html::a(
-        Yii::t('app', 'Assortiment toevoegen'),
-        [ 'create'],
-        [ 'class' => 'btn btn-success namen']
-    );
-    ?> <br> <br> <?php
     Pjax::begin();
     echo GridView::widget([
         'id' => 'kv-grid-assortiment',
@@ -51,7 +46,13 @@ $pjax = false; //TRUE zorgt ervoor dat de columnen vertraagd verspringen, dat is
             'aantal',
             'totaal_volume',
             'totaal_prijs',
-            'type',
+            'type' => [
+                'attribute' => 'type',
+                'filter'=> Afschrijving::getTypeOptions(),
+                'value' => function ($model) {
+                    return $model->getTypeText();
+                },
+            ],
             [
                 'class' => 'yii\grid\ActionColumn',
                 'header'=>'Actions',

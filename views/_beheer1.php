@@ -17,9 +17,6 @@ use yii\bootstrap\Nav;
  * @var string $content
  */
 
-//$this->title = Yii::t('user', 'Update user account');
-//$this->params['breadcrumbs'][] = ['label' => Yii::t('user', 'Users'), 'url' => ['index']];
-//$this->params['breadcrumbs'][] = $this->title;
 ?>
 
 <?= $this->render('/_alert', ['module' => Yii::$app->getModule('user')]) ?>
@@ -59,7 +56,42 @@ use yii\bootstrap\Nav;
                             'label' => 'Prijslijst',
                             'url' => ['/prijslijst/index']
                         ],
-
+                        [
+                            'label' => 'Aanpassingen',
+                            'options' => ['class' =>'nav-pills'],
+                            'items' => [
+                                '<li class="divider"></li>',
+                                '<li class="dropdown-header">Assortiment</li>',
+                                [
+                                    'label' => Yii::t('app', 'Assortiment toevoegen'),
+                                    'url' => ['/assortiment/create'],
+                                ],
+                                [
+                                    'label' => Yii::t('app', 'Eenheid toevoegen'),
+                                    'url' => ['/eenheid/create'],
+                                ],
+                                '<li class="divider"></li>',
+                                '<li class="dropdown-header">Voorraden</li>',
+                                [
+                                    'label' => Yii::t('app', 'Voorraad toevoegen'),
+                                    'url' => [ '/inkoop/create'],
+                                ],
+                                [
+                                    'label' => Yii::t('app', 'Afschrijving toevoegen'),
+                                    'url' => [ '/afschrijving/create'],
+                                ],
+                                '<li class="divider"></li>',
+                                '<li class="dropdown-header">Kosten</li>',
+                                [
+                                    'label' => Yii::t('app', 'Kosten Invoeren'),
+                                    'url' => [ '/kosten/create'],
+                                ],
+                                [
+                                    'label' => Yii::t('app', 'Prijslijst toevoegen'),
+                                    'url' => [ '/prijslijst/create'],
+                                ]
+                            ],
+                        ]
                     ],
                 ]) ?>
             </div>

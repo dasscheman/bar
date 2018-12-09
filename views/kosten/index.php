@@ -3,6 +3,7 @@
 use yii\helpers\Html;
 use kartik\grid\GridView;
 use yii\widgets\Pjax;
+use app\Models\Kosten;
 
 /* @var $this yii\web\View */
 /* @var $searchModel app\models\KostenSearch */
@@ -22,12 +23,6 @@ $toolbar = false;
 
 <div class="panel-body">
     <?php echo $this->render('/_alert');
-    echo Html::a(
-        Yii::t('app', 'Kosten toevoegen'),
-        [ 'create'],
-        [ 'class' => 'btn btn-success namen']
-    );
-    ?> <br> <br> <?php
     Pjax::begin();
     echo GridView::widget([
         'id' => 'kv-grid-kosten',
@@ -45,7 +40,14 @@ $toolbar = false;
             'omschrijving',
             'datum',
             'prijs',
-          [
+            'type' => [
+                'attribute' => 'type',
+                'filter'=> Kosten::getTypeOptions(),
+                'value' => function ($model) {
+                    return $model->getTypeText();
+                },
+            ],
+            [
                 'class' => 'yii\grid\ActionColumn',
                 'header'=>'Actions',
                 'headerOptions' => ['style' => 'width:15%'],
