@@ -46,7 +46,7 @@ class Mollie extends Transacties
         $rules = parent::rules();
         $rules[] = [['issuer', 'omschrijving', 'bedrag'], 'required', 'on' => 'betaling'];
         $rules[] = [['automatische_betaling', 'transacties_user_id'], 'safe'];
-        
+
         return $rules;
     }
 
@@ -75,7 +75,6 @@ class Mollie extends Transacties
 
     public function automatischOphogen()
     {
-        $mollie = new Mollie;
         $users = User::find()
             ->where('ISNULL(blocked_at)')
             ->andWhere('automatische_betaling = TRUE')
@@ -85,19 +84,21 @@ class Mollie extends Transacties
 
         echo 'volgende automatisch ophogen controleren:';
         foreach ($users as $user) {
+            $mollie = new Mollie;
             // Wanneer een user een pending transactie heeft, dan gaan we niet
             // een nieuwe transactie opstarten.
+            $username = $user->getProfile()->one()->voornaam . " " . $user->getProfile()->one()->achternaam;
             echo "\r\n";
-            echo '-->' . $user->getProfile()->one()->voornaam . " " . $user->getProfile()->one()->achternaam;
+            echo '-->' . $username;
             if ($user->getBalans() > $user->getProfile()->one()->limit_ophogen ) {
                 echo $user->getBalans();
                 echo $user->getProfile()->one()->limit_ophogen;
                 echo "--Balans is okey";
-                continue;                
+                continue;
             }
             if(!$mollie->checkUserMandates($user->mollie_customer_id)) {
                 echo "--Geen mandaat";
-                continue;                
+                continue;
             }
             if($mollie->pendingTransactionsExists($user->id)) {
                 echo "--Er loopt al een nog niet afgeronde incasso.";
@@ -105,7 +106,7 @@ class Mollie extends Transacties
             }
             echo "\r\n";
             $mollie->transacties_user_id = $user->id;
-            $mollie->omschrijving = 'Automatisch ophogen BisonBar met ' . number_format($user->mollie_bedrag, 2, ',', ' ') . ' Euro';
+            $mollie->omschrijving = 'Automatisch ophogen BisonBar voor ' . $username . ', met ' . number_format($user->mollie_bedrag, 2, ',', ' ') . ' Euro';
             $mollie->bedrag = $user->mollie_bedrag;
             $mollie->type_id = BetalingType::getIdealId();
             $mollie->status = self::STATUS_ingevoerd;
@@ -130,7 +131,7 @@ class Mollie extends Transacties
             } else {
                 $mollie->parameters['webhookUrl'] = "https://popupbar.biologenkantoor.nl/index.php?r=mollie/webhook";
             }
-            
+
             $payment = $mollie->createPayment();
 
             $message = Yii::$app->mailer->compose('mail_incasso_notificatie', [
@@ -144,7 +145,6 @@ class Mollie extends Transacties
                 $message->setCc($user->profile->public_email);
             }
             $message->send();
-            
             $count++;
         }
         return $count;
@@ -200,7 +200,7 @@ class Mollie extends Transacties
             $this->parameters['webhookUrl'] = "https://popupbar.biologenkantoor.nl/index.php?r=mollie/webhook";
         }
     }
-    
+
     public function createRecurringPayment()
     {
         if (!isset($this->transacties_user_id)) {
