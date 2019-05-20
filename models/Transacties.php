@@ -375,6 +375,7 @@ class Transacties extends BarActiveRecord
             return $class;
         }
         switch ($this->getType()->one()->omschrijving) {
+            case 'Uitbetaling Mollie';
             case 'Izettle Pin betaling':
                 if(!$this->getParentTransacties()->exists() &&
                    !$this->getChildTransacties()->exists()) {

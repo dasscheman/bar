@@ -11,8 +11,8 @@
  */
 
 $this->beginContent('../views/_beheer1.php');
-        echo $this->render('index', [
-            'searchModel' => $searchModel,
-            'dataProvider' => $dataProvider,
-        ]);
+    echo $this->render('index', [
+        'searchModel' => $searchModel,
+        'dataProvider' => $dataProvider,
+    ]);
 $this->endContent();

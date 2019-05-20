@@ -7,6 +7,7 @@ use dektrium\user\filters\AccessRule;
 use app\models\BetalingType;
 use app\models\Bonnen;
 use app\models\RelatedTransacties;
+use app\models\Turven;
 use app\models\Transacties;
 use app\models\TransactiesSearch;
 use yii\web\Controller;

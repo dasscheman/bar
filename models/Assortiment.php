@@ -400,7 +400,8 @@ class Assortiment extends BarActiveRecord
         }
 
         return Turven::find()
-            ->where(['in', 'eenheid_id', $eenheid_ids]);
+            ->where(['in', 'eenheid_id', $eenheid_ids])
+            ->andWhere('ISNULL(deleted_at)');
     }
 
     public function getMaandTurven($date)
@@ -414,8 +415,6 @@ class Assortiment extends BarActiveRecord
     {
         return $this->getTurven()
             ->andWhere('date_format(datum, "%Y-%m") <= date_format(' . $date . ', "%Y-%m")');
-            // ->andWhere('month(datum) <= month(' . $date . ')')
-            // ->andWhere('year(datum) <= year(' . $date . ')');
     }
 
     public function getSumMaandInkomen($date)

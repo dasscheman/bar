@@ -86,22 +86,6 @@ $pjax = false; //TRUE zorgt ervoor dat de columnen vertraagd verspringen, dat is
                     '1' => 'Ja'
                 ],
             ],
-            'prijs' => [
-                'attribute' => 'prijs',
-                'value' => function ($model) {
-                    if ($model->getEenheid()->one() !== null&&
-                        $model->getEenheid()->one()->getCurrentPrijslijst()->one()->prijs !== null) {
-                        return number_format($model->getEenheid()->one()->getCurrentPrijslijst()->one()->prijs, 2, ',', ' ') . ' €';
-                    }
-                    return 'geen prijs';
-                }
-            ],
-            'totaal' => [
-                'attribute' => 'totaal',
-                'value' => function ($model) {
-                    return $model->getTurven()->sum('aantal');
-                }
-            ],
             'opbrengst' => [
                 'attribute' => 'opbrengst',
                 'value' => function ($model) {

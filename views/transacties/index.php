@@ -38,7 +38,7 @@ $toolbar = false;
         'dataProvider' => $dataProvider,
         'filterModel'  => $searchModel,
         'rowOptions'=>function ($model) {
-                return ['class' => $model->getRowClass()];
+            return ['class' => $model->getRowClass()];
         },
         'layout'       => "{items}\n{pager}",
         'columns' => [
