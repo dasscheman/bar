@@ -10,36 +10,13 @@ use yii\widgets\DetailView;
 /* @var $this yii\web\View */
 /* @var $model app\models\Assortiment */
 
-$this->beginContent('../views/_beheer2.php');
 ?>
 
 <div class="panel-body">
     <?php
     echo $this->render('/_alert'); ?>
-    <div class="view">
-        <?php
-        echo Html::a(
-            Yii::t('app', 'Bewerken'),
-            [ 'update', 'id' => $model->transacties_id ],
-            [ 'class' => 'btn btn-success' ]
-        );
-        echo Html::a(
-            Yii::t('app', 'Delete'),
-            [ 'delete', 'id' => $model->transacties_id ],
-            [ 'class' => 'btn btn-danger', 'data-method'=>'post' ]
-        );
-
-        if (!empty($model->bon_id)) {
-            echo Html::a(
-                Yii::t('app', 'Download bon'),
-                ['/bonnen/download', 'id' => $model->bon_id],
-                [
-                    'title' => 'Download de bon',
-                    'class'=>'btn btn-primary',
-                    'target'=>'_blank',
-                ]
-            );
-        }
+    <div class="col-sm-6 col-md-6 col-lg-6" >
+    <?php
         echo DetailView::widget([
             'model' => $model,
             'attributes' => [
@@ -57,13 +34,6 @@ $this->beginContent('../views/_beheer2.php');
                         return $model->type->omschrijving;
                     },
                 ],
-                [
-                    'attribute'=>'bon_id',
-                    'format' => 'raw',
-                    'value'=>function ($model) {
-                        return Html::a($model->bon_id, ['bonnen/view', 'id' => $model->bon_id]);
-                    },
-                ],
                 'status' => [
                     'attribute' => 'status',
                     'value' => function ($model) {
@@ -78,23 +48,6 @@ $this->beginContent('../views/_beheer2.php');
                         }
                     },
                 ],
-                'all_related_transactions' => [
-                    'attribute' => 'all_related_transactions',
-                    'format'=>'raw',
-                    'value' => function ($model) {
-                        $ids = '';
-                        $count = 0;
-                        foreach ($model->all_related_transactions as $related_transaction) {
-                            $count++;
-                            $ids .= Html::a($related_transaction, ['transacties/view', 'id' => $related_transaction]);
-                            if ($count < count($model->all_related_transactions)) {
-                                $ids .= ', ';
-                            }
-                        }
-                        return $ids;
-                    },
-                ],
-
                 'created_at',
                 'created_by' => [
                     'attribute' => 'created_by',
@@ -111,9 +64,144 @@ $this->beginContent('../views/_beheer2.php');
                         return empty($model->getupdatedBy()->one())? '':$model->getupdatedBy()->one()->username;
                     },
                 ],
+                'deleted_at',
             ],
         ]) ?>
     </div>
+    <div class="col-sm-6 col-md-6 col-lg-6" >
+      <?php
+      echo DetailView::widget([
+          'model' => $model,
+          'attributes' => [
+              [
+                  'attribute'=>'bon_id',
+                  'format' => 'html',
+                  'visible' => $model->isBonRequired(),
+                  'value'=>function ($model) {
+                      if($model->bon_id != null) {
+                          return Html::a($model->bon_id, ['bonnen/view', 'id' => $model->bon_id]);
+                      }
+                      $ids = '';
+                      $count = 0;
+                      if($model->relatedBonnen() != null) {
+                          foreach ($model->relatedBonnen() as $relatedBon) {
+                              $count++;
+                              $ids .= Html::a($relatedBon, ['bonnen/view', 'id' => $relatedBon]);
+                              if ($count < count($model->relatedBonnen())) {
+                                  $ids .= ', ';
+                              }
+                          }
+                          return $ids;
+                      }
+                      if($model->bon_id == null && $model->isBonRequired()) {
+                          return '<div class="warning"> Bon mist en is verplicht </div>';
+                      }
+                      return 'nvt';
+                  },
+              ],
+              [
+                  'attribute' => 'inkoop',
+                  'format' => 'html',
+                  'visible' => $model->isInkoopRequired(),
+                  'value' => function ($model) {
+                      $ids = '';
+                      $count = 0;
+                      if($model->getBon()->exists()) {
+                          foreach ($model->bon->getInkoops()->all() as $related_inkoop) {
+                              $count++;
+                              $ids .= Html::a($related_inkoop->inkoop_id, ['inkopen/view', 'id' => $related_inkoop->inkoop_id]);
+                              if ($count < $model->bon->getInkoops()->count()) {
+                                  $ids .= ', ';
+                              }
+                          }
+                      }
+
+                      if ($ids !== '') {
+                          return $ids;
+                      }
+                      if (!$model->getBon()->exists() && $model->isInkoopRequired()) {
+                          return '<div class="warning">Voeg eerst een bon toe </div>';
+                      }
+                      if (!$model->bon->getInkoops()->exists() && $model->isInkoopRequired()) {
+                          return '<div class="warning"> De bon heeft geen link met inkopen of met kosten en minimaal 1 van de 2 is verplicht </div>';
+                      }
+                      return 'nvt';
+                  },
+              ],
+              'kosten_id' => [
+                  'attribute' => 'Kosten',
+                  'format'=>'html',
+                  'visible' => $model->isKostenRequired(),
+                  'value' => function ($model) {
+                      if (!$model->isKostenRequired()) {
+                          return 'nvt';
+                      }
+                      $ids = '';
+                      $count = 0;
+                      if($model->getBon()->exists() ) {
+                          foreach ($model->bon->getKostens()->all() as $related_kost) {
+                              $count++;
+                              $ids .= Html::a($related_kost->kosten_id, ['kosten/view', 'id' => $related_kost->kosten_id]);
+                              if ($count < $model->bon->getKostens()->count()) {
+                                  $ids .= ', ';
+                              }
+                          }
+                      }
+
+                      if($ids !== '') {
+                          return $ids;
+                      }
+
+                      if (!$model->getBon()->exists() && $model->isKostenRequired()) {
+                          return '<div class="warning">Voeg eerst een bon toe </div>';
+                      }
+                      if (!$model->bon->getKostens()->exists() && $model->isKostenRequired()) {
+                          return '<div class="warning"> De bon heeft geen link met inkopen of met kosten en minimaal 1 van de 2 is verplicht </div>';
+                      }
+                      return 'nvt';
+                  },
+              ],
+              'all_related_transactions' => [
+                  'attribute' => 'all_related_transactions',
+                  'format'=>'raw',
+                  'visible' => $model->isTransactionRequired(),
+                  'value' => function ($model) {
+                      $ids = '';
+                      $count = 0;
+                      $model->setAllRelatedTransactions();
+                      if($model->all_related_transactions != null) {
+                          foreach ($model->all_related_transactions as $related_transaction) {
+                              $count++;
+                              $ids .= Html::a($related_transaction, ['transacties/view', 'id' => $related_transaction]);
+                              if ($count < count($model->all_related_transactions)) {
+                                  $ids .= ', ';
+                              }
+                          }
+                          return $ids;
+                      }
+
+                      if($model->all_related_transactions == null && $model->isTransactionRequired()) {
+                          return '<div class="warning"> Er is geen link met een transactie en dat is verplicht </div>';
+                      }
+                      return 'nvt';
+                  },
+              ]
+          ],
+      ]);
+
+      if (!empty($model->bon_id)) {
+        echo Html::a(
+          Yii::t('app', 'Download bon'),
+          ['/bonnen/download', 'id' => $model->bon_id],
+          [
+            'title' => 'Download de bon',
+            'class'=>'btn btn-primary',
+            'target'=>'_blank',
+          ]
+        );
+      } ?>
+
+    </div>
 </div>
 <?php
-$this->endContent();
+// $this->endContent();

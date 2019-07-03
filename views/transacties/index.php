@@ -42,6 +42,22 @@ $toolbar = false;
         },
         'layout'       => "{items}\n{pager}",
         'columns' => [
+            [
+                'header' => Yii::t('app', 'View details'),
+                'class' => 'kartik\grid\ExpandRowColumn',
+                'width' => '50px',
+                'value' => function ($model, $key, $index, $column) {
+                    return GridView::ROW_COLLAPSED;
+                },
+                'detail' => function ($model, $key, $index, $column) {
+                    return Yii::$app->controller->renderPartial(
+                        '/transacties/view', ['model' => $model]);
+                },
+                'headerOptions' => ['class' => 'kartik-sheet-style'],
+                'expandOneOnly' => true,
+                'expandTitle' => Yii::t('app', 'Open detail view'),
+                'collapseTitle' => Yii::t('app', 'Close detail view'),
+            ],
             'transacties_id' => [
                 'attribute' => 'transacties_id',
                 'headerOptions' => ['style' => 'width:4%']
@@ -86,27 +102,6 @@ $toolbar = false;
                 },
             ],
             [
-                'attribute'=>'all_related_transactions',
-                'headerOptions' => ['style' => 'width:2%'],
-                'format' => 'raw',
-                'value'=>function ($model) {
-                    $ids = '';
-                    $model->setAllRelatedTransactions();
-                    if ($model->all_related_transactions === null) {
-                        return;
-                    }
-                    $count = 0;
-                    foreach ($model->all_related_transactions as $related_transaction) {
-                        $count++;
-                        $ids .= Html::a($related_transaction, ['transacties/view', 'id' => $related_transaction]);
-                        if ($count < count($model->all_related_transactions)) {
-                            $ids .= ', ';
-                        }
-                    }
-                    return $ids;
-                },
-            ],
-            [
                 'attribute'=>'bon_id',
                 'format' => 'raw',
                 'value'=>function ($model) {
@@ -120,11 +115,10 @@ $toolbar = false;
                     return empty($model->factuur_id)?'':Html::a('Factuur ' . $model->factuur_id, ['factuur/view', 'id' => $model->factuur_id]);
                 },
              ],
-            'deleted_at',
             [
                 'class' => 'yii\grid\ActionColumn',
                 'header'=>'Actions',
-                'template' => '{update} {view} {delete}',
+                'template' => '{update} {delete}',
                 'headerOptions' => ['style' => 'width:8%'],
                 'visibleButtons' => [
                     'delete' => function ($model, $key, $index) {

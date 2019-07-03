@@ -32,11 +32,11 @@ use yii\bootstrap\Nav;
                     ],
                     'items' => [
                         [
-                            'label' => 'Bankrekening',
+                            'label' => 'Bankrekening transacties',
                             'url' => ['/transacties/bank']
                         ],
                         [
-                            'label' => 'Transacties',
+                            'label' => 'Tegoeden',
                             'url' => ['/transacties/index']
                         ],
                         [

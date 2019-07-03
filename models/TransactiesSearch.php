@@ -47,7 +47,7 @@ class TransactiesSearch extends Transacties
         $betalings_type_bank = BetalingType::getBankBetalingsType();
 
         $query = Transacties::find()
-            ->where(['not in', 'type_id', $betalings_type_bank]);
+            ->where(['IS NOT', 'transacties_user_id', null]);
 
         // add conditions that should always apply here
         $query->joinWith(['transactiesUser.profile']);

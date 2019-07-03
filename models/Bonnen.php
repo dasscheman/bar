@@ -68,7 +68,7 @@ class Bonnen extends BarActiveRecord
             [['datum', 'created_at', 'updated_at'], 'safe'],
             [['bedrag'], 'number'],
             [['omschrijving', 'image'], 'string', 'max' => 255],
-            [['image_temp'],'file', 'extensions'=>'jpg, gif, png, jpeg', 'maxSize'=>1024 * 1024 * 2],
+            [['image_temp'],'file', 'extensions'=>'jpg, gif, png, jpeg, pdf', 'maxSize'=>1024 * 1024 * 2],
             [['created_by'], 'exist', 'skipOnError' => true, 'targetClass' => User::className(), 'targetAttribute' => ['created_by' => 'id']],
             [['updated_by'], 'exist', 'skipOnError' => true, 'targetClass' => User::className(), 'targetAttribute' => ['updated_by' => 'id']],
             [['inkoper_user_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::className(), 'targetAttribute' => ['inkoper_user_id' => 'id']],

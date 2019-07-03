@@ -152,22 +152,6 @@ class Transacties extends BarActiveRecord
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getInkoop()
-    {
-        return $this->hasMany(Inkoop::className(), ['transacties_id' => 'transacties_id']);
-    }
-
-    /**
-     * @return \yii\db\ActiveQuery
-     */
-    public function getKosten()
-    {
-        return $this->hasMany(Kosten::className(), ['transacties_id' => 'transacties_id']);
-    }
-
-    /**
-     * @return \yii\db\ActiveQuery
-     */
     public function getFactuur()
     {
         return $this->hasOne(Factuur::className(), ['factuur_id' => 'factuur_id']);
@@ -289,7 +273,7 @@ class Transacties extends BarActiveRecord
     * Retrieves a list of users
     * @return array an of available relatedtransactions.'.
     */
-    public function setAllRelatedTransactions()
+    public function getAllRelatedTransactionsModels()
     {
         $queryParentTransactions = RelatedTransacties::find()
             ->select('child_transacties_id')
@@ -301,13 +285,32 @@ class Transacties extends BarActiveRecord
             ->where('child_transacties_id=:transacties_id')
             ->addParams([':transacties_id' => $this->transacties_id]);
 
-        $result = Transacties::find()
-            ->select('transacties_id')
+        $results = Transacties::find()
+            ->select('transacties_id, bon_id')
             ->where(['in', 'transacties.transacties_id', $queryParentTransactions])
             ->orwhere(['in', 'transacties.transacties_id', $queryChildTransactions])
             ->all();
 
+        return $results;
+    }
+
+    /**
+    * Retrieves a list of users
+    * @return array an of available relatedtransactions.'.
+    */
+    public function setAllRelatedTransactions()
+    {
+        $result = $this->getAllRelatedTransactionsModels();
         $this->all_related_transactions = ArrayHelper::getColumn($result, 'transacties_id');
+    }
+
+    public function relatedBonnen() {
+        $bonnenIds = [];
+        $models = $this->getAllRelatedTransactionsModels();
+        foreach ($models as $key => $value) {
+              $bonnenIds[] = $value->bon_id;
+        }
+        return $bonnenIds;
     }
 
     /**
@@ -371,43 +374,121 @@ class Transacties extends BarActiveRecord
     {
         $class = 'info';
         if (isset($this->deleted_at)) {
-            $class = 'deleted';
-            return $class;
+            return 'deleted';
         }
+
+        if ($this->isBonRequired()) {
+            if (!isset($this->bon_id)) {
+                return 'danger';
+            }
+        }
+
+        if ($this->isInkoopRequired()) {
+            if ($this->bon->getInkoops()->count() == 0) {
+                return 'danger';
+            }
+        }
+
+        if ($this->isKostenRequired()) {
+            if ($this->bon->getKostens()->count() == 0) {
+                return 'danger';
+            }
+        }
+
+        if ($this->isTransactionRequired()) {
+            if(!$this->getParentTransacties()->exists() &&
+              !$this->getChildTransacties()->exists()) {
+                return 'danger';
+            }
+        }
+
         switch ($this->getType()->one()->omschrijving) {
-            case 'Uitbetaling Mollie';
-            case 'Izettle Pin betaling':
-                if(!$this->getParentTransacties()->exists() &&
-                   !$this->getChildTransacties()->exists()) {
-                    $class = 'danger';
-                    break;
-                }
-                $class = '';
-                break;
             case 'Ideal':
                 if (!isset($this->mollie_status)) {
-                    $class = 'danger';
-                    break;
+                    return 'danger';
                 }
                 if ($this->mollie_status != Transacties::MOLLIE_STATUS_paid) {
-                    $class = 'warning';
-                    break;
+                    return 'warning';
                 }
-                $class = '';
-                break;
+        }
+        return;
+    }
+
+    public function isBonRequired(){
+        switch ($this->getType()->one()->omschrijving) {
             case 'Pin betaling':
             case 'Declaratie':
             case 'Bankoverschrijving Af':
-                if (!isset($this->bon_id)) {
-                    $class = 'danger';
-                    break;
-                }
-                $class = '';
-                break;
-            case 'Bankoverschrijving Bij':
-                $class = '';
-                break;
+            case 'Uitbetaling Mollie':
+                return true;
         }
-        return $class;
+
+        return false;
+    }
+
+    public function isInkoopRequired() {
+        $type = $this->getType()->one()->omschrijving;
+        if($type == 'Pin betaling' &&
+          $this->getBon()->exists() &&
+          $this->bon->getKostens()->count() == 0) {
+            // bij pin betalingen moeten of kosten of inkopen gelinkt zijn
+            return true;
+        }
+
+        if($type == 'Declaratie' &&
+          $this->getBon()->exists() &&
+          $this->bon->getKostens()->count() == 0) {
+            // bij pin betalingen moeten of kosten of inkopen gelinkt zijn
+            return true;
+        }
+
+        if($type == 'Bankoverschrijving Af' &&
+          $this->getBon()->exists() &&
+          $this->bon->getKostens()->count() == 0) {
+            // bij pin betalingen moeten of kosten of inkopen gelinkt zijn
+            return true;
+        }
+
+        return false;
+    }
+
+    public function isKostenRequired() {
+        $type = $this->getType()->one()->omschrijving;
+        if($type == 'Pin betaling' &&
+          $this->getBon()->exists() &&
+          $this->bon->getInkoops()->count() == 0) {
+            // bij pin betalingen moeten of kosten of inkopen gelinkt zijn
+            return true;
+        }
+
+        if($type == 'Declaratie' &&
+          $this->getBon()->exists() &&
+          $this->bon->getInkoops()->count() == 0) {
+            // bij pin betalingen moeten of kosten of inkopen gelinkt zijn
+            return true;
+        }
+
+        if($type == 'Bankoverschrijving Af' &&
+          $this->getBon()->exists() &&
+          $this->bon->getInkoops()->count() == 0) {
+            // bij pin betalingen moeten of kosten of inkopen gelinkt zijn
+            return true;
+        }
+
+        if ($type == 'Uitbetaling Mollie') {
+            return true;
+        }
+        return false;
+    }
+
+    public function isTransactionRequired(){
+        switch ($this->getType()->one()->omschrijving) {
+            case 'Ideal':
+            case 'Uitbetaling Mollie';
+            case 'Izettle Pin betaling':
+            case 'Uitbetaling Izettle':
+                  return true;
+        }
+        return false;
     }
 }
