@@ -62,7 +62,7 @@ use app\models\User;
             'allowClear' => true
         ],
     ]);
-    echo $form->field($modelBonnen, 'image_temp')->fileInput();
+    echo $form->field($modelBonnen, 'image_temp', ['enableClientValidation' => false])->fileInput();
     echo Html::encode('Huidige bon: ' . $modelBonnen->image);
     echo $form->field($modelBonnen, 'soort')->widget(Select2::className(), [
         'data' => $modelBonnen->getSoortOptions(),

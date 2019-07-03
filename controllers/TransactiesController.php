@@ -172,8 +172,11 @@ class TransactiesController extends Controller
                     $model->type_id = BetalingType::getMollieKostenId();
                     break;
             }
-
-            if($model->transacties_user_id !== null) {
+            if ($model->omschrijving == null) {
+                $model->omschrijving = BetalingType::getOmschrijving($model->type_id) . ' ' .
+                $model->bedrag . ' ' . $model->datum;
+            }
+            if ($model->transacties_user_id !== null) {
                 $model->omschrijving = BetalingType::getOmschrijving($model->type_id) . ' ' .
                 $model->getTransactiesUser()->one()->getProfile()->one()->voornaam . ' ' .
                 $model->getTransactiesUser()->one()->getProfile()->one()->achternaam;
@@ -181,9 +184,10 @@ class TransactiesController extends Controller
 
             if ($model->save()) {
                 $modelBon = new Bonnen();
-
-
                 if ($modelBon->load(Yii::$app->request->post())) {
+                    if ($modelBon->soort == null) {
+                        $modelBon->soort = Bonnen::SOORT_overige;
+                    }
 
                     // get the uploaded file instance. for multiple file uploads
                     // the following data will return an array

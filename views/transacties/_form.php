@@ -100,14 +100,17 @@ use app\models\Transacties;
             ],
         ]);
     }
-    if(Yii::$app->request->get('type') == null || Yii::$app->request->get('type') == 'pin') {
+    if(Yii::$app->request->get('type') == null ||
+        in_array(Yii::$app->request->get('type'), ['pin', 'mollie_uitbetaling'])) {
         echo $form->field($modelTransacties, 'omschrijving')->textInput();
     }
     if (Yii::$app->request->get('type') == null ||
         in_array(Yii::$app->request->get('type'), ['pin', 'declaratie_invoer', 'izettle_uitbetaling', 'mollie_uitbetaling', 'ing_kosten'])) {
-        echo $form->field($modelBonnen, 'image_temp')->fileInput();
+        echo $form->field($modelBonnen, 'image_temp', ['enableClientValidation' => false])->fileInput();
         echo Html::encode('Huidige bon: ' . $modelBonnen->image);
-
+    }
+    if (Yii::$app->request->get('type') == null ||
+        in_array(Yii::$app->request->get('type'), ['pin', 'declaratie_invoer', 'ing_kosten'])) {
         echo $form->field($modelBonnen, 'soort')->widget(Select2::className(), [
             'data' => $modelBonnen->getSoortOptions(),
             'options' => [
