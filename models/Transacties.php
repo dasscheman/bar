@@ -68,7 +68,8 @@ class Transacties extends BarActiveRecord
             [['transacties_user_id'], 'required', 'when' => function($model) {
                 if( BetalingType::getIzettleUitbetalingId() == $model->type_id ||
                     BetalingType::getPinId() == $model->type_id ||
-                    BetalingType::getMollieUitbetalingId() == $model->type_id) {
+                    BetalingType::getMollieUitbetalingId() == $model->type_id ||
+                    BetalingType::getIngKostenId() == $model->type_id) {
                     return false;
                 }
                 return true;
