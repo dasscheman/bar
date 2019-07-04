@@ -428,23 +428,23 @@ class Transacties extends BarActiveRecord
 
     public function isInkoopRequired() {
         $type = $this->getType()->one()->omschrijving;
-        if($type == 'Pin betaling' &&
+        if ($type == 'Pin betaling' &&
           $this->getBon()->exists() &&
-          $this->bon->getKostens()->count() == 0) {
+          !$this->bon->getKostens()->exists()) {
             // bij pin betalingen moeten of kosten of inkopen gelinkt zijn
             return true;
         }
 
         if($type == 'Declaratie' &&
           $this->getBon()->exists() &&
-          $this->bon->getKostens()->count() == 0) {
+          !$this->bon->getKostens()->exists()) {
             // bij pin betalingen moeten of kosten of inkopen gelinkt zijn
             return true;
         }
 
-        if($type == 'Bankoverschrijving Af' &&
+        if ($type == 'Bankoverschrijving Af' &&
           $this->getBon()->exists() &&
-          $this->bon->getKostens()->count() == 0) {
+          !$this->bon->getKostens()->exists()) {
             // bij pin betalingen moeten of kosten of inkopen gelinkt zijn
             return true;
         }
@@ -454,23 +454,23 @@ class Transacties extends BarActiveRecord
 
     public function isKostenRequired() {
         $type = $this->getType()->one()->omschrijving;
-        if($type == 'Pin betaling' &&
+        if ($type == 'Pin betaling' &&
           $this->getBon()->exists() &&
-          $this->bon->getInkoops()->count() == 0) {
+          ! $this->bon->getInkoops()->exists()) {
             // bij pin betalingen moeten of kosten of inkopen gelinkt zijn
             return true;
         }
 
-        if($type == 'Declaratie' &&
+        if ($type == 'Declaratie' &&
           $this->getBon()->exists() &&
-          $this->bon->getInkoops()->count() == 0) {
+          !$this->bon->getInkoops()->exists()) {
             // bij pin betalingen moeten of kosten of inkopen gelinkt zijn
             return true;
         }
 
-        if($type == 'Bankoverschrijving Af' &&
+        if ($type == 'Bankoverschrijving Af' &&
           $this->getBon()->exists() &&
-          $this->bon->getInkoops()->count() == 0) {
+          !$this->bon->getInkoops()->exists()) {
             // bij pin betalingen moeten of kosten of inkopen gelinkt zijn
             return true;
         }

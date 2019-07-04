@@ -102,8 +102,12 @@ use yii\widgets\DetailView;
               [
                   'attribute' => 'inkoop',
                   'format' => 'html',
-                  'visible' => $model->isInkoopRequired(),
+                  'visible' => ($model->isInkoopRequired() || (isset($model->bon) && $model->bon->getInkoops()->exists())),
+
                   'value' => function ($model) {
+                      if (!$model->getBon()->exists()) {
+                          return 'nvt';
+                      }
                       $ids = '';
                       $count = 0;
                       if($model->getBon()->exists()) {
@@ -131,9 +135,9 @@ use yii\widgets\DetailView;
               'kosten_id' => [
                   'attribute' => 'Kosten',
                   'format'=>'html',
-                  'visible' => $model->isKostenRequired(),
+                  'visible' => ($model->isKostenRequired() || (isset($model->bon) && $model->bon->getKostens()->exists())),
                   'value' => function ($model) {
-                      if (!$model->isKostenRequired()) {
+                      if (!$model->getBon()->exists()) {
                           return 'nvt';
                       }
                       $ids = '';
