@@ -18,6 +18,13 @@ Een belangrijke factor in de bepaling van de prijs is hoe netjes er wordt geturf
 Om iedereen daar inzicht in te geven en om elkaar scherp te houden zal vanaf nu
 ook rendement data toegvoegd worden aan de mail.
 Het rendement is het % dat ingekocht is, wat ook daadwerkelijk geturfd is.
+
+<b>
+	<i>
+		Door een bug in de berekingen van het rendement waren de cijfers niet correct.
+		De bereking zou nu beter moeten gaan, maar ik hou nog een kleine slag om de arm.
+	</i>
+</b>
 <br />
 <br />
 <table>
