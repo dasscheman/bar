@@ -110,9 +110,9 @@ class TurvenController extends Controller
                 foreach ($count as $prijslijst_id => $aantal) {
 
                     if ($i === 0) {
-                        $message .= $aantal . ' ' . Prijslijst::findOne($prijslijst_id)->getEenheid()->name;
+                        $message .= $aantal . ' ' . Prijslijst::findOne($prijslijst_id)->eenheid->name;
                     } else {
-                        $message .= ', ' . $aantal . ' ' . Prijslijst::findOne($prijslijst_id)->getEenheid()->name;
+                        $message .= ', ' . $aantal . ' ' . Prijslijst::findOne($prijslijst_id)->eenheid->name;
                     }
                     $i++;
                 }
