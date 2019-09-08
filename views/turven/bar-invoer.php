@@ -22,8 +22,8 @@ use app\models\User;
                 <?php
                 echo $this->render('/_alert');
                 foreach ($prijslijstDataProvider->getModels() as $item) {
-                    if (isset($count[$item->eenheid_id])) {
-                        $labelName = $item->getEenheid()->one()->name . ' <span class="bold-red">' . $count[$item->eenheid_id] . '</span>';
+                    if (isset($count[$item->prijslijst_id])) {
+                        $labelName = $item->getEenheid()->one()->name . ' <span class="bold-red">' . $count[$item->prijslijst_id] . '</span>';
                     } else {
                         $labelName = $item->getEenheid()->one()->name;
                     }
