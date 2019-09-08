@@ -208,28 +208,28 @@ class Turven extends BarActiveRecord
         return $turven->count();
     }
 
-    public function saveBarInvoer($user_id, $invoer_items)
+    public function saveBarInvoer($user_id, $prijslijst_ids)
     {
         Yii::$app->cache->flush();
         $date = Yii::$app->setupdatetime->storeFormat(time(), 'datetime');
         $dbTransaction = Yii::$app->db->beginTransaction();
         try {
-            foreach ($invoer_items as $eenheid_id => $count) {
+            foreach ($prijslijst_ids as $prijslijst_id => $count) {
                 $model = new Turven();
-                $model->eenheid_id = $eenheid_id;
+                $model->prijslijst_id = $prijslijst_id;
                 $model->aantal = $count;
                 $model->datum = $date;
                 $model->consumer_user_id = $user_id;
                 $model->status = TURVEN::STATUS_gecontroleerd;
                 $model->type = TURVEN::TYPE_losse_verkoop;
 
-                $eenheid = Eenheid::findOne($eenheid_id);
-                if (!$eenheid) {
-                    Yii::$app->session->setFlash('warning', Yii::t('app', 'Er is geen geldige eenheid voor ' . $eenheid_id));
+                $prijslijst = Prijslijst::findOne($prijslijst_id);
+                if ($prijslijst == null) {
+                    Yii::$app->session->setFlash('warning', Yii::t('app', 'Er is geen geldige prijslijst voor ' . $prijslijst_id));
                     return false;
                 }
-                $prijslijst = $eenheid->getCurrentPrijslijst()->one();
-                $model->prijslijst_id = $prijslijst->prijslijst_id;
+
+                $model->eenheid_id = $prijslijst->eenheid_id;
                 $model->totaal_prijs = $count * $prijslijst->prijs;
 
                 if (!$model->save()) {
@@ -248,7 +248,7 @@ class Turven extends BarActiveRecord
         return true ;
     }
 
-    public function saveRondje($users, $invoer_item)
+    public function saveRondje($users, $prijslijst_id)
     {
         Yii::$app->cache->flush();
         $count = 1;
@@ -257,21 +257,20 @@ class Turven extends BarActiveRecord
         try {
             foreach ($users as $user) {
                 $model = new Turven();
-                $model->eenheid_id = $invoer_item;
+                $model->prijslijst_id = $prijslijst_id;
                 $model->aantal = $count;
                 $model->datum = $date;
                 $model->consumer_user_id = $user;
                 $model->status = TURVEN::STATUS_gecontroleerd;
                 $model->type = TURVEN::TYPE_rondje;
 
-                $eenheid = Eenheid::findOne($invoer_item);
-                if (!$eenheid) {
-                    Yii::$app->session->setFlash('warning', Yii::t('app', 'Er is geen geldige eenheid voor ' . $eenheid_id));
+                $prijslijst = Prijslijst::findOne($prijslijst_id);
+                if ($prijslijst === null) {
+                    Yii::$app->session->setFlash('warning', Yii::t('app', 'Er is geen geldige prijslijst voor ' . $prijslijst_id));
                     return false;
                 }
 
-                $prijslijst = $eenheid->getCurrentPrijslijst()->one();
-                $model->prijslijst_id = $prijslijst->prijslijst_id;
+                $model->eenheid_id = $prijslijst->eenheid_id;
                 $model->totaal_prijs = $count * $prijslijst->prijs;
 
                 if (!$model->save()) {

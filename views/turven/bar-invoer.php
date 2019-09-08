@@ -31,7 +31,7 @@ use app\models\User;
                         $labelName,
                         [
                             'barinvoer',
-                            'prijslijst_id' => $item->eenheid_id,
+                            'prijslijst_id' => $item->prijslijst_id,
                             'count' => $count,
                             'user_id' => $user_id,
                             'actie' => 'toevoegen',
