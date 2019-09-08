@@ -107,12 +107,12 @@ class TurvenController extends Controller
                 Turven::saveBarInvoer($user_id, $count)) {
                 $message = 'Volgende turven zijn toegevoegd bij ' . User::getUserDisplayName($user_id) . ': ';
                 $i = 0;
-                foreach ($count as $eenheid_id => $aantal) {
+                foreach ($count as $prijslijst_id => $aantal) {
 
                     if ($i === 0) {
-                        $message .= $aantal . ' ' . Eenheid::findOne($eenheid_id)->name;
+                        $message .= $aantal . ' ' . Prijslijst::findOne($prijslijst_id)->getEenheid()->name;
                     } else {
-                        $message .= ', ' . $aantal . ' ' . Eenheid::findOne($eenheid_id)->name;
+                        $message .= ', ' . $aantal . ' ' . Prijslijst::findOne($prijslijst_id)->getEenheid()->name;
                     }
                     $i++;
                 }
