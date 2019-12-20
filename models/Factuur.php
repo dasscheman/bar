@@ -244,7 +244,7 @@ class Factuur extends BarActiveRecord
             'defaultFont' => 'arial',
             'filename' =>  Yii::getAlias('@app') . '/web/uploads/facture/'. $this->naam . '.pdf',
             // portrait orientation
-            'orientation' => Pdf::FORMAT_A4,
+            'orientation' => 'P',
             // stream to browser inline
 //                    'destination' => Pdf::DEST_BROWSER,
             'destination' => Pdf::DEST_FILE,
@@ -252,7 +252,7 @@ class Factuur extends BarActiveRecord
             'content' => $content,
             // format content from your own css file if needed or use the
             // enhanced bootstrap css built by Krajee for mPDF formatting
-            'cssFile' => 'css/factuur.css',
+            'cssFile' => Yii::getAlias('@app') . '/web/css/factuur.css',
              // set mPDF properties on the fly
             'options' => [
                 'title' => $this->naam . '.pdf',
