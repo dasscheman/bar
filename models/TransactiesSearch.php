@@ -44,8 +44,6 @@ class TransactiesSearch extends Transacties
      */
     public function search($params)
     {
-        $betalings_type_bank = BetalingType::getBankBetalingsType();
-
         $query = Transacties::find()
             ->where(['IS NOT', 'transacties_user_id', null]);
 
@@ -99,7 +97,8 @@ class TransactiesSearch extends Transacties
      */
     public function searchBank($params)
     {
-        $betalings_type_bank = BetalingType::getBankBetalingsType();
+        $betalingType = new BetalingType();
+        $betalings_type_bank = $betalingType->getBankBetalingsType();
 
         $query = Transacties::find()
                 ->where(['in', 'type_id', $betalings_type_bank]);

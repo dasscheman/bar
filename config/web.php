@@ -34,7 +34,7 @@ $config = [
             // send all mails to a file by default. You have to set
             // 'useFileTransport' to false and configure a transport
             // for the mailer to send real emails.
-            'useFileTransport' => YII_ENV_DEV ? true : false,
+            'useFileTransport' => false,
             'transport' => require(__DIR__ . '/email.php')
         ],
         'log' => [
@@ -54,7 +54,7 @@ $config = [
         'urlManager' => [
             'class' => 'yii\web\UrlManager',
 //            'scriptUrl' => YII_ENV_DEV ? 'https://popupbar.biologenkantoor.nl' : 'https://bar.debison.nl',
-            'hostInfo' => YII_ENV_DEV ? 'https://popupbar.biologenkantoor.nl' : 'https://bar.debison.nl',
+            'hostInfo' => YII_ENV_DEV ? 'https://bisonbar.vagrant' : 'https://bar.debison.nl',
         ],
 
 //        'authManager' => [
@@ -101,6 +101,10 @@ $config = [
              'class' => '\kartik\grid\Module'
          ]
     ],
+    'aliases' => [
+        '@bower' => '@vendor/bower-asset',
+        '@npm' => '@vendor/npm-asset',
+    ],
     'params' => $params,
 ];
 
@@ -110,14 +114,16 @@ if (YII_ENV_DEV) {
     $config['modules']['debug'] = [
         'class' => 'yii\debug\Module',
         // uncomment the following to add your IP if you are not connecting from localhost.
-        //'allowedIPs' => ['127.0.0.1', '::1'],
+//        'allowedIPs' => ['127.0.0.1', '::1', '192.168.10.5'],
+        'allowedIPs' => ['*'],
     ];
 
     $config['bootstrap'][] = 'gii';
     $config['modules']['gii'] = [
         'class' => 'yii\gii\Module',
         // uncomment the following to add your IP if you are not connecting from localhost.
-        //'allowedIPs' => ['127.0.0.1', '::1'],
+//        'allowedIPs' => ['127.0.0.1', '::1', '192.168.10.5'],
+        'allowedIPs' => ['*'],
     ];
 }
 

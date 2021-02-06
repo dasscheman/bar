@@ -42,7 +42,9 @@ $toolbar = false;
             'prijs',
             'type' => [
                 'attribute' => 'type',
-                'filter'=> Kosten::getTypeOptions(),
+                'filter'=> function ($model) {
+                    return $model->getTypeOptions();
+                },
                 'value' => function ($model) {
                     return $model->getTypeText();
                 },

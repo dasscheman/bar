@@ -3,11 +3,10 @@
 namespace app\models;
 
 use Yii;
-use Mollie_API_Client;
-use Mollie_API_Object_Method;
 use yii\helpers\ArrayHelper;
-use app\models\Transacties;
 use yii\web\NotFoundHttpException;
+use Mollie\Api\MollieApiClient;
+use Mollie\Api\Types\PaymentMethod;
 
 /**
  * This is the model class for Mollie intergration.
@@ -22,7 +21,7 @@ class Mollie extends Transacties
     public function __construct()
     {
         parent::__construct();
-        $this->mollie = new Mollie_API_Client;
+        $this->mollie = new MollieApiClient;
 
         if (YII_ENV === 'prod') {
             $this->mollie->setApiKey(Yii::$app->params['mollie']['live']);
@@ -66,7 +65,7 @@ class Mollie extends Transacties
         $issuers = $this->mollie->issuers->all();
         $list = [];
         foreach ($issuers as $issuer) {
-            if ($issuer->method == Mollie_API_Object_Method::IDEAL) {
+            if ($issuer->method == PaymentMethod::IDEAL) {
                 $list[] = $issuer;
             }
         }
@@ -184,7 +183,7 @@ class Mollie extends Transacties
          */
         $this->parameters = [
             "amount"       => $this->bedrag,
-            "method"       => Mollie_API_Object_Method::IDEAL,
+            "method"       => PaymentMethod::IDEAL,
             "description"  => $this->omschrijving,
             "metadata"     => [
                 "transacties_id" => $this->transacties_id,

@@ -102,9 +102,9 @@ class Prijslijst extends BarActiveRecord
         return $this->hasMany(Turven::className(), ['prijslijst_id' => 'prijslijst_id']);
     }
 
-    public function getDisplayName($prijslijst_id) {
-        $prijslijst = Prijslijst::findOne($prijslijst_id);
-        return $prijslijst->getEenheid()->one()->name;
+    public function getDisplayName() {
+//        $prijslijst = Prijslijst::findOne($prijslijst_id);
+        return $this->getEenheid()->one()->name;
     }
 
 

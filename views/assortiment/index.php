@@ -45,14 +45,18 @@ $pjax = false; //TRUE zorgt ervoor dat de columnen vertraagd verspringen, dat is
                 'value' => function ($model) {
                     return $model->getSoortText();
                 },
-                'filter' => Assortiment::getSoortOptions(),
+                'filter' => function ($model) {
+                    return $model->getSoortOptions();
+                },
             ],
             'status' => [
                 'attribute' => 'status',
                 'value' => function ($model) {
                     return $model->getStatusText();
                 },
-                'filter' => Assortiment::getStatusOptions(),
+                'filter' => function ($model) {
+                    return $model->getSoortOptions();
+                },
             ],
             'alcohol' => [
                 'attribute' => 'alcohol',

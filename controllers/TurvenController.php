@@ -101,10 +101,10 @@ class TurvenController extends Controller
                     $count[$prijslijst_id] = 1;
                 }
             }
-
+            $turven = new Turven();
             if (Yii::$app->request->get('actie') === 'opslaan' &&
                 $count !== null &&
-                Turven::saveBarInvoer($user_id, $count)) {
+                $turven->saveBarInvoer($user_id, $count)) {
                 $message = 'Volgende turven zijn toegevoegd bij ' . User::getUserDisplayName($user_id) . ': ';
                 $i = 0;
                 foreach ($count as $prijslijst_id => $aantal) {
@@ -124,15 +124,14 @@ class TurvenController extends Controller
                 }
                 return $this->redirect(['barinvoer', '#' => $tab]);
             }
-
-            if (!User::limitenControleren($user_id)) {
+            $user = new User();
+            if (!$user->limitenControleren($user_id)) {
                 Yii::$app->session->setFlash('warning', Yii::t('app', 'Wat errug, betalen pannenkoek! Vanaf 1 maart kun je niet meer turven als je meer dan 20 euro in het rood staat.'));
             }
             return $this->render('bar-invoer', [
                 'prijslijstSearchModel' => $prijslijstSearchModel,
                 'prijslijstDataProvider' => $prijslijstDataProvider,
                 'count' => $count,
-                'user_id' => $user_id,
                 'model' => User::findOne($user_id),
                 'tab' => Yii::$app->request->get('tab'),
             ]);
@@ -153,16 +152,18 @@ class TurvenController extends Controller
         $userSearchModel = new UserSearch();
         $userDataProvider = $userSearchModel->search(Yii::$app->request->queryParams);
         $prijslijst_id = Yii::$app->request->get('prijslijst_id');
+        $prijslijst = Prijslijst::findOne($prijslijst_id);
 
         if (Yii::$app->request->get('users') === null) {
             $users = [];
         } else {
             $users = Yii::$app->request->get('users');
         }
+        $turven = new Turven();
 
         if (Yii::$app->request->get('actie') === 'opslaan' &&
-            Turven::saveRondje($users, $prijslijst_id)) {
-            $message = 'Eén ' . Prijslijst::getDisplayName($prijslijst_id) . ' voor: ';
+            $turven->saveRondje($users, $prijslijst_id)) {
+            $message = 'Eén ' . $prijslijst->getDisplayName() . ' voor: ';
             $i = 0;
             foreach ($users as $user_id) {
                 if ($i === 0) {
@@ -193,7 +194,7 @@ class TurvenController extends Controller
 
         return $this->render('rondje', [
             'models' => $userDataProvider->getModels(),
-            'prijslijst_id' => $prijslijst_id,
+            'prijslijst' => $prijslijst,
             'users' => $users
         ]);
     }
@@ -228,6 +229,7 @@ class TurvenController extends Controller
             $count = 0;
             $dbTransaction = Yii::$app->db->beginTransaction();
             try {
+                $prijslijst = Prijslijst();
                 foreach ($models as $model) {
                     if (empty($model->eenheid_id)) {
                         continue;
@@ -241,9 +243,9 @@ class TurvenController extends Controller
                     }
 
                     if (empty($model->datum)) {
-                        $prijslijst = Prijslijst::determinePrijslijstTurflijstIdBased($model->eenheid_id, $model->turflijst_id);
+                        $prijslijst = $prijslijst->determinePrijslijstTurflijstIdBased($model->eenheid_id, $model->turflijst_id);
                     } elseif (empty($model->turflijst_id)) {
-                        $prijslijst = Prijslijst::determinePrijslijstDateBased($model->eenheid_id, $model->datum);
+                        $prijslijst = $prijslijst->determinePrijslijstDateBased($model->eenheid_id, $model->datum);
                     }
 
                     if (!$prijslijst) {

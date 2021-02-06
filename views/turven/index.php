@@ -73,14 +73,18 @@ $toolbar = false;
             'totaal_prijs',
             'type' => [
                 'attribute' => 'type',
-                'filter'=> Turven::getTypeOptions(),
+                'filter'=> function ($model) {
+                    return $model->getTypeOptions();
+                },
                 'value' => function ($model) {
                     return $model->getTypeText();
                 },
             ],
             'status' => [
                 'attribute' => 'status',
-                'filter'=> Turven::getStatusOptions(),
+                'filter'=> function ($model) {
+                    return $model->getStatusOptions();
+                },
                 'value' => function ($model) {
                     return $model->getStatusText();
                 },

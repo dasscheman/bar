@@ -6,8 +6,8 @@
 
 use yii\helpers\Html;
 use kartik\detail\DetailView;
-use yii\helpers\Url;
 use app\models\User;
+
 
 /* @var $this yii\web\View */
 /* @var $model app\models\Turven */
@@ -16,7 +16,7 @@ use app\models\User;
     <div class="col-md-12">
         <div class="panel panel-default">
             <div class="panel-heading">
-                <?= Html::encode('Niewe turven voor ' . User::getUserDisplayName($user_id)) ?>
+                <?= Html::encode('Niewe turven voor ' . $model->id) ?>
             </div>
             <div class="panel-body">
                 <?php
@@ -33,7 +33,7 @@ use app\models\User;
                             'barinvoer',
                             'prijslijst_id' => $item->prijslijst_id,
                             'count' => $count,
-                            'user_id' => $user_id,
+                            'user_id' => $model->id,
                             'actie' => 'toevoegen',
                             'tab' => $tab
                         ],
@@ -49,7 +49,7 @@ use app\models\User;
             [
                 'barinvoer',
                 'count' => $count,
-                'user_id' => $user_id,
+                'user_id' => $model->id,
                 'actie' => 'opslaan',
                 'tab' => $tab
             ],

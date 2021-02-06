@@ -14,7 +14,7 @@ use app\models\Prijslijst;
     <div class="col-md-12">
         <div class="panel panel-default">
             <div class="panel-heading">
-                <?= Html::encode(Prijslijst::getDisplayName($prijslijst_id) . ' turven voor de volgende gebruikers:') ?>
+                <?= Html::encode($prijslijst->getDisplayName() . ' turven voor de volgende gebruikers:') ?>
             </div>
         <div class="panel-body">
             <?php
@@ -28,7 +28,7 @@ use app\models\Prijslijst;
                             'rondje',
                             'remove' => $user->id,
                             'users' => $users,
-                            'prijslijst_id' => $prijslijst_id],
+                            'prijslijst_id' => $prijslijst->prijslijst_id],
                         [ 'class' => 'btn-lg btn-info namen' ]
                     );
                 }
@@ -38,7 +38,7 @@ use app\models\Prijslijst;
                 'Opslaan',
                 [
                     'rondje',
-                    'prijslijst_id' => $prijslijst_id,
+                    'prijslijst_id' => $prijslijst->prijslijst_id,
                     'users' => $users,
                     'actie' => 'opslaan',
                 ],
@@ -81,7 +81,7 @@ use app\models\Prijslijst;
                         'rondje',
                         'user_id' => $user->id,
                         'users' => $users,
-                        'prijslijst_id' => $prijslijst_id],
+                        'prijslijst_id' => $prijslijst->prijslijst_id],
                     [ 'class' => 'btn-lg btn-success namen' ]
                 );
             }

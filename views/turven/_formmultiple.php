@@ -11,7 +11,7 @@
 
 use kartik\select2\Select2;
 use kartik\widgets\ActiveForm;
-use kartik\helpers\Html;
+use yii\helpers\Html;
 use yii\helpers\ArrayHelper;
 use app\models\User;
 use app\models\Eenheid;

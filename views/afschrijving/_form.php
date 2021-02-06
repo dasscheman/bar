@@ -5,7 +5,7 @@
  */
 
 use app\models\Assortiment;
-use kartik\helpers\Html;
+use yii\helpers\Html;
 use kartik\select2\Select2;
 use kartik\widgets\ActiveForm;
 use kartik\widgets\DatePicker;
