@@ -1,5 +1,8 @@
 <?php
 
+$dotenv = Dotenv\Dotenv::createImmutable(__DIR__, '../.env');
+$dotenv->load();
+
 require_once(__DIR__.'/../config/debug.php');
 $params = require(__DIR__ . '/../config/params.php');
 
@@ -42,6 +45,7 @@ $config = [
                 [
                     'class' => 'yii\log\FileTarget',
                     'levels' => ['error', 'warning'],
+//                    'logFile' => __DIR__ . '/storage/logs/app.log',
                 ],
             ],
         ],
