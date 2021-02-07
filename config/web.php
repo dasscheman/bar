@@ -16,7 +16,7 @@ $config = [
     'components' => [
         'request' => [
             // !!! insert a secret key in the following (if it is empty) - this is required by cookie validation
-            'cookieValidationKey' => 'gliGiDKmYVjfyIfOal2te8rf9PWo_q82',
+            'cookieValidationKey' => $_ENV['COOKIE_KEY'],
         ],
         'cache' => [
             'class' => 'yii\caching\FileCache',
@@ -34,11 +34,11 @@ $config = [
             // send all mails to a file by default. You have to set
             // 'useFileTransport' to false and configure a transport
             // for the mailer to send real emails.
-            'useFileTransport' => false,
+            'useFileTransport' => $_ENV['EMAIL_TO_FILE'],
             'transport' => require(__DIR__ . '/email.php')
         ],
         'log' => [
-            'traceLevel' => YII_DEBUG ? 3 : 0,
+            'traceLevel' => $_ENV['YII_DEBUG_LEVEL'],
             'targets' => [
                 [
                     'class' => 'yii\log\FileTarget',
@@ -53,8 +53,7 @@ $config = [
         'db' => require(__DIR__ . '/db.php'),
         'urlManager' => [
             'class' => 'yii\web\UrlManager',
-//            'scriptUrl' => YII_ENV_DEV ? 'https://popupbar.biologenkantoor.nl' : 'https://bar.debison.nl',
-            'hostInfo' => YII_ENV_DEV ? 'https://bisonbar.vagrant' : 'https://bar.debison.nl',
+            'hostInfo' => $_ENV['URL'],
         ],
 
 //        'authManager' => [
@@ -108,7 +107,7 @@ $config = [
     'params' => $params,
 ];
 
-if (YII_ENV_DEV) {
+if ($_ENV['YII_ENV'] == 'dev') {
     // configuration adjustments for 'dev' environment
     $config['bootstrap'][] = 'debug';
     $config['modules']['debug'] = [

@@ -1,6 +1,0 @@
-    <?php
-
-return [
-    'test' => 'test_key',
-    'live' => 'live_key',
-];

@@ -26,7 +26,8 @@
         "mollie/mollie-api-php": "^2.29",
         "2amigos/yii2-highcharts-widget": "^1.0",
         "kartik-v/yii2-grid": "^3.3",
-        "kartik-v/yii2-money": "^1.2"
+        "kartik-v/yii2-money": "^1.2",
+        "vlucas/phpdotenv": "^5.3"
     },
     "require-dev": {
         "yiisoft/yii2-debug": "~2",
