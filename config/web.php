@@ -1,8 +1,7 @@
 <?php
 
-
-require_once(__DIR__.'/debug.php');
-$params = require(__DIR__ . '/params.php');
+require_once(__DIR__.'/../config/debug.php');
+$params = require(__DIR__ . '/../config/params.php');
 
 $config = [
     'id' => 'basic',
@@ -35,7 +34,7 @@ $config = [
             // 'useFileTransport' to false and configure a transport
             // for the mailer to send real emails.
             'useFileTransport' => $_ENV['EMAIL_TO_FILE'],
-            'transport' => require(__DIR__ . '/email.php')
+            'transport' => require(__DIR__ . '/../config/email.php')
         ],
         'log' => [
             'traceLevel' => $_ENV['YII_DEBUG_LEVEL'],
