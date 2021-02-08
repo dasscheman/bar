@@ -62,7 +62,8 @@ class Mollie extends Transacties
 
     public function getIssuersOptions()
     {
-        $issuers = $this->mollie->issuers->all();
+        $issuers = $this->mollie->methods->get(\Mollie\Api\Types\PaymentMethod::IDEAL, ["include" => "issuers"]);
+
         $list = [];
         foreach ($issuers as $issuer) {
             if ($issuer->method == PaymentMethod::IDEAL) {
@@ -191,13 +192,8 @@ class Mollie extends Transacties
             "issuer"       => !empty($this->issuer) ? $this->issuer : null
         ];
 
-        if (YII_ENV === 'prod') {
-            $this->parameters['redirectUrl'] = "https://bar.debison.nl/index.php?r=mollie/return-betaling&transacties_id={$this->transacties_id}";
-            $this->parameters['webhookUrl'] = "https://bar.debison.nl/index.php?r=mollie/webhook";
-        } else {
-            $this->parameters['redirectUrl'] = "https://popupbar.biologenkantoor.nl/index.php?r=mollie/return-betaling&transacties_id={$this->transacties_id}";
-            $this->parameters['webhookUrl'] = "https://popupbar.biologenkantoor.nl/index.php?r=mollie/webhook";
-        }
+        $this->parameters['redirectUrl'] = "https://" . $_ENV['URL'] . "bar.debison.nl/index.php?r=mollie/return-betaling&transacties_id={$this->transacties_id}";
+        $this->parameters['webhookUrl'] = "https://" . $_ENV['URL'] . "/index.php?r=mollie/webhook";
     }
 
     public function createRecurringPayment()
