@@ -27,12 +27,8 @@ use yii\helpers\Url;
         Wil je toekomstige incasso aanpassen, dan kun je dat hier doen:
         
         <?php
-        if (YII_ENV === 'prod') {
-            $link = "https://bar.debison.nl/index.php?r=mollie/betaling&pay_key={$user->pay_key}";
-        } else {
-            $link = "https://popupbar.biologenkantoor.nl/index.php?r=mollie/betaling&pay_key={$user->pay_key}";
-        }
-            echo Html::a(' Automatisch ophogen wijzigen', $link); ?>
+        $link = "https://" . $_ENV['URL'] . "/index.php?r=mollie/betaling&pay_key={$user->pay_key}";
+        echo Html::a(' Automatisch ophogen wijzigen', $link); ?>
 
         <br>
         Transactie gegevens:
@@ -72,7 +68,7 @@ use yii\helpers\Url;
         </table>
         <br>
         <br>
-		Als je vragen hebt kun je mailen naar bar@debison.nl
+		Als je vragen hebt kun je mailen naar <?php echo $_ENV['ADMIN_EMAILs'] ?>
         <br>
         <br>
 		Met vriendelijke groet,<br>
