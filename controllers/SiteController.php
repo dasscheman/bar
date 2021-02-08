@@ -317,7 +317,7 @@ class SiteController extends Controller
         $message = Yii::$app->mailer->compose('mail_test', [
                 'user' => $user,
             ])
-            ->setFrom('bar@debison.nl')
+            ->setFrom($_ENV['ADMIN_EMAIL'])
             ->setTo($user->email)
             ->setSubject('Test mail Bison bar');
         $message->send();

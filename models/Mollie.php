@@ -23,10 +23,10 @@ class Mollie extends Transacties
         parent::__construct();
         $this->mollie = new MollieApiClient;
 
-        if (YII_ENV === 'prod') {
-            $this->mollie->setApiKey(Yii::$app->params['mollie']['live']);
+        if ($_ENV['YII_ENV'] === 'prod') {
+            $this->mollie->setApiKey($_ENV['MOLLIE_LIVE_KEY']);
         } else {
-            $this->mollie->setApiKey(Yii::$app->params['mollie']['test']);
+            $this->mollie->setApiKey($_ENV['MOLLIE_TEST_KEY']);
         }
     }
 
@@ -62,15 +62,10 @@ class Mollie extends Transacties
 
     public function getIssuersOptions()
     {
+        $this->mollie = new MollieApiClient;
+        $this->mollie->setApiKey($_ENV['MOLLIE_TEST_KEY']);
         $issuers = $this->mollie->methods->get(\Mollie\Api\Types\PaymentMethod::IDEAL, ["include" => "issuers"]);
-
-        $list = [];
-        foreach ($issuers as $issuer) {
-            if ($issuer->method == PaymentMethod::IDEAL) {
-                $list[] = $issuer;
-            }
-        }
-        return ArrayHelper::map($list, 'id', 'name');
+        return ArrayHelper::map($issuers->issuers, 'id', 'name');
     }
 
     public function automatischOphogen()
@@ -118,7 +113,8 @@ class Mollie extends Transacties
                 continue;
             }
 
-            $mollie->parameters['amount'] = $user->mollie_bedrag;
+            $mollie->parameters['amount']['currency'] = "EUR";
+            $mollie->parameters['amount']['value'] = $user->mollie_bedrag;
             $mollie->parameters['customerId'] = $user->mollie_customer_id;
             $mollie->parameters['recurringType'] = 'recurring';       // important
             $mollie->parameters['description'] = $mollie->omschrijving;
@@ -126,11 +122,7 @@ class Mollie extends Transacties
                     "transacties_id" => $mollie->transacties_id,
                 ];
 
-            if (YII_ENV === 'prod') {
-                $mollie->parameters['webhookUrl'] = "https://bar.debison.nl/index.php?r=mollie/webhook";
-            } else {
-                $mollie->parameters['webhookUrl'] = "https://popupbar.biologenkantoor.nl/index.php?r=mollie/webhook";
-            }
+            $mollie->parameters['webhookUrl'] = "https://" . $_ENV['URL'] . "/index.php?r=mollie/webhook";
 
             $payment = $mollie->createPayment();
 
@@ -138,7 +130,7 @@ class Mollie extends Transacties
                     'user' => $user,
                     'transactie' => $mollie,
                 ])
-                ->setFrom('bar@debison.nl')
+                ->setFrom($_ENV['ADMIN_EMAIL'])
                 ->setTo($user->email)
                 ->setSubject('Incasso betaling Bison bar');
             if (!empty($user->profile->public_email)) {
@@ -183,7 +175,10 @@ class Mollie extends Transacties
          *   issuer        The customer's bank. If empty the customer can select it later.
          */
         $this->parameters = [
-            "amount"       => $this->bedrag,
+            "amount"       => [
+                "currency" => "EUR",
+                "value" => '15.00', //round($this->bedrag, 2),
+            ],
             "method"       => PaymentMethod::IDEAL,
             "description"  => $this->omschrijving,
             "metadata"     => [
@@ -192,7 +187,7 @@ class Mollie extends Transacties
             "issuer"       => !empty($this->issuer) ? $this->issuer : null
         ];
 
-        $this->parameters['redirectUrl'] = "https://" . $_ENV['URL'] . "bar.debison.nl/index.php?r=mollie/return-betaling&transacties_id={$this->transacties_id}";
+        $this->parameters['redirectUrl'] = "https://" . $_ENV['URL'] . "/index.php?r=mollie/return-betaling&transacties_id={$this->transacties_id}";
         $this->parameters['webhookUrl'] = "https://" . $_ENV['URL'] . "/index.php?r=mollie/webhook";
     }
 
@@ -241,7 +236,7 @@ class Mollie extends Transacties
             /*
              * Send the customer off to complete the payment.
              */
-            return $payment->getPaymentUrl();
+            return $payment->getCheckoutUrl();
         } catch (Mollie_API_Exception $e) {
             echo "API call failed: " . htmlspecialchars($e->getMessage());
         }
