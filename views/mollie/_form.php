@@ -27,15 +27,15 @@ use app\models\User;
     echo $form->field($model, 'omschrijving')->textInput(['readOnly'=> true]);
     echo $form->field($model, 'bedrag')->widget(Select2::className(), [
         'data' => [
-            10 => '10 euro',
-            15 => '15 euro',
-            25 => '25 euro',
-            50 => '50 euro',
-            75 => '75 euro',
-            100 => '100 euro'
+            '10.00' => '10 euro',
+            '15.00' => '15 euro',
+            '25.00' => '25 euro',
+            '50.00' => '50 euro',
+            '75.00' => '75 euro',
+            '100.00' => '100 euro'
         ],
         'options'   => [
-        'value' => 15,
+        'value' => '15.00',
             'placeholder' => Yii::t('app', 'Selecteer de hoogte van het tegoed dat je wilt kopen'),
             'id' => 'turflijst_id',
         ],

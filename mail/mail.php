@@ -88,7 +88,7 @@ Je kunt je account pas weer gebruiken wanneer je betaald hebt.
 
 <br>
 <br>
-Als je vragen hebt kun je mailen naar bar@debison.nl
+Als je vragen hebt kun je mailen naar <?php echo $_ENV['URL'] ?>
 <br>
 <br>
 Met vriendelijke groet,<br>

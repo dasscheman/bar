@@ -23,7 +23,6 @@ use DateTime;
  * @property string $deleted_at
  *
  * @property User $createdBy
- * @property User $ontvanger
  * @property User $updatedBy
  * @property Transacties[] $transacties
  * @property Turven[] $turvens
@@ -352,7 +351,7 @@ class Factuur extends BarActiveRecord
                     'user' => $user,
                     'verkoopData' => $verkoopData
                 ])
-                ->setFrom('bar@debison.nl')
+                ->setFrom($_ENV['URL'])
                 ->setTo($user->email)
                 ->setSubject('Nota Bison bar')
                 ->attach(Yii::$app->basePath . '/web/uploads/facture/' . $factuur->pdf);

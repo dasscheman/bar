@@ -141,7 +141,7 @@ class BetalingType extends BarActiveRecord
         return "Onbekende staat ({$this->state})";
     }
 
-    public function getIdealId()
+    public static function getIdealId()
     {
         $betaling = BetalingType::findOne(['omschrijving' => 'Ideal']);
 
@@ -151,7 +151,7 @@ class BetalingType extends BarActiveRecord
         return;
     }
 
-    public function getIdealTerugbetalingId()
+    public static function getIdealTerugbetalingId()
     {
         $betaling = BetalingType::findOne(['omschrijving' => 'Ideal terugbetaling']);
 
@@ -161,7 +161,7 @@ class BetalingType extends BarActiveRecord
         return;
     }
 
-    public function getPinId()
+    public static function getPinId()
     {
         $betaling = BetalingType::findOne(['omschrijving' => 'Pin betaling']);
 
@@ -171,7 +171,7 @@ class BetalingType extends BarActiveRecord
         return;
     }
 
-    public function getDeclaratieUitbetaalsId()
+    public static function getDeclaratieUitbetaalsId()
     {
         $betaling = BetalingType::findOne(['omschrijving' => 'Uitbetaling declaratie']);
 
@@ -181,7 +181,7 @@ class BetalingType extends BarActiveRecord
         return;
     }
 
-    public function getIzettleUitbetalingId()
+    public static function getIzettleUitbetalingId()
     {
         $betaling = BetalingType::findOne(['omschrijving' => 'Uitbetaling Izettle']);
 
@@ -191,7 +191,7 @@ class BetalingType extends BarActiveRecord
         return;
     }
 
-    public function getMollieUitbetalingId()
+    public static function getMollieUitbetalingId()
     {
         $betaling = BetalingType::findOne(['omschrijving' => 'Uitbetaling Mollie']);
 
@@ -201,7 +201,7 @@ class BetalingType extends BarActiveRecord
         return;
     }
 
-    public function getIzettleKosotenId()
+    public static function getIzettleKosotenId()
     {
         $betaling = BetalingType::findOne(['omschrijving' => 'Kosten Izettle']);
 
@@ -211,7 +211,7 @@ class BetalingType extends BarActiveRecord
         return;
     }
 
-    public function getIngKostenId()
+    public static function getIngKostenId()
     {
         $betaling = BetalingType::findOne(['omschrijving' => 'Kosten ING']);
 
@@ -221,7 +221,7 @@ class BetalingType extends BarActiveRecord
         return;
     }
 
-    public function getMollieKostenId()
+    public static function getMollieKostenId()
     {
         $betaling = BetalingType::findOne(['omschrijving' => 'Kosten Mollie']);
 
@@ -231,7 +231,7 @@ class BetalingType extends BarActiveRecord
         return;
     }
 
-    public function getDeclaratieInvoerId()
+    public static function getDeclaratieInvoerId()
     {
         $betaling = BetalingType::findOne(['omschrijving' => 'Declaratie']);
 
@@ -241,7 +241,7 @@ class BetalingType extends BarActiveRecord
         return;
     }
 
-    public function getBankAfId()
+    public static function getBankAfId()
     {
         $betaling = BetalingType::findOne(['omschrijving' => 'Bankoverschrijving Af']);
 
@@ -251,7 +251,7 @@ class BetalingType extends BarActiveRecord
         return;
     }
 
-    public function getBankBijId()
+    public static function getBankBijId()
     {
         $betaling = BetalingType::findOne(['omschrijving' => 'Bankoverschrijving Bij']);
 
@@ -261,7 +261,7 @@ class BetalingType extends BarActiveRecord
         return;
     }
 
-    public function getIzettleInvoerId()
+    public static function getIzettleInvoerId()
     {
         $betaling = BetalingType::findOne(['omschrijving' => 'Izettle Pin betaling']);
 
@@ -271,7 +271,7 @@ class BetalingType extends BarActiveRecord
         return;
     }
 
-    public function getStatiegeldId()
+    public static function getStatiegeldId()
     {
         $betaling = BetalingType::findOne(['omschrijving' => 'Statiegeld']);
 

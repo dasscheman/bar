@@ -45,7 +45,6 @@ $config = [
                 [
                     'class' => 'yii\log\FileTarget',
                     'levels' => ['error', 'warning'],
-//                    'logFile' => __DIR__ . '/storage/logs/app.log',
                 ],
             ],
         ],
