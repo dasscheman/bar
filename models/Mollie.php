@@ -116,7 +116,7 @@ class Mollie extends Transacties
             $mollie->parameters['amount']['currency'] = "EUR";
             $mollie->parameters['amount']['value'] = $user->mollie_bedrag;
             $mollie->parameters['customerId'] = $user->mollie_customer_id;
-            $mollie->parameters['recurringType'] = 'recurring';       // important
+            $mollie->parameters['sequenceType'] = 'recurring';       // important
             $mollie->parameters['description'] = $mollie->omschrijving;
             $mollie->parameters["metadata"] = [
                     "transacties_id" => $mollie->transacties_id,
@@ -205,7 +205,7 @@ class Mollie extends Transacties
             ]);
 
             $this->parameters['customerId'] = $customer->id;
-            $this->parameters['recurringType'] = 'first';
+            $this->parameters['sequenceType'] = 'first';
             $user->automatische_betaling = true;
             $user->mollie_customer_id = $customer->id;
             $user->mollie_bedrag = $this->bedrag;
