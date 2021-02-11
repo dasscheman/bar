@@ -27,7 +27,8 @@
         "2amigos/yii2-highcharts-widget": "^1.0",
         "kartik-v/yii2-grid": "^3.3",
         "kartik-v/yii2-money": "^1.2",
-        "vlucas/phpdotenv": "^5.3"
+        "vlucas/phpdotenv": "^5.3",
+        "kartik-v/yii2-mpdf": "^1.0"
     },
     "require-dev": {
         "yiisoft/yii2-debug": "~2",

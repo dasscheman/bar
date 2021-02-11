@@ -222,16 +222,16 @@ use app\models\Transacties;
                         <td align="center"><?php echo $new_invalid_transactie->transacties_id ?></td>
                         <td align="center"><?php
                             echo $new_invalid_transactie->statusText;
-                    if (isset($new_invalid_transactie->mollie_status)) {
-                        echo ' (';
-                        echo $new_invalid_transactie->getMollieStatusText();
-                        echo ')';
-                    } ?></td>
+                            if (isset($new_invalid_transactie->mollie_status)) {
+                                echo ' (';
+                                echo $new_invalid_transactie->getMollieStatusText();
+                                echo ')';
+                            } ?></td>
                         <td align="center"><?php echo $new_invalid_transactie->getType()->one()->omschrijving ?></td>
                         <td align="center"><?php echo Yii::$app->setupdatetime->displayFormat($new_invalid_transactie->datum, 'php:d-M-Y') ?></td>
                         <td align="left"><?php echo $new_invalid_transactie->omschrijving ?></td>
                         <td class="cost"><?php echo number_format($new_invalid_transactie->bedrag, 2, ',', ' ') ?> &euro;</td>
-                        <td class="cost"></td>
+<!--                        <td class="cost"></td>-->
                     </tr>
                     <?php
                 }

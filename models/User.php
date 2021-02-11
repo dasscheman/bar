@@ -95,7 +95,7 @@ class User extends BaseUser
     {
         return [
             'id' => 'ID',
-            'username' => 'Username',
+            'username' => 'Getoonde naam',
             'email' => 'Email',
             'password_hash' => 'Password Hash',
             'auth_key' => 'Auth Key',

@@ -23,7 +23,7 @@ use app\models\Prijslijst;
             foreach ($models as $user) {
                 if (in_array($user->id, $users)) {
                     echo Html::a(
-                        $user->profile->name,
+                        $user->username,
                         [
                             'rondje',
                             'remove' => $user->id,
@@ -76,7 +76,7 @@ use app\models\Prijslijst;
                     continue;
                 }
                 echo Html::a(
-                    $user->profile->name,
+                    $user->username,
                     [
                         'rondje',
                         'user_id' => $user->id,

@@ -12,7 +12,7 @@ return [
     'components' => [
         'db' => $dbParams,
         'mailer' => [
-            'useFileTransport' => true,
+            'useFileTransport' => $_ENV['EMAIL_TO_FILE'],
         ],
         'assetManager' => [            
             'basePath' => __DIR__ . '/../web/assets',

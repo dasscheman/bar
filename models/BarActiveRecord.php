@@ -86,7 +86,7 @@ abstract class BarActiveRecord extends ActiveRecord
                 'errors' => $this->errors,
                 'model' => $this,
             ])
-            ->setFrom($_ENV['URL'])
+            ->setFrom($_ENV['ADMIN_EMAIL'])
             ->setTo('daan@biologenkantoor.nl')
             ->setSubject('Critical Error Bison bar');
         $message->send();

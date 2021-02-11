@@ -12,6 +12,7 @@ use app\models\TurvenSearch;
 use app\models\TransactiesSearch;
 use app\models\FactuurSearch;
 use app\models\Factuur;
+use app\models\Profile;
 use app\models\User;
 
 class AdminController extends BaseAdminController
@@ -146,6 +147,104 @@ class AdminController extends BaseAdminController
             'dataProviderTurven' => $dataProviderTurven,
             'searchModelTransacties' => $searchModelTransacties,
             'dataProviderTransacties' => $dataProviderTransacties,
+        ]);
+    }
+
+    /**
+     * Creates a new User model.
+     * If creation is successful, the browser will be redirected to the 'index' page.
+     *
+     * @return mixed
+     */
+    public function actionCreate()
+    {
+        $user = new User();
+        $profile = new Profile();
+        if ($user->load(Yii::$app->request->post(), 'User')) {
+            try {
+                if(!$user->create()) {
+                    foreach ($user->errors as $key => $error) {
+                        Yii::$app->session->setFlash('warning', Yii::t('app', 'Fout met opslaan: ' . $key . ':' . $error[0]));
+                        return $this->render('create', [
+                            'user' => $user,
+                            'profile' => $profile
+                        ]);
+                    }
+                }
+                $profile = $user->profile;
+                $profile->load(\Yii::$app->request->post(),'Profile');
+                if(!$profile->save()) {
+                    foreach ($user->errors as $key => $error) {
+                        Yii::$app->session->setFlash('warning', Yii::t('app', 'Fout met opslaan: ' . $key . ':' . $error[0]));
+                        return $this->render('create', [
+                            'user' => $user,
+                            'profile' => $profile
+                        ]);
+                    }
+                }
+            } catch (\Exception $error) {
+                throw $error;
+            }
+
+            Yii::$app->getSession()->setFlash('success', \Yii::t('user', 'User has been created'));
+            return $this->redirect(['update', 'id' => $user->id]);
+        }
+
+        $profile->validate();
+        return $this->render('create', [
+            'user' => $user,
+            'profile' => $profile
+        ]);
+    }
+
+    /**
+     * Updates an existing User model.
+     *
+     * @param int $id
+     *
+     * @return mixed
+     */
+    public function actionUpdate($id)
+    {
+        Url::remember('', 'actions-redirect');
+        $user = $this->findModel($id);
+
+        if ($user->load(Yii::$app->request->post(), 'User')) {
+            try {
+                if(!$user->save()) {
+                    foreach ($user->errors as $key => $error) {
+                        Yii::$app->session->setFlash('warning', Yii::t('app', 'Fout met opslaan: ' . $key . ':' . $error[0]));
+                        return $this->render('create', [
+                            'user' => $user,
+                            'profile' => $user->profile
+                        ]);
+                    }
+                }
+                $profile = $user->profile;
+                $profile->load(\Yii::$app->request->post(), 'Profile');
+
+                if(!$profile->save()) {
+                    foreach ($user->errors as $key => $error) {
+                        Yii::$app->session->setFlash('warning', Yii::t('app', 'Fout met opslaan: ' . $key . ':' . $error[0]));
+                        return $this->render('create', [
+                            'user' => $user,
+                            'profile' => $profile
+                        ]);
+                    }
+                }
+            } catch (\Exception $error) {
+                throw $error;
+            }
+
+            Yii::$app->getSession()->setFlash('success', \Yii::t('user', 'User has been updated'));
+            return $this->redirect(['update', 'id' => $user->id, 'profile' => $profile]);
+        }
+
+        $profile = $user->getProfile();
+
+        return $this->render('_account', [
+            'user' => $user,
+            'profile' => $profile
         ]);
     }
 }
