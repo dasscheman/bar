@@ -3,10 +3,7 @@
 namespace app\models;
 
 use Yii;
-use app\models\BarActiveRecord;
-use app\models\User;
 use kartik\mpdf\Pdf;
-use DateTime;
 
 /**
  * This is the model class for table "factuur".
@@ -187,7 +184,7 @@ class Factuur extends BarActiveRecord
 
             $facuur = new Factuur();
 
-            if ($generate && $facuur->createFactuur($user)) {
+            if ($generate && $facuur->createFactuur($user)){
                 echo "\r\n";
                 echo '--> Nieuwe Factuur aangemaakt';
                 $facuur->updateAfterCreateFactuur($user);
@@ -212,7 +209,6 @@ class Factuur extends BarActiveRecord
 
         $vorig_openstaand =  $user->getSumOldBijTransactiesUser() - $user->getSumOldTurvenUsers() - $user->getSumOldAfTransactiesUser();
         $nieuw_openstaand = $vorig_openstaand - $sum_new_turven + $sum_new_bij_transacties - $sum_new_af_transacties;
-
         $content = Yii::$app->controller->renderPartial(
             '/factuur/factuur_template',
             [
@@ -351,7 +347,7 @@ class Factuur extends BarActiveRecord
                     'user' => $user,
                     'verkoopData' => $verkoopData
                 ])
-                ->setFrom($_ENV['URL'])
+                ->setFrom($_ENV['ADMIN_EMAIL'])
                 ->setTo($user->email)
                 ->setSubject('Nota Bison bar')
                 ->attach(Yii::$app->basePath . '/web/uploads/facture/' . $factuur->pdf);
