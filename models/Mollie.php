@@ -177,7 +177,7 @@ class Mollie extends Transacties
         $this->parameters = [
             "amount"       => [
                 "currency" => "EUR",
-                "value" => '15.00', //round($this->bedrag, 2),
+                "value" => $this->bedrag,
             ],
             "method"       => PaymentMethod::IDEAL,
             "description"  => $this->omschrijving,
