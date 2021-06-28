@@ -12,57 +12,14 @@ Hallo <?php echo  $user->profile->voornaam; ?>,<br><br>
 hierbij ontvangt je de factuur voor de Bison bar. In de bijlage zie je een gedetaileerd overzicht.
 <br>
 <br>
-<b>Rendement</b>
+<b>Update juli 2021</b>
 <br>
-Een belangrijke factor in de bepaling van de prijs is hoe netjes er wordt geturfd.
-Om iedereen daar inzicht in te geven en om elkaar scherp te houden zal vanaf nu
-ook rendement data toegvoegd worden aan de mail.
-Het rendement is het % dat ingekocht is, wat ook daadwerkelijk geturfd is.
+Afgelopen tijd heeft de administratie en de inkooop van de bar een beetje stil gelegen.
+Een aantal hebben zelf drank voor de bar ingekocht, dank voor dat initiatief. Als je dat gedaan hebt kun je je bonnetje bij mij inleveren.
 
-<b>
-	<i>
-		Door een bug in de berekingen van het rendement waren de cijfers niet correct.
-		De bereking zou nu beter moeten gaan, maar ik hou nog een kleine slag om de arm.
-	</i>
-</b>
-<br />
-<br />
-<table>
-	<tr>
-		<th></th>
-		<?php
-		$month = 3;
-		while ($month > 0) {?>
-			<th><?php echo date("M-Y", strtotime("-$month months")); ?></th>
-			<?php
-			$month--;
-		} ?>
-	</tr>
-	<?php
-	foreach ($verkoopData as $name => $graph_data) { ?>
-		<?php
-		foreach ($graph_data as $name_item => $item) {
-			if(!isset($item['name']) || $item['name'] !== 'Rendement') {
-				continue;
-			}; ?>
-			<tr>
-				<td><?php echo $name ?></td>
-				<?php
-			  	$i = 0;
-			  	while ($i < count($verkoopData[$name][0]['data'])) { ?>
-					<td>
-						<?php
-						if(isset($item['data'][$i])) {
-							echo round($item['data'][$i]) . '%';
-						} ?>
-					</td>
-					<?php
-					$i++;
-				} ?>
-	  		</tr>
-		<?php } ?>
-<?php } ?>
-</table>
+Komende maanden zal ik weer wat aandacht geven aan de bar en de administratie. Ik zal er voor zorgen dat alles voor het nieuwe seizoen weer up-to-date is.
+
+
 <br />
 
 <b>Betalen</b>
