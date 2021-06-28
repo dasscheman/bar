@@ -36,7 +36,7 @@ use app\models\Transacties;
             <tr>
                 <td style="width:50%;"></td>
                 <td align="right" style="width:14%; ">Email :</td>
-                <td style="width:36%">bar@bison.nl</td>
+                <td style="width:36%">bar@debison.nl</td>
             </tr>
             <tr>
                 <td style="width:50%;"></td>

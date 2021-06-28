@@ -281,7 +281,7 @@ class BetalingType extends BarActiveRecord
         return;
     }
 
-    public function getOmschrijving($id)
+    static public function getOmschrijving($id)
     {
         $betaling = BetalingType::findOne(['type_id' => $id]);
 
