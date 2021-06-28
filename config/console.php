@@ -2,7 +2,6 @@
 
 $params = require(__DIR__ . '/params.php');
 $db = require(__DIR__ . '/db.php');
-
 $config = [
     'id' => 'basic-console',
     'basePath' => dirname(__DIR__),
@@ -28,7 +27,7 @@ $config = [
             // send all mails to a file by default. You have to set
             // 'useFileTransport' to false and configure a transport
             // for the mailer to send real emails.
-            'useFileTransport' => YII_ENV_DEV ? true : false,
+            'useFileTransport' => $_ENV['EMAIL_TO_FILE'],
             'transport' => require(__DIR__ . '/email.php')
         ],
         'setupdatetime' => [
@@ -37,7 +36,7 @@ $config = [
         'db' => $db,
         'urlManager' => [
             'class' => 'yii\web\UrlManager',
-            'scriptUrl' => YII_ENV_DEV ? 'https://popupbar.biologenkantoor.nl' : 'https://bar.debison.nl',
+            'scriptUrl' => $_ENV['URL'],
         ]
     ],
     'modules' => [
@@ -56,7 +55,7 @@ $config = [
     'params' => $params,
 ];
 
-if (YII_ENV_DEV) {
+if ($_ENV['YII_ENV']) {
     // configuration adjustments for 'dev' environment
     $config['bootstrap'][] = 'gii';
     $config['modules']['gii'] = [

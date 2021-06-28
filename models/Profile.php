@@ -48,7 +48,7 @@ class Profile extends BaseProfile
             [['user_id', 'functie', 'speltak'], 'integer'],
             [['bio'], 'string'],
             [['limit_hard', 'limit_ophogen'], 'number'],
-            [['limit_hard'], 'default', 'value'=> '20'],
+            [['limit_hard'], 'default', 'value'=> '-20'],
             [['limit_ophogen'], 'default', 'value'=> '0'],
             [['geboorte_datum', 'limit'], 'safe'],
             [['name', 'public_email', 'gravatar_email', 'location', 'website', 'voornaam', 'tussenvoegsel', 'achternaam'], 'string', 'max' => 255],
@@ -65,7 +65,7 @@ class Profile extends BaseProfile
     {
         return [
             'user_id' => 'User ID',
-            'name' => 'Name',
+            'name' => 'Volledigenaam',
             'public_email' => 'Tweede email',
             'limit_hard' => 'Harde limiet',
             'limit_ophogen' => 'Autmatisch ophogen vanaf',

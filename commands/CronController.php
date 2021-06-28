@@ -34,40 +34,44 @@ class CronController extends Controller
         // called every two minutes
         // */2 * * * * ~/sites/www/yii2/yii cron/day
         Yii::$app->cache->flush();
-        $time_start = microtime(true);
-        $aantal = Factuur::genereerFacturen();
+        $factuur = new Factuur();
+        $timeStart = microtime(true);
+        $aantal = $factuur->genereerFacturen();
         echo 'Er zijn '.($aantal).' facturen aangemaakt.';
         echo "\n";
-        $time_end = microtime(true);
-        echo date("l jS \of F Y h:i:s A") . ': Processing for '.($time_end-$time_start).' seconds';
+        $timeEnd = microtime(true);
+        echo date("l jS \of F Y h:i:s A") . ': Processing for '.($timeEnd-$timeStart).' seconds';
         echo "\n\n";
 
-        $time_start = microtime(true);
-        $aantal = Factuur::verzendFacturen();
+        $timeStart = microtime(true);
+        $aantal = $factuur->verzendFacturen();
         echo 'Er zijn '.($aantal).' emails verzonden';
         echo "\n";
-        $time_end = microtime(true);
-        echo date("l jS \of F Y h:i:s A") . ': Processing for '.($time_end-$time_start).' seconds';
+        $timeEnd = microtime(true);
+        echo date("l jS \of F Y h:i:s A") . ': Processing for '.($timeEnd-$timeStart).' seconds';
         echo "\n\n";
 
-        $time_start = microtime(true);
-        $turven_controleren = Turven::controleerStatusTurven();
-        echo date("l jS \of F Y h:i:s A") . ': Er zijn '.($turven_controleren).' turven die gecontroleerd moeten wordne';
+        $turven = new Turven();
+        $timeStart = microtime(true);
+        $turvenControleren = $turven->controleerStatusTurven();
+        echo date("l jS \of F Y h:i:s A") . ': Er zijn '.($turvenControleren).' turven die gecontroleerd moeten wordne';
         echo "\n";
 
-        $transacties_controleren = Transacties::controleerStatusTransacties();
-        echo date("l jS \of F Y h:i:s A") . ': Er zijn '.($transacties_controleren).' transacties die gecontroleerd moeten worden';
+        $transacties = new Transacties();
+        $transactiesControleren = $transacties->controleerStatusTransacties();
+        echo date("l jS \of F Y h:i:s A") . ': Er zijn '.($transactiesControleren).' transacties die gecontroleerd moeten worden';
         echo "\n";
-        $time_end = microtime(true);
-        echo 'Processing for '.($time_end-$time_start).' seconds';
+        $timeEnd = microtime(true);
+        echo 'Processing for '.($timeEnd-$timeStart).' seconds';
         echo "\n\n";
 
-        $time_start = microtime(true);
-        $aantal = Mollie::automatischOphogen();
+        $timeStart = microtime(true);
+        $mollie = new Mollie();
+        $aantal = $mollie->automatischOphogen();
         echo 'Er zijn '.($aantal).' users automatisch opgehoogd';
         echo "\n";
-        $time_end = microtime(true);
-        echo date("l jS \of F Y h:i:s A") . ': Processing for '.($time_end-$time_start).' seconds';
+        $timeEnd = microtime(true);
+        echo date("l jS \of F Y h:i:s A") . ': Processing for '.($timeEnd-$timeStart).' seconds';
         echo "\n\n";
     }
 

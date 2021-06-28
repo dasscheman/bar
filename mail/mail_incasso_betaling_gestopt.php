@@ -23,7 +23,7 @@ use yii\helpers\Url;
         Dus doe dat liever niet.
         <br>
         <br>
-		Als je vragen hebt kun je mailen naar bar@debison.nl
+		Als je vragen hebt kun je mailen naar <?php echo $_ENV['URL'] ?>
         <br>
         <br>
 		Met vriendelijke groet,<br>

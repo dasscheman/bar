@@ -132,7 +132,8 @@ class SiteController extends Controller
         $uitgavenMateriaal = [];
         $series = [];
 
-        $kosteTypes = Kosten::getTypeOptions();
+        $kosteTypes = new Kosten();
+
         while ($i < 12) {
             $date = date("Ymd", strtotime("-$i months"));
             $maanden[] = date("M-Y", strtotime("-$i months"));
@@ -151,7 +152,7 @@ class SiteController extends Controller
                     ->andWhere('year(datum) = year(' . $date . ')')
                     ->sum('totaal_prijs');
 
-            foreach ($kosteTypes as $key => $kostenType) {
+            foreach ($kosteTypes->getTypeOptions() as $key => $kostenType) {
                 $uitgavenMateriaal[$kostenType][date("M", strtotime("-$i months"))] = (float) Kosten::find()
                         ->where('month(datum) = month(' . $date . ')')
                         ->andWhere('year(datum) = year(' . $date . ')')
@@ -316,7 +317,7 @@ class SiteController extends Controller
         $message = Yii::$app->mailer->compose('mail_test', [
                 'user' => $user,
             ])
-            ->setFrom('bar@debison.nl')
+            ->setFrom($_ENV['ADMIN_EMAIL'])
             ->setTo($user->email)
             ->setSubject('Test mail Bison bar');
         $message->send();

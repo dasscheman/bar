@@ -1,8 +1,10 @@
 <?php
 
+$dotenv = Dotenv\Dotenv::createImmutable(__DIR__, '../.env');
+$dotenv->load();
 
-require_once(__DIR__.'/debug.php');
-$params = require(__DIR__ . '/params.php');
+require_once(__DIR__.'/../config/debug.php');
+$params = require(__DIR__ . '/../config/params.php');
 
 $config = [
     'id' => 'basic',
@@ -16,7 +18,7 @@ $config = [
     'components' => [
         'request' => [
             // !!! insert a secret key in the following (if it is empty) - this is required by cookie validation
-            'cookieValidationKey' => 'gliGiDKmYVjfyIfOal2te8rf9PWo_q82',
+            'cookieValidationKey' => $_ENV['COOKIE_KEY'],
         ],
         'cache' => [
             'class' => 'yii\caching\FileCache',
@@ -34,11 +36,11 @@ $config = [
             // send all mails to a file by default. You have to set
             // 'useFileTransport' to false and configure a transport
             // for the mailer to send real emails.
-            'useFileTransport' => YII_ENV_DEV ? true : false,
-            'transport' => require(__DIR__ . '/email.php')
+            'useFileTransport' => $_ENV['EMAIL_TO_FILE'],
+            'transport' => require(__DIR__ . '/../config/email.php')
         ],
         'log' => [
-            'traceLevel' => YII_DEBUG ? 3 : 0,
+            'traceLevel' => $_ENV['YII_DEBUG_LEVEL'],
             'targets' => [
                 [
                     'class' => 'yii\log\FileTarget',
@@ -53,8 +55,7 @@ $config = [
         'db' => require(__DIR__ . '/db.php'),
         'urlManager' => [
             'class' => 'yii\web\UrlManager',
-//            'scriptUrl' => YII_ENV_DEV ? 'https://popupbar.biologenkantoor.nl' : 'https://bar.debison.nl',
-            'hostInfo' => YII_ENV_DEV ? 'https://popupbar.biologenkantoor.nl' : 'https://bar.debison.nl',
+            'hostInfo' => $_ENV['URL'],
         ],
 
 //        'authManager' => [
@@ -101,23 +102,29 @@ $config = [
              'class' => '\kartik\grid\Module'
          ]
     ],
+    'aliases' => [
+        '@bower' => '@vendor/bower-asset',
+        '@npm' => '@vendor/npm-asset',
+    ],
     'params' => $params,
 ];
 
-if (YII_ENV_DEV) {
+if ($_ENV['YII_ENV'] == 'dev') {
     // configuration adjustments for 'dev' environment
     $config['bootstrap'][] = 'debug';
     $config['modules']['debug'] = [
         'class' => 'yii\debug\Module',
         // uncomment the following to add your IP if you are not connecting from localhost.
-        //'allowedIPs' => ['127.0.0.1', '::1'],
+//        'allowedIPs' => ['127.0.0.1', '::1', '192.168.10.5'],
+        'allowedIPs' => ['*'],
     ];
 
     $config['bootstrap'][] = 'gii';
     $config['modules']['gii'] = [
         'class' => 'yii\gii\Module',
         // uncomment the following to add your IP if you are not connecting from localhost.
-        //'allowedIPs' => ['127.0.0.1', '::1'],
+//        'allowedIPs' => ['127.0.0.1', '::1', '192.168.10.5'],
+        'allowedIPs' => ['*'],
     ];
 }
 

@@ -95,7 +95,7 @@ class User extends BaseUser
     {
         return [
             'id' => 'ID',
-            'username' => 'Username',
+            'username' => 'Getoonde naam',
             'email' => 'Email',
             'password_hash' => 'Password Hash',
             'auth_key' => 'Auth Key',
@@ -705,7 +705,7 @@ class User extends BaseUser
      * @param int $id Assortiment id.
      * @return string Name of assortiment.
      */
-    public function getUserDisplayName($id)
+    public static function getUserDisplayName($id)
     {
         if (($model = self::findOne($id)) !== null) {
             $name = $model->profile->voornaam;

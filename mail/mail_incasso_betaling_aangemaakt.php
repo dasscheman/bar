@@ -21,12 +21,9 @@ use yii\helpers\Url;
         Hier kun je automatisch ophogen stop zetten of de hoogte van het bedrag wijzigen:
         <?php
 
-        if (YII_ENV === 'prod') {
-            $link = "https://bar.debison.nl/index.php?r=mollie/betaling&pay_key={$user->pay_key}";
-        } else {
-            $link = "https://popupbar.biologenkantoor.nl/index.php?r=mollie/betaling&pay_key={$user->pay_key}";
-        }
-            echo Html::a(' Automatisch ophogen wijzigen', $link); ?>
+        $link = "https://" . $_ENV['URL'] . "/index.php?r=mollie/betaling&pay_key={$user->pay_key}";
+
+        echo Html::a(' Automatisch ophogen wijzigen', $link); ?>
         <br>
         <br>
         Worden er incasso's gedaan waar je het niet mee eens bent, neem dan contact met mij op en dan regelen we het.
@@ -36,7 +33,7 @@ use yii\helpers\Url;
 
         <br>
         <br>
-		Als je vragen hebt kun je mailen naar bar@debison.nl
+		Als je vragen hebt kun je mailen naar <?php echo $_ENV['URL'] ?>
         <br>
         <br>
 		Met vriendelijke groet,<br>

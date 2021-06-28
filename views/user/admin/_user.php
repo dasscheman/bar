@@ -9,12 +9,19 @@
  * file that was distributed with this source code.
  */
 
+use kartik\money\MaskMoney;
+
 /**
  * @var yii\widgets\ActiveForm $form
  * @var dektrium\user\models\User $user
+ * @var dektrium\user\models\Profile $profile
  */
-?>
 
-<?= $form->field($user, 'email')->textInput(['maxlength' => 255]) ?>
-<?= $form->field($user, 'username')->textInput(['maxlength' => 255]) ?>
-<?= $form->field($user, 'password')->passwordInput() ?>
+echo $form->field($user, 'email')->textInput(['maxlength' => 255]);
+echo $form->field($user, 'username')->textInput(['maxlength' => 255]);
+echo $form->field($profile, 'name');
+echo $form->field($profile, 'public_email');
+echo $form->field($profile, 'limit_hard')->widget(MaskMoney::classname());
+echo $form->field($profile, 'limit_ophogen')->widget(MaskMoney::classname());
+
+

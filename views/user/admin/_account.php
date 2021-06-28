@@ -15,6 +15,7 @@ use yii\helpers\Html;
 /**
  * @var yii\web\View $this
  * @var dektrium\user\models\User $user
+ * @var dektrium\user\models\Profile $profile
  */
 ?>
 
@@ -31,7 +32,7 @@ use yii\helpers\Html;
     ],
 ]); ?>
 
-<?= $this->render('_user', ['form' => $form, 'user' => $user]) ?>
+<?= $this->render('_user', ['form' => $form, 'user' => $user, 'profile' => $user->profile]) ?>
 
 <div class="form-group">
     <div class="col-lg-offset-3 col-lg-9">

@@ -1,7 +1,7 @@
 <?php
 
 return [
-    'adminEmail' => 'bar@debison.nl',
+    'adminEmail' => $_ENV['ADMIN_EMAIL'],
     'maskMoneyOptions' => [
         'prefix' => '€ ',
         'suffix' => '',

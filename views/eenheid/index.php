@@ -41,7 +41,9 @@ $pjax = false; //TRUE zorgt ervoor dat de columnen vertraagd verspringen, dat is
             'name',
             'volume',
             'assortiment' => [
-                'filter' => Assortiment::getAssortimentNameOptions(),
+                'filter' => function ($model) {
+                    return $model->assortiment->getAssortimentNameOptions();
+                },
                 'attribute' => 'assortiment_id',
                 'value' => function ($model) {
                     return $model->assortiment->name;

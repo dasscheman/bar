@@ -73,7 +73,8 @@ class MollieController extends Controller
         $model = new Mollie;
         $model->scenario = 'betaling';
         if ($model->load(Yii::$app->request->post())) {
-            $model->type_id = BetalingType::getIdealId();
+            $betalingType = new BetalingType();
+            $model->type_id = $betalingType->getIdealId();
             $model->datum = date('Y-m-d H:i:s');
             $model->status = Transacties::STATUS_ingevoerd;
             if ($model->automatische_betaling) {
@@ -87,7 +88,7 @@ class MollieController extends Controller
                         'user' => $user,
                         'transactie' => $model,
                     ])
-                    ->setFrom('bar@debison.nl')
+                    ->setFrom($_ENV['ADMIN_EMAIL'])
                     ->setTo($user->email)
                     ->setSubject('Incasso betaling Bison bar');
                     if (!empty($user->profile->public_email)) {
@@ -161,7 +162,7 @@ class MollieController extends Controller
                     $model->factuur_id = null;
                     $model->deleted_at = null;
                     break;
-                case 'cancelled':
+                case 'canceled':
                     $model->mollie_status = Transacties::MOLLIE_STATUS_cancelled;
                     $model->status = Transacties::STATUS_geannuleerd;
                     $model->factuur_id = null;
@@ -202,7 +203,8 @@ class MollieController extends Controller
                 $model->sendErrorReport();
             }
             if ($old_factuur !== null) {
-                Factuur::deleteFactuur($old_factuur);
+                $factuur = new Factuur();
+                $factuur->deleteFactuur($old_factuur);
             }
             if ($payment->isPaid() === true) {
                 $user = User::findOne($model->transacties_user_id);
@@ -210,7 +212,7 @@ class MollieController extends Controller
                         'user' => $user,
                         'transactie' => $model,
                     ])
-                    ->setFrom('bar@debison.nl')
+                    ->setFrom($_ENV['ADMIN_EMAIL'])
                     ->setTo($user->email)
                     ->setSubject('Online betaling Bison bar');
                 if (!empty($user->profile->public_email)) {
@@ -223,7 +225,7 @@ class MollieController extends Controller
                         'user' => $user,
                         'transactie' => $model,
                     ])
-                    ->setFrom('bar@debison.nl')
+                    ->setFrom($_ENV['ADMIN_EMAIL'])
                     ->setTo($user->email)
                     ->setSubject('Fout bij online betaling Bison bar');
                 if (!empty($user->profile->public_email)) {
@@ -298,7 +300,7 @@ class MollieController extends Controller
             $message = Yii::$app->mailer->compose('mail_incasso_betaling_gewijzigd', [
                     'user' => $user,
                 ])
-                ->setFrom('bar@debison.nl')
+                ->setFrom($_ENV['ADMIN_EMAIL'])
                 ->setTo($user->email)
                 ->setSubject('Wijziging betaling Bison bar');
             if (!empty($user->profile->public_email)) {
@@ -340,7 +342,7 @@ class MollieController extends Controller
             $message = Yii::$app->mailer->compose('mail_incasso_betaling_gestopt', [
                     'user' => $user,
                 ])
-                ->setFrom('bar@debison.nl')
+                ->setFrom($_ENV['ADMIN_EMAIL'])
                 ->setTo($user->email)
                 ->setSubject('Annulering incasso Bison bar');
             if (!empty($user->profile->public_email)) {

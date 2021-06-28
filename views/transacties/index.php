@@ -90,7 +90,9 @@ $toolbar = false;
             ],
             'status' => [
                 'attribute' => 'status',
-                'filter'=> Transacties::getStatusOptions(),
+                'filter'=> function ($model) {
+                    return $model->getStatusOptions();
+                },
                 'value' => function ($model) {
                     return $model->getStatusText();
                 },

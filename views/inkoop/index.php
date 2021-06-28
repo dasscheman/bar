@@ -40,7 +40,9 @@ $toolbar = false;
                 },
             ],
             'assortiment' => [
-                'filter' => Assortiment::getAssortimentNameOptions(),
+                'filter' =>  function ($model) {
+                    return $model->assortiment->getAssortimentNameOptions();
+                },
                 'attribute' => 'assortiment_id',
                 'value' => function ($model) {
                     return $model->assortiment->name;
@@ -62,7 +64,9 @@ $toolbar = false;
             ],
             'type' => [
                 'attribute' => 'type',
-                'filter'=> Inkoop::getTypeOptions(),
+                'filter'=>  function ($model) {
+                    return $model->getTypeOptions();
+                },
                 'value' => function ($model) {
                     return $model->getTypeText();
                 },

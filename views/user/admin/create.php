@@ -16,6 +16,7 @@ use yii\helpers\Html;
 /**
  * @var yii\web\View $this
  * @var dektrium\user\models\User $user
+ * @var dektrium\user\models\Profile $profile
  */
 
 $this->title = Yii::t('user', 'Create a user account');
@@ -24,7 +25,6 @@ $this->params['breadcrumbs'][] = $this->title;
 ?>
 
 <?= $this->render('/_alert', ['module' => Yii::$app->getModule('user'),]) ?>
-
 <?= $this->render('_menu') ?>
 
 <div class="row">
@@ -37,10 +37,10 @@ $this->params['breadcrumbs'][] = $this->title;
                     ],
                     'items' => [
                         ['label' => Yii::t('user', 'Account details'), 'url' => ['/user/admin/create']],
-                        ['label' => Yii::t('user', 'Profile details'), 'options' => [
-                            'class' => 'disabled',
-                            'onclick' => 'return false;',
-                        ]],
+//                        ['label' => Yii::t('user', 'Profile details'), 'options' => [
+//                            'class' => 'disabled',
+//                            'onclick' => 'return false;',
+//                        ]],
                         ['label' => Yii::t('user', 'Information'), 'options' => [
                             'class' => 'disabled',
                             'onclick' => 'return false;',
@@ -59,8 +59,8 @@ $this->params['breadcrumbs'][] = $this->title;
                 </div>
                 <?php $form = ActiveForm::begin([
                     'layout' => 'horizontal',
-                    'enableAjaxValidation' => true,
-                    'enableClientValidation' => false,
+                    'enableAjaxValidation' => false,
+                    'enableClientValidation' => true,
                     'fieldConfig' => [
                         'horizontalCssClasses' => [
                             'wrapper' => 'col-sm-9',
@@ -68,7 +68,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     ],
                 ]); ?>
 
-                <?= $this->render('_user', ['form' => $form, 'user' => $user]) ?>
+                <?= $this->render('_user', ['form' => $form, 'user' => $user, 'profile' => $profile]) ?>
 
                 <div class="form-group">
                     <div class="col-lg-offset-3 col-lg-9">

@@ -48,7 +48,9 @@ $pjax = false; //TRUE zorgt ervoor dat de columnen vertraagd verspringen, dat is
             'totaal_prijs',
             'type' => [
                 'attribute' => 'type',
-                'filter'=> Afschrijving::getTypeOptions(),
+                'filter'=> function ($model) {
+                    return $model->getTypeOptions();
+                },
                 'value' => function ($model) {
                     return $model->getTypeText();
                 },

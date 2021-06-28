@@ -14,37 +14,47 @@
     },
     "minimum-stability": "stable",
     "require": {
-        "php": ">=5.4.0",
-        "yiisoft/yii2": "~2.0.5",
-        "yiisoft/yii2-bootstrap": "~2.0.0",
-        "yiisoft/yii2-swiftmailer": "~2.0.0",
-        "kartik-v/yii2-widgets": "dev-master",
-        "kartik-v/yii2-grid": "@dev",
-        "kartik-v/yii2-money": "dev-master",
-        "kartik-v/yii2-mpdf": "@dev",
-        "dektrium/yii2-user": "dev-master",
-        "dektrium/yii2-rbac": "1.0.0-alpha@dev",
-        "prawee/yii2-widgets": "dev-master",
-        "kartik-v/yii2-detail-view": "*",
-        "kartik-v/yii2-tabs-x": "*",
-        "mollie/mollie-api-php": "1.9.*",
-        "2amigos/yii2-highcharts-widget": "~1.0"
+        "php": ">=5.6.0",
+        "yiisoft/yii2": "~2",
+        "yiisoft/yii2-bootstrap": "~2",
+        "yiisoft/yii2-swiftmailer": "~2 || ~2.1.0",
+        "dektrium/yii2-user": "^0.9.14",
+        "dektrium/yii2-rbac": "^1.0",
+        "kartik-v/yii2-widgets": "^3.4",
+        "kartik-v/yii2-tabs-x": "^1.2",
+        "kartik-v/yii2-detail-view": "^1.8",
+        "mollie/mollie-api-php": "^2.29",
+        "2amigos/yii2-highcharts-widget": "^1.0",
+        "kartik-v/yii2-grid": "^3.3",
+        "kartik-v/yii2-money": "^1.2",
+        "vlucas/phpdotenv": "^5.3",
+        "kartik-v/yii2-mpdf": "^1.0"
     },
     "require-dev": {
-        "yiisoft/yii2-debug": "~2.0.0",
-        "yiisoft/yii2-gii": "~2.0.0",
-        "yiisoft/yii2-faker": "~2.0.0",
-
-        "codeception/base": "^2.2.3",
-        "codeception/verify": "~0.3.1",
-        "codeception/specify": "~0.4.3"
+        "yiisoft/yii2-debug": "~2",
+        "yiisoft/yii2-gii": "~2.2",
+        "yiisoft/yii2-faker": "~2",
+        "codeception/codeception": "^4.0",
+        "codeception/verify": "~0.5.0 || ~1.1.0",
+        "codeception/specify": "~0.4.6",
+        "symfony/browser-kit": ">=2.7 <=4.2.4",
+        "codeception/module-filesystem": "^1.0.0",
+        "codeception/module-yii2": "^1.0.0",
+        "codeception/module-asserts": "^1.0.0"
     },
     "config": {
-        "process-timeout": 1800
+        "process-timeout": 1800,
+        "fxp-asset": {
+            "enabled": false
+        }
     },
     "scripts": {
+        "post-install-cmd": [
+            "yii\\composer\\Installer::postInstall"
+        ],
         "post-create-project-cmd": [
-            "yii\\composer\\Installer::postCreateProject"
+            "yii\\composer\\Installer::postCreateProject",
+            "yii\\composer\\Installer::postInstall"
         ]
     },
     "extra": {
@@ -55,14 +65,22 @@
                     "web/assets": "0777",
                     "yii": "0755"
                 }
-            ],
+            ]
+        },
+        "yii\\composer\\Installer::postInstall": {
             "generateCookieValidationKey": [
                 "config/web.php"
             ]
         },
         "asset-installer-paths": {
             "npm-asset-library": "vendor/npm",
-            "bower-asset-library": "vendor/bower"
+            "bower-asset-library": "vendor/bower-asset"
         }
-    }
+    },
+    "repositories": [
+        {
+            "type": "composer",
+            "url": "https://asset-packagist.org"
+        }
+    ]
 }

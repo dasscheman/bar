@@ -15,14 +15,14 @@ use yii\helpers\Html;
     foreach ($models as $user) {
         if (!$user->limitenControleren($user->id)) {
             echo Html::button(
-                $user->profile->name,
+                $user->username,
                 [ 'class' => 'btn btn-lg btn-danger namen disabled']
             );
             // Na 1 maart 2018 continue
             continue;
         }
         echo Html::a(
-            $user->profile->name,
+            $user->username,
             [ 'barinvoer', 'user_id' => $user->id ],
             [ 'class' => 'btn-lg btn-success namen' ]
         );
