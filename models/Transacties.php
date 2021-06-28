@@ -326,7 +326,7 @@ class Transacties extends BarActiveRecord
         return $arrayRestuls;
     }
 
-    public function addRelatedTransactions($transaction_id, $all_related_transactions= [])
+    static public function addRelatedTransactions($transaction_id, $all_related_transactions= [])
     {
         $transactionsOld = RelatedTransacties::find()
                 ->where('parent_transacties_id =:transacties_id')

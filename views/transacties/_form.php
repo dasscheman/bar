@@ -17,7 +17,7 @@ use app\models\User;
 use yii\helpers\ArrayHelper;
 use kartik\widgets\DatePicker;
 use app\models\BetalingType;
-use app\models\Transacties;
+use kartik\widgets\FileInput;
 
 ?>
 
@@ -106,7 +106,14 @@ use app\models\Transacties;
     }
     if (Yii::$app->request->get('type') == null ||
         in_array(Yii::$app->request->get('type'), ['pin', 'declaratie_invoer', 'izettle_uitbetaling', 'mollie_uitbetaling', 'ing_kosten'])) {
-        echo $form->field($modelBonnen, 'image_temp', ['enableClientValidation' => false])->fileInput();
+        // Usage with ActiveForm and model
+        echo $form->field($modelBonnen, 'image_temp', ['enableClientValidation' => true])->widget(FileInput::classname(), [
+            'options' => ['accept' => 'image/*'],
+            'pluginOptions' => [
+                'showCaption' => false,
+                'showUpload' => false
+            ]
+        ]);
         echo Html::encode('Huidige bon: ' . $modelBonnen->image);
     }
     if (Yii::$app->request->get('type') == null ||

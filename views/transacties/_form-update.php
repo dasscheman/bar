@@ -9,16 +9,16 @@
  * @var $model app\models\Transacties
  */
 
-use kartik\money\MaskMoney;
-use kartik\select2\Select2;
 use yii\widgets\ActiveForm;
 use yii\helpers\Html;
 use yii\helpers\ArrayHelper;
-use kartik\widgets\DatePicker;
 use app\models\BetalingType;
 use app\models\Bonnen;
-use app\models\Transacties;
 use app\models\User;
+use kartik\widgets\DatePicker;
+use kartik\widgets\FileInput;
+use kartik\money\MaskMoney;
+use kartik\select2\Select2;
 
 ?>
 
@@ -62,7 +62,14 @@ use app\models\User;
             'allowClear' => true
         ],
     ]);
-    echo $form->field($modelBonnen, 'image_temp', ['enableClientValidation' => false])->fileInput();
+    echo $form->field($modelBonnen, 'image_temp', ['enableClientValidation' => true])->widget(FileInput::classname(), [
+        'options' => ['accept' => 'image/*'],
+        'pluginOptions' => [
+            'showCaption' => false,
+            'showUpload' => false
+        ]
+    ]);
+
     echo Html::encode('Huidige bon: ' . $modelBonnen->image);
     echo $form->field($modelBonnen, 'soort')->widget(Select2::className(), [
         'data' => $modelBonnen->getSoortOptions(),
