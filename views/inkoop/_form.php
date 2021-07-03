@@ -19,6 +19,13 @@ use app\models\Bonnen;
         <?= Html::encode($this->title) ?>
     </div>
     Hier kun je voorraad toevoegen.
+    <br>
+    Winkels als de Gepu en Makro geven meestal niet de totaal prijs. Korting en btw worden appart berekend.
+    Daarom zijn de velden korting (EUR), korting % en btw % toegevoegd. Voor boodschappen bij de Albert Heijn heb je die velden niet nodig, je kunt ze dan leeglaten.
+    Maar ze kunnen handig zijn voor de boodschappen van de groothandel. Deze velden worden niet opgeslagen en zijn alleen bedoelt als  rekenhulp.
+    <br>
+    LET OP! korting wordt eerst berekend als laatst pas de btw.
+
     <br><br>
     <?php
     $form = ActiveForm::begin([
@@ -57,6 +64,9 @@ use app\models\Bonnen;
     echo $form->field($model, 'aantal')->textInput();
 
     echo $form->field($model, 'totaal_prijs')->widget(MaskMoney::classname());
+    echo $form->field($model, 'korting_bedrag')->widget(MaskMoney::classname());
+    echo $form->field($model, 'korting_procent')->textInput();
+    echo $form->field($model, 'btw')->textInput();
 
     echo $form->field($model, 'type')->widget(Select2::className(), [
         'data' => $model->getTypeOptions(),

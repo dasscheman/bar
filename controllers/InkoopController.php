@@ -132,6 +132,8 @@ class InkoopController extends Controller
             $bon = Bonnen::findOne($model->bon_id);
             $model->datum = $bon->datum;
             $model->totaal_volume = $model->aantal * $model->volume;
+            $model->berekenPrijs();
+
             if (!$model->save()) {
                 foreach ($model->errors as $key => $error) {
                     Yii::$app->session->setFlash('warning', Yii::t('app', 'Fout met opslaan: ' . $key . ':' . $error[0]));
@@ -163,6 +165,7 @@ class InkoopController extends Controller
         $this->layout = 'main-fluid';
         if ($model->load(Yii::$app->request->post())) {
             $model->totaal_volume = $model->aantal * $model->volume;
+            $model->berekenPrijs();
             if($model->save()) {
                 return $this->redirect(['view', 'id' => $model->inkoop_id]);
             }

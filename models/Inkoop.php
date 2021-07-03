@@ -4,6 +4,7 @@ namespace app\models;
 
 use Yii;
 use app\models\BarActiveRecord;
+use yii\db\ActiveQuery;
 
 /**
  * This is the model class for table "inkoop".
@@ -26,6 +27,7 @@ use app\models\BarActiveRecord;
  * @property Bonnen $bon
  * @property User $createdBy
  * @property User $updatedBy
+ * @property mixed|null typeOptions
  */
 class Inkoop extends BarActiveRecord
 {
@@ -35,6 +37,10 @@ class Inkoop extends BarActiveRecord
     const TYPE_blik = 4;
 
     public $totaal_aantal;
+    public $korting_bedrag;
+    public $korting_procent;
+    public $btw;
+
     /**
      * @inheritdoc
      */
@@ -51,12 +57,13 @@ class Inkoop extends BarActiveRecord
         return [
             [['assortiment_id', 'datum', 'totaal_prijs', 'type'], 'required'],
             [['assortiment_id', 'bon_id', 'aantal', 'type', 'created_by', 'updated_by'], 'integer'],
-            [['datum', 'created_at', 'updated_at', 'totaal_aantal'], 'safe'],
-            [['volume', 'totaal_prijs'], 'number'],
-            [['assortiment_id'], 'exist', 'skipOnError' => true, 'targetClass' => Assortiment::className(), 'targetAttribute' => ['assortiment_id' => 'assortiment_id']],
-            [['bon_id'], 'exist', 'skipOnError' => true, 'targetClass' => Bonnen::className(), 'targetAttribute' => ['bon_id' => 'bon_id']],
-            [['created_by'], 'exist', 'skipOnError' => true, 'targetClass' => User::className(), 'targetAttribute' => ['created_by' => 'id']],
-            [['updated_by'], 'exist', 'skipOnError' => true, 'targetClass' => User::className(), 'targetAttribute' => ['updated_by' => 'id']],
+            [['datum', 'created_at', 'updated_at', 'totaal_aantal', 'korting_bedrag', 'korting_procent', 'btw'], 'safe'],
+            [['volume', 'totaal_prijs', 'korting_bedrag'], 'number', 'min' => 0],
+            [['korting_procent', 'btw'], 'number', 'max' => 100, 'min' => 0],
+            [['assortiment_id'], 'exist', 'skipOnError' => true, 'targetClass' => Assortiment::class, 'targetAttribute' => ['assortiment_id' => 'assortiment_id']],
+            [['bon_id'], 'exist', 'skipOnError' => true, 'targetClass' => Bonnen::class, 'targetAttribute' => ['bon_id' => 'bon_id']],
+            [['created_by'], 'exist', 'skipOnError' => true, 'targetClass' => User::class, 'targetAttribute' => ['created_by' => 'id']],
+            [['updated_by'], 'exist', 'skipOnError' => true, 'targetClass' => User::class, 'targetAttribute' => ['updated_by' => 'id']],
         ];
     }
 
@@ -79,47 +86,50 @@ class Inkoop extends BarActiveRecord
             'updated_at' => 'Updated At',
             'updated_by' => 'Updated By',
             'omschrijving' => 'Omschrijving',
+            'korting_procent' => 'Korting %',
+            'korting_bedrag' => 'Totaal korting (EUR)',
+            'btw' => 'btw %',
         ];
     }
 
     /**
-     * @return \yii\db\ActiveQuery
+     * @return ActiveQuery
      */
     public function getBon()
     {
-        return $this->hasOne(Bonnen::className(), ['bon_id' => 'bon_id']);
+        return $this->hasOne(Bonnen::class, ['bon_id' => 'bon_id']);
     }
 
     /**
-     * @return \yii\db\ActiveQuery
+     * @return ActiveQuery
      */
     public function getTransactie()
     {
-        return $this->hasOne(Transacties::className(), ['transacties_id' => 'transacties_id']);
+        return $this->hasOne(Transacties::class, ['transacties_id' => 'transacties_id']);
     }
 
     /**
-     * @return \yii\db\ActiveQuery
+     * @return ActiveQuery
      */
     public function getAssortiment()
     {
-        return $this->hasOne(Assortiment::className(), ['assortiment_id' => 'assortiment_id']);
+        return $this->hasOne(Assortiment::class, ['assortiment_id' => 'assortiment_id']);
     }
 
     /**
-     * @return \yii\db\ActiveQuery
+     * @return ActiveQuery
      */
     public function getCreatedBy()
     {
-        return $this->hasOne(User::className(), ['id' => 'created_by']);
+        return $this->hasOne(User::class, ['id' => 'created_by']);
     }
 
     /**
-     * @return \yii\db\ActiveQuery
+     * @return ActiveQuery
      */
     public function getUpdatedBy()
     {
-        return $this->hasOne(User::className(), ['id' => 'updated_by']);
+        return $this->hasOne(User::class, ['id' => 'updated_by']);
     }
 
     /**
@@ -154,6 +164,20 @@ class Inkoop extends BarActiveRecord
         if (isset($typeOptions[$this->type])) {
             return $typeOptions[$this->type];
         }
-        return "unknown type ({$this->type})";
+        return "unknown type ( $this->type )";
+    }
+
+    public function berekenPrijs()
+    {
+        if($this->korting_bedrag){
+            $this->totaal_prijs = $this->totaal_prijs - $this->korting_bedrag;
+        }
+        if($this->korting_procent){
+            $this->totaal_prijs = $this->totaal_prijs - (100 - $this->korting_procent) / 100;
+        }
+        if($this->btw){
+            $this->totaal_prijs = $this->totaal_prijs * ($this->btw / 100 + 1);
+            $this->totaal_prijs = $this->totaal_prijs * ($this->btw / 100 + 1);
+        }
     }
 }
