@@ -45,7 +45,6 @@ use dektrium\user\models\User as BaseUser;
  * @property FavorietenLijsten[] $favorietenLijstens1
  * @property Inkoop[] $inkoops
  * @property Inkoop[] $inkoops0
- * @property Inkoop[] $inkoops
  * @property Kosten[] $kostens
  * @property Kosten[] $kostens0
  * @property Prijslijst[] $prijslijsts
