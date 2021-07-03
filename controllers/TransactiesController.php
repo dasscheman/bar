@@ -6,10 +6,12 @@ use Yii;
 use dektrium\user\filters\AccessRule;
 use app\models\BetalingType;
 use app\models\Bonnen;
+use app\models\Kosten;
 use app\models\RelatedTransacties;
 use app\models\Turven;
 use app\models\Transacties;
 use app\models\TransactiesSearch;
+use yii\base\BaseObject;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
@@ -136,6 +138,7 @@ class TransactiesController extends Controller
         $this->layout = 'main-fluid';
         if ($model->load(Yii::$app->request->post())) {
             $model->status = Transacties::STATUS_gecontroleerd;
+            $modelKosten = null;
             switch (Yii::$app->request->get('type')) {
                 case 'pin':
                     $model->type_id = BetalingType::getPinId();
@@ -161,6 +164,14 @@ class TransactiesController extends Controller
                     break;
                 case 'mollie_uitbetaling':
                     $model->type_id = BetalingType::getMollieUitbetalingId();
+                    $model->omschrijving = BetalingType::getOmschrijving(BetalingType::getMollieUitbetalingId());
+                    if (Yii::$app->request->post('Transacties')['bedrag_kosten'] != null) {
+                        $modelKosten = new Kosten();
+                        $modelKosten->prijs = Yii::$app->request->post('Transacties')['bedrag_kosten'];
+                        $modelKosten->datum = $model->datum;
+                        $modelKosten->type = $modelKosten::TYPE_bank_kosten;
+                        $modelKosten->omschrijving = BetalingType::getOmschrijving(BetalingType::getMollieKostenId());
+                    }
                     break;
                 case 'izettle_kosten':
                     $model->type_id = BetalingType::getIzettleKosotenId();
@@ -184,34 +195,23 @@ class TransactiesController extends Controller
 
             if ($model->save()) {
                 $modelBon = new Bonnen();
-                if ($modelBon->load(Yii::$app->request->post())) {
-                    if ($modelBon->soort == null) {
-                        $modelBon->soort = Bonnen::SOORT_overige;
-                    }
 
-                    // get the uploaded file instance. for multiple file uploads
-                    // the following data will return an array
-                    $image = UploadedFile::getInstance($modelBon, 'image_temp');
-                    // store the source file name
-                    $modelBon->image = date('Y-m-d H:i:s') . '-' . $image->name;
-                    $modelBon->bedrag = $model->bedrag;
-                    $modelBon->datum = $model->datum;
-                    $modelBon->type = Bonnen::TYPE_pin_betaling;
-                    $modelBon->omschrijving = $model->omschrijving;
-                    $path = Yii::$app->params['bonnen_path'] . $modelBon->image;
-                    if ($modelBon->save()) {
-                        $image->saveAs($path);
-                        $model->bon_id = $modelBon->bon_id;
-                        $model->save();
-                    } else {
-                        foreach ($modelBon->errors as $key => $error) {
-                            Yii::$app->session->setFlash('warning', Yii::t('app', 'Fout met opslaan van de Bon: ' . $key . ':' . $error[0]));
-                        }
+                if ($modelBon->load(Yii::$app->request->post()) ) {
+                    $modelBon->saveBonForTransactie($model);
+                }
+                if (isset($modelKosten)) {
+                    $modelKosten->bon_id = $modelBon->bon_id;
+                    $modelKosten->transacties_id = $model->transacties_id;
+                    $modelKosten->save();
+
+                    foreach ($modelKosten->errors as $key => $error) {
+                        Yii::$app->session->setFlash('warning', Yii::t('app', 'Fout met opslaan: ' . $key . ':' . $error[0]));
                     }
                 }
                 if (isset(Yii::$app->request->post('Transacties')['all_related_transactions'])) {
                     Transacties::addRelatedTransactions($model->transacties_id, Yii::$app->request->post('Transacties')['all_related_transactions']);
                 }
+
                 if(!isset($redirect)) {
                     $redirect = ['view', 'id' => $model->transacties_id];
                 }

@@ -63,10 +63,12 @@ use kartik\widgets\FileInput;
             Verder moet een uitdraai van Izettle met een overzicht toegevoegd worden.';
             break;
         case 'mollie_uitbetaling':
-            echo 'Mollie doet maandelijks een uitbetaling. Het totale bedrag kan hier ingevoerd worden.
-            Verder moeten de Mollie invoeren die hiermee uitbetaald worden, gelinkt worden.
-            Omdat er meerdere transacties in 1 keer uitbetaald kunnen worden, hoeft er geen naam toegevoegd te worden.
-            Verder moet een uitdraai van Mollie met een overzicht toegevoegd worden.';
+            $transactionsArray = $modelTransacties->getTransactionsArray();
+            echo 'Mollie doet maandelijks een uitbetaling. Het totale bedrag wat op de bankrekening bijgescreven wordt 
+            moet hier ingevoerd worden. Verder moeten de Ideal betalingen die hiermee uitbetaald worden, gelinkt worden (dit kan ook nog later).
+            <br>
+            De PDF uitdraai van Mollie met een overzicht moet hier toegevoegd worden. Je kunt hier ook nog de kosten invoeren die Mollie rekent.
+            Er wordt dan automatisch een kostenpost en een bon gemaakt.';
             break;
         case 'izettle_kosten':
             echo 'De kosten die Izettle rekent voor hun diensten
@@ -101,7 +103,7 @@ use kartik\widgets\FileInput;
         ]);
     }
     if(Yii::$app->request->get('type') == null ||
-        in_array(Yii::$app->request->get('type'), ['pin', 'mollie_uitbetaling'])) {
+        in_array(Yii::$app->request->get('type'), ['pin'])) {
         echo $form->field($modelTransacties, 'omschrijving')->textInput();
     }
     if (Yii::$app->request->get('type') == null ||
@@ -114,7 +116,9 @@ use kartik\widgets\FileInput;
                 'showUpload' => false
             ]
         ]);
-        echo Html::encode('Huidige bon: ' . $modelBonnen->image);
+        if($modelBonnen->image != null) {
+            echo Html::encode('Huidige bon: ' . $modelBonnen->image);
+        }
     }
     if (Yii::$app->request->get('type') == null ||
         in_array(Yii::$app->request->get('type'), ['pin', 'declaratie_invoer', 'ing_kosten'])) {
@@ -129,11 +133,17 @@ use kartik\widgets\FileInput;
 
     if (Yii::$app->request->get('type') == null ||
         in_array(Yii::$app->request->get('type'), ['declaratie_uitbetaling', 'izettle_uitbetaling', 'mollie_uitbetaling', 'izettle_kosten', 'mollie_kosten'])) {
+        $transactionsArray = $modelTransacties->getTransactionsArray();
+
+        if(Yii::$app->request->get('type') == 'mollie_uitbetaling') {
+            $transactionsArray = $modelTransacties->getTransactionsArray([BetalingType::getIdealTerugbetalingId(), BetalingType::getIdealId()],
+                [\app\models\Transacties::MOLLIE_STATUS_paid]);
+        }
         echo $form->field($modelTransacties, 'all_related_transactions')->widget(Select2::classname(), [
             'name' => 'all_related_transactions',
             'value' => $modelTransacties->all_related_transactions,
             'id' => $modelTransacties->transacties_id,
-            'data' => $modelTransacties->getTransactionsArray(),
+            'data' => $transactionsArray,
             'options' => [
                 'placeholder' => 'Filter as you type ...',
                 'id' => $modelTransacties->transacties_id,
@@ -147,6 +157,10 @@ use kartik\widgets\FileInput;
     }
 
     echo $form->field($modelTransacties, 'bedrag')->widget(MaskMoney::classname());
+    if (Yii::$app->request->get('type') == 'mollie_uitbetaling') {
+        echo $form->field($modelTransacties, 'bedrag_kosten')->widget(MaskMoney::classname());
+    }
+
     if (Yii::$app->request->get('type') == null) {
         echo $form->field($modelTransacties, 'type_id')->widget(Select2::className(), [
             'data' => ArrayHelper::map(BetalingType::find()->all(), 'type_id', 'omschrijving'),

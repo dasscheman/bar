@@ -49,6 +49,7 @@ class Transacties extends BarActiveRecord
     const MOLLIE_STATUS_pending = 7;
     const MOLLIE_STATUS_paidout = 8;
     public $all_related_transactions;
+    public $bedrag_kosten;
 
     /**
      * @inheritdoc
@@ -69,7 +70,8 @@ class Transacties extends BarActiveRecord
                 if( BetalingType::getIzettleUitbetalingId() == $model->type_id ||
                     BetalingType::getPinId() == $model->type_id ||
                     BetalingType::getMollieUitbetalingId() == $model->type_id ||
-                    BetalingType::getIngKostenId() == $model->type_id) {
+                    BetalingType::getIngKostenId() == $model->type_id ||
+                    BetalingType::getMollieKostenId() == $model->type_id) {
                     return false;
                 }
                 return true;
@@ -95,10 +97,11 @@ class Transacties extends BarActiveRecord
         return [
             'transacties_id' => 'ID',
             'transacties_user_id' => 'Voor',
-            'all_related_transactions' => 'Gelinkte trans.',
+            'all_related_transactions' => 'Gelinkte Ideal transacties',
             'factuur_id' => Yii::t('app', 'Factuur ID'),
             'omschrijving' => 'Omschrijving',
-            'bedrag' => 'Bedrag',
+            'bedrag' => 'Bedrag uitgekeerd',
+            'bedrag_kosten' => 'In rekening gebracht kosten',
             'type_id' => 'Type ID',
             'bon_id' => 'Bon ID',
             'status' => 'Status',
@@ -261,13 +264,21 @@ class Transacties extends BarActiveRecord
     public function getTransactionOmschrijving()
     {
         $omschrijving = $this->omschrijving . ' - '
-            . $this->getType()->one()->omschrijving;
+            . $this->getType()->one()->omschrijving .
+            ' - Tran ID ' . $this->transacties_id .
+            ' - ' . round($this->bedrag, 2) .
+            ' - ' . Yii::$app->setupdatetime->displayFormat($this->datum, 'php:d-M-Y');
         if ($this->getTransactiesUser()->one() !== null) {
             $omschrijving .= ' ('
                 . $this->getTransactiesUser()->one()->getProfile()->one()->voornaam . ' '
                 . $this->getTransactiesUser()->one()->getProfile()->one()->achternaam . ')';
         }
         return $omschrijving;
+    }
+
+    public function getUserName()
+    {
+        return $this->transactiesUser->username;
     }
 
     /**
@@ -318,11 +329,19 @@ class Transacties extends BarActiveRecord
     * Retrieves a list of users
     * @return array an of available relatedtransactions.'.
     */
-    public function getTransactionsArray()
+    public function getTransactionsArray($types = null, $status = null)
     {
-        $result = Transacties::find()
-            ->all();
-        $arrayRestuls = ArrayHelper::map($result, 'transacties_id', 'transactionOmschrijving');
+        $results = Transacties::find();
+
+        if($types) {
+            $results->andWhere(['in', 'type_id', $types]);
+        }
+
+        if($status) {
+            $results->andWhere(['in', 'status', $status]);
+        }
+
+        $arrayRestuls = ArrayHelper::map($results->orderBy('datum')->all(), 'transacties_id', 'transactionOmschrijving', 'userName');
         return $arrayRestuls;
     }
 

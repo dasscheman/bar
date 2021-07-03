@@ -180,7 +180,7 @@ class Mollie extends Transacties
                 "value" => $this->bedrag,
             ],
             "method"       => PaymentMethod::IDEAL,
-            "description"  => $this->omschrijving,
+            "description"  => $this->omschrijving . ' transacties_id: '  . $this->transacties_id,
             "metadata"     => [
                 "transacties_id" => $this->transacties_id,
             ],

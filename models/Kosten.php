@@ -14,6 +14,7 @@ use app\models\BarActiveRecord;
  * @property string $datum
  * @property string $prijs
  * @property integer $type
+ * @property integer $transacties_id
  * @property string $created_at
  * @property integer $created_by
  * @property string $updated_at
@@ -44,9 +45,9 @@ class Kosten extends BarActiveRecord
     public function rules()
     {
         return [
-            [['bon_id', 'type', 'created_by', 'updated_by'], 'integer'],
-            [['omschrijving', 'datum', 'prijs', 'type'], 'required'],
-            [['datum', 'created_at', 'updated_at'], 'safe'],
+            [['bon_id', 'type', 'transacties_id', 'created_by', 'updated_by'], 'integer'],
+            [['omschrijving', 'datum', 'prijs', 'type', 'transacties_id'], 'required'],
+            [['transacties_id', 'datum', 'created_at', 'updated_at'], 'safe'],
             [['prijs'], 'number'],
             [['omschrijving'], 'string', 'max' => 255],
             [['bon_id'], 'exist', 'skipOnError' => true, 'targetClass' => Bonnen::className(), 'targetAttribute' => ['bon_id' => 'bon_id']],
@@ -71,6 +72,7 @@ class Kosten extends BarActiveRecord
             'created_by' => 'Created By',
             'updated_at' => 'Updated At',
             'updated_by' => 'Updated By',
+            'transactie_id' => 'transactie id'
         ];
     }
 
