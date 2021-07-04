@@ -18,7 +18,7 @@ echo Nav::widget([
         ],
         [
             'label' => 'Transacties',
-            'url' => ['/transacties/index']
+            'url' => ['/transacties/bank']
         ],
         [
             'label' => 'Turven',

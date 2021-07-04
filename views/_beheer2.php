@@ -10,6 +10,7 @@
  */
 
 use yii\bootstrap\Nav;
+use app\models\BetalingType;
 
 /**
  * @var \yii\web\View $this
@@ -40,6 +41,10 @@ use yii\bootstrap\Nav;
                             'url' => ['/transacties/index']
                         ],
                         [
+                            'label' => 'Kosten',
+                            'url' => ['/kosten/index']
+                        ],
+                        [
                             'label' => 'Bonnen',
                             'url' => ['/bonnen/index']
                         ],
@@ -48,46 +53,42 @@ use yii\bootstrap\Nav;
                             'url' => ['/factuur/index']
                         ],
                         [
-                            'label' => 'Betalings Typen',
-                            'url' => ['/betaling-type/index']
-                        ],
-                        [
                             'label' => 'Transacties invoeren',
                             'options' => ['class' =>'nav-pills'],
                             'items' => [
                                 [
                                     'label' => Yii::t('app', 'Betaling gedaan met pinpas'),
-                                    'url' => ['/transacties/create', 'type' => 'pin'],
+                                    'url' => ['/transacties/create', 'type_id' => BetalingType::getPinId()],
                                 ],
                                 [
                                     'label' => Yii::t('app', 'Bankoverschrijving bij van gebruiker'),
-                                    'url' => ['/transacties/create', 'type' => 'bankbij_gebruiker'],
+                                    'url' => ['/transacties/create', 'type_id' => BetalingType::getBankBijId()],
                                 ],
                                 [
                                     'label' => Yii::t('app', 'Izettle pin invoeren'),
-                                    'url' => [ '/transacties/create', 'type' => 'izettle_invoer'],
+                                    'url' => [ '/transacties/create', 'type_id' => BetalingType::getIzettleInvoerId()],
                                 ],
                                 [
                                     'label' => Yii::t('app', 'Statiegeld ontvangen'),
-                                    'url' => [ '/transacties/create', 'type' => 'statiegeld'],
+                                    'url' => [ '/transacties/create', 'type_id' => BetalingType::getStatiegeldId()],
                                 ],
                                 [
                                     'label' => Yii::t('app', 'Declaratie Invoeren'),
-                                    'url' => [ '/transacties/create', 'type' => 'declaratie_invoer'],
+                                    'url' => [ '/transacties/create', 'type_id' => BetalingType::getDeclaratieInvoerId()],
                                 ],
                                 '<li class="divider"></li>',
                                 '<li class="dropdown-header">Uitbetalingen</li>',
                                 [
                                     'label' => Yii::t('app', 'Declaratie Uitbetalen'),
-                                    'url' => [ '/transacties/create', 'type' => 'declaratie_uitbetaling'],
+                                    'url' => [ '/transacties/create', 'type_id' => BetalingType::getDeclaratieUitbetaalsId()],
                                 ],
                                 [
                                     'label' => Yii::t('app', 'Izettle uitbetaling'),
-                                    'url' => [ '/transacties/create', 'type' => 'izettle_uitbetaling'],
+                                    'url' => [ '/transacties/create', 'type_id' => BetalingType::getIzettleUitbetalingId()],
                                 ],
                                 [
                                     'label' => Yii::t('app', 'Mollie uitbetaling'),
-                                    'url' => [ '/transacties/create', 'type' => 'mollie_uitbetaling'],
+                                    'url' => [ '/transacties/create', 'type_id' => BetalingType::getMollieKostenId()],
                                 ],
 
                                 '<li class="divider"></li>',
@@ -95,15 +96,15 @@ use yii\bootstrap\Nav;
 
                                 [
                                     'label' => Yii::t('app', 'Izettle kosten'),
-                                    'url' => [ '/transacties/create', 'type' => 'izettle_kosten'],
+                                    'url' => [ '/transacties/create', 'type_id' => BetalingType::getIzettleKosotenId()],
                                 ],
                                 [
                                     'label' => Yii::t('app', 'ING kosten'),
-                                    'url' => [ '/transacties/create', 'type' => 'ing_kosten'],
+                                    'url' => [ '/transacties/create', 'type_id' =>BetalingType::getIngKostenId()],
                                 ],
                                 [
                                     'label' => Yii::t('app', 'Mollie kosten'),
-                                    'url' => [ '/transacties/create', 'type' => 'mollie_kosten'],
+                                    'url' => [ '/transacties/create', 'type_id' => BetalingType::getMollieKostenId()],
                                 ],
 
                                 '<li class="divider"></li>',

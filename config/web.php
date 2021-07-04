@@ -15,7 +15,9 @@ $config = [
         'log',
         'app\components\Bootstrap',
     ],
+    'language' => 'nl',
     'components' => [
+        'sourceLanguage' => 'nl',
         'request' => [
             // !!! insert a secret key in the following (if it is empty) - this is required by cookie validation
             'cookieValidationKey' => $_ENV['COOKIE_KEY'],
@@ -75,15 +77,23 @@ $config = [
         ],
         'i18n' => [
             'translations' => [
-//                'app' => [
-//                    'class' => 'yii\i18n\PhpMessageSource',
-//                    'basePath' => '@app/messages',
-//                ],
-                'kvgrid' => [
+                '*' => [
                     'class' => 'yii\i18n\PhpMessageSource',
                     'basePath' => '@app/messages',
+                    'sourceLanguage' => 'en-US',
+                    'fileMap' => [
+                        'app' => 'app.php',
+                        'betalingstypes' => 'betalingstypes.php',
+                        'app/error' => 'error.php',
+                    ],
+                    //'on missingTranslation' => ['app\components\TranslationEventHandler', 'handleMissingTranslation']
                 ],
             ],
+        ],
+        'formatter' => [
+            'class' => 'yii\i18n\Formatter',
+            'nullDisplay' => '',
+            'defaultTimeZone' => 'Europe/Amsterdam',
         ],
     ],
     'modules' => [

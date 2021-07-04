@@ -49,10 +49,6 @@ use yii\bootstrap\Nav;
                             'url' => ['/afschrijving/index']
                         ],
                         [
-                            'label' => 'Kosten',
-                            'url' => ['/kosten/index']
-                        ],
-                        [
                             'label' => 'Prijslijst',
                             'url' => ['/prijslijst/index']
                         ],
