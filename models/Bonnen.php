@@ -66,7 +66,7 @@ class Bonnen extends BarActiveRecord
             }, 'enableClientValidation' => false
             ],
             [['type', 'created_by', 'updated_by', 'inkoper_user_id', 'soort'], 'integer'],
-            [['datum', 'created_at', 'updated_at'], 'safe'],
+            [['bon_id', 'datum', 'created_at', 'updated_at'], 'safe'],
             [['bedrag'], 'number'],
             [['omschrijving', 'image'], 'string', 'max' => 255],
             [['image_temp'],'file', 'extensions'=>'jpg, gif, png, jpeg, pdf', 'maxSize'=>1024 * 1024 * 2],
@@ -232,10 +232,18 @@ class Bonnen extends BarActiveRecord
         if ($this->soort == null) {
             $this->soort = Bonnen::SOORT_overige;
         }
+        $image = UploadedFile::getInstance($this, 'image_temp');
+        if(isset($this->bon_id)) {
+            if($image) {
+                Yii::$app->session->setFlash('warning', Yii::t('app', 'Er is een bestaande bon gelinkt, het geladen bestand is genegeerd!'));
+            }
+            $model->bon_id = $this->bon_id;
+            $model->save();
+            return;
+        }
 
         // get the uploaded file instance. for multiple file uploads
         // the following data will return an array
-        $image = UploadedFile::getInstance($this, 'image_temp');
         if(!$image) {
             Yii::$app->session->setFlash('warning', Yii::t('app', 'Geen bon aanwezig '));
             return;

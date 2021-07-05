@@ -14,6 +14,7 @@ use kartik\select2\Select2;
 use yii\widgets\ActiveForm;
 use yii\helpers\Html;
 use app\models\User;
+use app\models\Bonnen;
 use yii\helpers\ArrayHelper;
 use kartik\widgets\DatePicker;
 use app\models\BetalingType;
@@ -65,10 +66,26 @@ use kartik\widgets\FileInput;
                 'showUpload' => false
             ]
         ]);
-        if($modelBonnen->image != null) {
-            echo Html::encode('Huidige bon: ' . $modelBonnen->image);
-        }
     }
+
+    echo $form->field($modelBonnen, 'bon_id')->widget(Select2::className(), [
+        'data' => ArrayHelper::map(
+            Bonnen::find()->orderBy(['bon_id' => SORT_DESC])->all(),
+            'bon_id',
+            function($model, $defaultValue) {
+
+                return $model->bon_id . ': ' . $model['omschrijving']. ' (' . $model->bedrag .' - ' . $model->datum . ')';
+            }
+        ),
+        'options'   => [
+            'placeholder' => Yii::t('app', 'Selecteer een bon'),
+            'id' => 'transacties_id',
+        ],
+        'pluginOptions' => [
+            'allowClear' => true
+        ],
+    ]);
+
     if (Yii::$app->request->get('type_id') == null ||
         in_array(Yii::$app->request->get('type_id'), [BetalingType::getPinId(), BetalingType::getDeclaratieInvoerId()])) {
         echo $form->field($modelBonnen, 'soort')->widget(Select2::class, [

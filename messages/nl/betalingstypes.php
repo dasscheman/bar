@@ -43,7 +43,10 @@ return [
             Want die heeft de orginele bon van de declaratie. Als er meerdere declaratie zijn ingevoerd,
             kunnen er ook meerdere gelinkt worden.',
     'uitleg_14' => 'De kosten die de ING rekent voor hun diensten
-            Een afschrift invoeren is verplicht. Er wordt dan automatisch een kostenpost en een bon gemaakt.',
+            Een afschrift invoeren is verplicht. Er wordt dan automatisch een kostenpost en een bon gemaakt. 
+            <br>
+            <br>
+            LET OP! je moet of een bestand teovoegen of een een bestaande bon selecteren.',
     'uitleg_15' => 'De kosten die Izettle rekent voor hun diensten
             De transactie van de uitbetaling moet gelinkt worden, want die heeft een uitdraai met ook de kosten',
     'uitleg_16' => 'De kosten die Mollie rekent voor hun diensten

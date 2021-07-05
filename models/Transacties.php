@@ -449,34 +449,32 @@ class Transacties extends BarActiveRecord
     }
 
     public function isBonRequired(){
-        switch ($this->getType()->one()->omschrijving) {
-            case 'Pin betaling':
-            case 'Declaratie':
-            case 'Bankoverschrijving Af':
-            case 'Uitbetaling Mollie':
-                return true;
-        }
-
-        return false;
+        return in_array($this->type_id, [
+            BetalingType::getPinId(),
+            BetalingType::getDeclaratieInvoerId(),
+            BetalingType::getBankAfId(),
+            BetalingType::getMollieUitbetalingId(),
+            BetalingType::getIngKostenId()
+        ]);
     }
 
     public function isInkoopRequired() {
-        $type = $this->getType()->one()->omschrijving;
-        if ($type == 'Pin betaling' &&
+        $type_id = $this->type_id;
+        if ($type_id == BetalingType::getPinId() &&
           $this->getBon()->exists() &&
           !$this->bon->getKostens()->exists()) {
             // bij pin betalingen moeten of kosten of inkopen gelinkt zijn
             return true;
         }
 
-        if($type == 'Declaratie' &&
+        if($type_id == BetalingType::getDeclaratieInvoerId() &&
           $this->getBon()->exists() &&
           !$this->bon->getKostens()->exists()) {
             // bij pin betalingen moeten of kosten of inkopen gelinkt zijn
             return true;
         }
 
-        if ($type == 'Bankoverschrijving Af' &&
+        if ($type_id == BetalingType::getBankAfId() &&
           $this->getBon()->exists() &&
           !$this->bon->getKostens()->exists()) {
             // bij pin betalingen moeten of kosten of inkopen gelinkt zijn
@@ -487,29 +485,29 @@ class Transacties extends BarActiveRecord
     }
 
     public function isKostenRequired() {
-        $type = $this->getType()->one()->omschrijving;
-        if ($type == 'Pin betaling' &&
+        $type_id = $this->type_id;
+        if ($type_id == BetalingType::getPinId() &&
           $this->getBon()->exists() &&
           ! $this->bon->getInkoops()->exists()) {
             // bij pin betalingen moeten of kosten of inkopen gelinkt zijn
             return true;
         }
 
-        if ($type == 'Declaratie' &&
+        if ($type_id == BetalingType::getDeclaratieInvoerId() &&
           $this->getBon()->exists() &&
           !$this->bon->getInkoops()->exists()) {
             // bij pin betalingen moeten of kosten of inkopen gelinkt zijn
             return true;
         }
 
-        if ($type == 'Bankoverschrijving Af' &&
+        if ($type_id == BetalingType::getBankAfId() &&
           $this->getBon()->exists() &&
           !$this->bon->getInkoops()->exists()) {
             // bij pin betalingen moeten of kosten of inkopen gelinkt zijn
             return true;
         }
 
-        if ($type == 'Uitbetaling Mollie') {
+        if ($type_id == BetalingType::getMollieUitbetalingId()) {
             return true;
         }
         return false;

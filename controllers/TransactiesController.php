@@ -212,12 +212,7 @@ class TransactiesController extends Controller
         if (isset(Yii::$app->request->post('Transacties')['all_related_transactions'])) {
             Transacties::addRelatedTransactions($model->transacties_id, Yii::$app->request->post('Transacties')['all_related_transactions']);
         }
-//        dd('asd');
-//        $this->layout = 'main-fluid';
-//        return $this->    render('beheer', [
-//            'searchModel' => $searchModel,
-//            'dataProvider' => $dataProvider,
-//        ]);
+
         return $this->render('beheer', ['model' => $model]);
     }
 
