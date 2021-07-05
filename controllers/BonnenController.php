@@ -99,7 +99,7 @@ class BonnenController extends Controller
             $path = Yii::$app->params['bonnen_path'] . $model->image;
             if ($model->save()) {
                 $image->saveAs($path);
-                return $this->redirect(['view', 'id' => $model->bon_id]);
+                return $this->render('beheer', ['model' => $model]);
             } else {
                 foreach ($model->errors as $key => $error) {
                     Yii::$app->session->setFlash('warning', Yii::t('app', 'Fout met opslaan: ' . $key . ':' . $error[0]));
@@ -123,7 +123,7 @@ class BonnenController extends Controller
 
         $this->layout = 'main-fluid';
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->bon_id]);
+            return $this->render('beheer', ['model' => $model]);
         } else {
             return $this->render('update', [
                 'model' => $model,

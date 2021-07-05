@@ -233,7 +233,7 @@ class Bonnen extends BarActiveRecord
             $this->soort = Bonnen::SOORT_overige;
         }
         $image = UploadedFile::getInstance($this, 'image_temp');
-        if(isset($this->bon_id)) {
+        if($this->bon_id != null || $this->bon_id != '' ) {
             if($image) {
                 Yii::$app->session->setFlash('warning', Yii::t('app', 'Er is een bestaande bon gelinkt, het geladen bestand is genegeerd!'));
             }

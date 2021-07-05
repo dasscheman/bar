@@ -45,7 +45,6 @@ use kartik\widgets\FileInput;
         ],
     ]);
     echo $form->field($model, 'image_temp', ['enableClientValidation' => true])->widget(FileInput::classname(), [
-        'options' => ['accept' => 'image/*'],
         'pluginOptions' => [
             'showCaption' => false,
             'showUpload' => false
