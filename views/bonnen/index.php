@@ -42,6 +42,22 @@ $toolbar = false;
         'filterModel'  => $searchModel,
         'layout'       => "{items}\n{pager}",
         'columns' => [
+            [
+                'header' => Yii::t('app', 'View details'),
+                'class' => 'kartik\grid\ExpandRowColumn',
+                'width' => '50px',
+                'value' => function ($model, $key, $index, $column) {
+                    return GridView::ROW_COLLAPSED;
+                },
+                'detail' => function ($model, $key, $index, $column) {
+                    return Yii::$app->controller->renderPartial(
+                        '/bonnen/view', ['model' => $model]);
+                },
+                'headerOptions' => ['class' => 'kartik-sheet-style'],
+                'expandOneOnly' => true,
+                'expandTitle' => Yii::t('app', 'Open detail view'),
+                'collapseTitle' => Yii::t('app', 'Close detail view'),
+            ],
             'bon_id',
             'omschrijving',
             'type',

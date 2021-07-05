@@ -134,7 +134,7 @@ class BonnenController extends Controller
     public function actionDownload($id)
     {
         $download = Bonnen::findOne($id);
-        $path=Yii::getAlias('@webroot').'/uploads/bonnen/'.$download->image;
+        $path = Yii::getAlias('@webroot').'/uploads/bonnen/' . $download->image;
         if (file_exists($path)) {
             return Yii::$app->response->sendFile($path);
         } else {
