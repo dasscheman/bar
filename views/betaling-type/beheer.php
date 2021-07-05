@@ -11,7 +11,7 @@
  * @var \app\models\Assortiment $searchModel
  */
 
-$this->beginContent('../views/_beheer2.php');
+$this->beginContent('../views/_beheer4.php');
         echo $this->render('index', [
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,

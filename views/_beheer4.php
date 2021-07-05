@@ -31,17 +31,31 @@ use yii\bootstrap\Nav;
                         'class' => 'nav-pills nav-stacked',
                     ],
                     'items' => [
-                        ['label' => 'Favorieten', 'url' => ['/favorieten-lijsten/index']],
+                        [
+                            'label' => 'Favorieten',
+                            'url' => ['/favorieten-lijsten/index']
+                        ],
+                        [
+                            'label' => 'Betalings Typen',
+                            'url' => ['/betaling-type/index']
+                        ],
                     ]
                 ]) ?>
             </div>
         </div>
+
+        <?php
+        if( file_exists(Yii::$app->getViewPath() .'/' . Yii::$app->controller->id . '/_help.php') ) {
+            echo $this->render(Yii::$app->controller->id . '/_help');
+        } ?>
     </div>
+
     <div class="col-md-9">
         <div class="panel panel-default">
             <div class="panel-body">
                 <?php echo $content ?>
             </div>
         </div>
-    </div>
+    </div
+
 </div>

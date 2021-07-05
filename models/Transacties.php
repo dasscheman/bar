@@ -48,6 +48,7 @@ class Transacties extends BarActiveRecord
     const MOLLIE_STATUS_refunded = 6;
     const MOLLIE_STATUS_pending = 7;
     const MOLLIE_STATUS_paidout = 8;
+
     public $all_related_transactions;
     public $bedrag_kosten;
 
@@ -166,7 +167,7 @@ class Transacties extends BarActiveRecord
      */
     public function getType()
     {
-        return $this->hasOne(BetalingType::className(), ['type_id' => 'type_id']);
+         return $this->hasOne(BetalingType::class, ['type_id' => 'type_id']);
     }
 
     /**
@@ -174,7 +175,7 @@ class Transacties extends BarActiveRecord
      */
     public function getCreatedBy()
     {
-        return $this->hasOne(User::className(), ['id' => 'created_by']);
+        return $this->hasOne(User::class, ['id' => 'created_by']);
     }
 
     /**
@@ -182,7 +183,7 @@ class Transacties extends BarActiveRecord
      */
     public function getUpdatedBy()
     {
-        return $this->hasOne(User::className(), ['id' => 'updated_by']);
+        return $this->hasOne(User::class, ['id' => 'updated_by']);
     }
 
     /**
@@ -190,7 +191,7 @@ class Transacties extends BarActiveRecord
      */
     public function getTransactiesUser()
     {
-        return $this->hasOne(User::className(), ['id' => 'transacties_user_id']);
+        return $this->hasOne(User::class, ['id' => 'transacties_user_id']);
     }
 
     /**
@@ -263,15 +264,28 @@ class Transacties extends BarActiveRecord
 
     public function getTransactionOmschrijving()
     {
+        $db = self::getDb();
+        $omschrijving = $db->cache(function ($db) {
+            return $this->type->omschrijving;
+        });
+
         $omschrijving = $this->omschrijving . ' - '
-            . $this->getType()->one()->omschrijving .
+            . $omschrijving .
             ' - Tran ID ' . $this->transacties_id .
             ' - ' . round($this->bedrag, 2) .
             ' - ' . Yii::$app->setupdatetime->displayFormat($this->datum, 'php:d-M-Y');
-        if ($this->getTransactiesUser()->one() !== null) {
+
+        $transactiesUser = $db->cache(function ($db) {
+            return $this->transactiesUser;
+        });
+
+        if ($transactiesUser !== null) {
+            $profile = $db->cache(function ($db) {
+                return $this->transactiesUser->profile;
+            });
             $omschrijving .= ' ('
-                . $this->getTransactiesUser()->one()->getProfile()->one()->voornaam . ' '
-                . $this->getTransactiesUser()->one()->getProfile()->one()->achternaam . ')';
+                . $profile->voornaam . ' '
+                . $profile->achternaam . ')';
         }
         return $omschrijving;
     }

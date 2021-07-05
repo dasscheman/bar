@@ -88,7 +88,7 @@ use app\models\BetalingType;
                                 ],
                                 [
                                     'label' => Yii::t('app', 'Mollie uitbetaling'),
-                                    'url' => [ '/transacties/create', 'type_id' => BetalingType::getMollieKostenId()],
+                                    'url' => [ '/transacties/create', 'type_id' => BetalingType::getMollieUitbetalingId()],
                                 ],
 
                                 '<li class="divider"></li>',
@@ -119,6 +119,14 @@ use app\models\BetalingType;
                 ]) ?>
             </div>
         </div>
+
+        <?php if( file_exists(Yii::$app->getViewPath() .'/' . Yii::$app->controller->id . '/_help.php') ) { ?>
+            <div class="panel panel-default">
+                <div class="panel-body">
+                    <?php echo $this->render(Yii::$app->controller->id . '/_help'); ?>
+                </div>
+            </div>
+        <?php } ?>
     </div>
     <div class="col-md-9">
         <div class="panel panel-default">

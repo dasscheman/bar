@@ -13,6 +13,10 @@ use \app\models\BetalingType;
  */
 
 $this->beginContent('../views/_beheer2.php');
-    $this->title = BetalingType::findOne(Yii::$app->request->get('type_id'))->omschrijving . ' Toevoegen';
+    $title = 'Nieuwe transactie toevoegen';
+    if(Yii::$app->request->get('type_id') !== null) {
+        $title = BetalingType::findOne(Yii::$app->request->get('type_id'))->omschrijving . ' Toevoegen';
+    }
+    $this->title = $title;
     echo  $this->render('_form', ['modelTransacties' => $modelTransacties, 'modelBonnen' => $modelBonnen]);
 $this->endContent();

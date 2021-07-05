@@ -17,6 +17,7 @@
  * NOTE: this file must be saved in UTF-8 encoding.
  */
 return [
+    'uitleg_' => 'Transactie toevoegen.',
     'uitleg_3' => 'Het gaat om overschrijvingen die een gebruiker van zijn eigen rekening heeft gemaakt.
             Het het gaat niet om de uitbetalingen die gemaakt zijn door Mollie of Izettle.',
     'uitleg_5','Als iemand inkopen heeft gedaan en zelf voorgeschoten heeft, dan kan dat hier ingevoerd worden.

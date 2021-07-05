@@ -68,6 +68,11 @@ class FavorietenLijstenController extends Controller
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
         $this->layout = 'main-fluid';
+
+        $this->render('beheer', [
+            'searchModel' => $searchModel,
+            'dataProvider' => $dataProvider,
+        ]);
         return $this->render('beheer', [
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
