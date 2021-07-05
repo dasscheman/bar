@@ -232,37 +232,8 @@ class TransactiesController extends Controller
         $modelTransacties->setAllRelatedTransactions();
         $this->layout = 'main-fluid';
         if ($modelTransacties->load(Yii::$app->request->post())) {
-            $image = null;
-            if ($modelBonnen !== null) {
-                $image = UploadedFile::getInstance($modelBonnen, 'image_temp');
-            }
-            if (!empty($image)) {
-                // store the source file name
-                $modelBonnen->image = date('Y-m-d H:i:s') . '-' . $image->name ;
-                $modelBonnen->omschrijving = $modelTransacties->omschrijving;
-                $modelBonnen->type = Bonnen::TYPE_declaratie;
-                $modelBonnen->datum = $modelTransacties->datum;
-                $modelBonnen->bedrag = $modelTransacties->bedrag;
-
-                $path = Yii::$app->params['bonnen_path'] . $modelBonnen->image;
-                if ($modelBonnen->save()) {
-                    $image->saveAs($path);
-                } else {
-                    foreach ($modelBonnen->errors as $key => $error) {
-                        Yii::$app->session->setFlash('warning', Yii::t('app', 'Fout met opslaan: ' . $key . ': ' . $error[0]));
-                    }
-                }
-                $modelTransacties->bon_id = $modelBonnen->bon_id;
-            }
-            if ($modelTransacties->save()) {
-                if (isset(Yii::$app->request->post('Transacties')['all_related_transactions'])) {
-                    Transacties::addRelatedTransactions($modelTransacties->transacties_id, Yii::$app->request->post('Transacties')['all_related_transactions']);
-                }
-                return $this->redirect(['transacties/bank']);
-            } else {
-                foreach ($modelTransacties->errors as $key => $error) {
-                    Yii::$app->session->setFlash('warning', Yii::t('app', 'Fout met opslaan: ' . $key . ':' . $error[0]));
-                }
+            if ($modelBonnen->load(Yii::$app->request->post()) ) {
+                $modelBonnen->saveBonForTransactie($modelTransacties);
             }
         }
 
