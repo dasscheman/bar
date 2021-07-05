@@ -72,7 +72,7 @@ class BonnenSearch extends Bonnen
 
         $query->andFilterWhere(['like', 'omschrijving', $this->omschrijving])
             ->andFilterWhere(['like', 'image', $this->image]);
-
+        $query->orderBy(['datum' => SORT_DESC]);
         return $dataProvider;
     }
 }
