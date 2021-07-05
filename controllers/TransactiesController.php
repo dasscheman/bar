@@ -149,7 +149,7 @@ class TransactiesController extends Controller
         $model->status = Transacties::STATUS_gecontroleerd;
         $modelKosten = null;
         switch (Yii::$app->request->get('type_id')) {
-            case 'mollie_uitbetaling':
+            case BetalingType::getMollieUitbetalingId():
                 $model->type_id = BetalingType::getMollieUitbetalingId();
                 $model->omschrijving = BetalingType::getOmschrijving(BetalingType::getMollieUitbetalingId());
                 if (Yii::$app->request->post('Transacties')['bedrag_kosten'] != null) {
@@ -160,10 +160,10 @@ class TransactiesController extends Controller
                     $modelKosten->omschrijving = BetalingType::getOmschrijving(BetalingType::getMollieKostenId());
                 }
                 break;
-            case 'izettle_kosten':
+            case BetalingType::getIzettleKosotenId():
                 $model->type_id = BetalingType::getIzettleKosotenId();
                 break;
-            case 'ing_kosten':
+            case BetalingType::getIngKostenId():
                 $model->type_id = BetalingType::getIngKostenId();
                 $model->omschrijving = BetalingType::getOmschrijving(BetalingType::getIngKostenId());
                 $modelKosten = new Kosten();
@@ -172,7 +172,7 @@ class TransactiesController extends Controller
                 $modelKosten->type = $modelKosten::TYPE_bank_kosten;
                 $modelKosten->omschrijving = BetalingType::getOmschrijving(BetalingType::getIngKostenId());
                 break;
-            case 'mollie_kosten':
+            case BetalingType::getMollieKostenId():
                 $model->type_id = BetalingType::getMollieKostenId();
                 break;
         }

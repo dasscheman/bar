@@ -510,6 +510,10 @@ class Transacties extends BarActiveRecord
         if ($type_id == BetalingType::getMollieUitbetalingId()) {
             return true;
         }
+
+        if ($type_id == BetalingType::getIngKostenId()) {
+            return true;
+        }
         return false;
     }
 
