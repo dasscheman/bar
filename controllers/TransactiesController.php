@@ -231,17 +231,18 @@ class TransactiesController extends Controller
         }
         $modelTransacties->setAllRelatedTransactions();
         $this->layout = 'main-fluid';
-        if ($modelTransacties->load(Yii::$app->request->post())) {
-            if ($modelBonnen->load(Yii::$app->request->post()) ) {
-                $modelBonnen->saveBonForTransactie($modelTransacties);
-            }
+        if (!$modelTransacties->load(Yii::$app->request->post())) {
+            $this->layout = 'main-fluid';
+            return $this->render('update', [
+                'modelTransacties' => $modelTransacties,
+                'modelBonnen' => $modelBonnen
+            ]);
+        }
+        if ($modelBonnen->load(Yii::$app->request->post()) ) {
+            $modelBonnen->saveBonForTransactie($modelTransacties);
         }
 
-        $this->layout = 'main-fluid';
-        return $this->render('update', [
-            'modelTransacties' => $modelTransacties,
-            'modelBonnen' => $modelBonnen
-        ]);
+        return $this->render('beheer', ['model' => $modelTransacties]);
     }
 
     /**
