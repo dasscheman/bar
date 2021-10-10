@@ -114,7 +114,7 @@ class Mollie extends Transacties
             }
 
             $mollie->parameters['amount']['currency'] = "EUR";
-            $mollie->parameters['amount']['value'] = $user->mollie_bedrag;
+            $mollie->parameters['amount']['value'] = strval(number_format($user->mollie_bedrag, 2));
             $mollie->parameters['customerId'] = $user->mollie_customer_id;
             $mollie->parameters['sequenceType'] = 'recurring';       // important
             $mollie->parameters['description'] = $mollie->omschrijving;
@@ -144,8 +144,10 @@ class Mollie extends Transacties
 
     public function checkUserMandates($mollie_user_id)
     {
-        $mandates = $this->mollie->customers_mandates->withParentId($mollie_user_id)->all();
-        foreach ($mandates->data as $key => $mandate) {
+        $customer = $this->mollie->customers->get($mollie_user_id);
+        $mandates = $customer->mandates();
+
+        foreach ($mandates as $key => $mandate) {
             if ($mandate->status === 'valid') {
                 return true;
             }
