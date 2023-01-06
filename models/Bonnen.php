@@ -5,6 +5,7 @@ namespace app\models;
 use Yii;
 use app\models\BarActiveRecord;
 use yii\helpers\ArrayHelper;
+use yii\web\UploadedFile;
 
 /**
  * This is the model class for table "bonnen".
@@ -65,7 +66,7 @@ class Bonnen extends BarActiveRecord
             }, 'enableClientValidation' => false
             ],
             [['type', 'created_by', 'updated_by', 'inkoper_user_id', 'soort'], 'integer'],
-            [['datum', 'created_at', 'updated_at'], 'safe'],
+            [['bon_id', 'datum', 'created_at', 'updated_at'], 'safe'],
             [['bedrag'], 'number'],
             [['omschrijving', 'image'], 'string', 'max' => 255],
             [['image_temp'],'file', 'extensions'=>'jpg, gif, png, jpeg, pdf', 'maxSize'=>1024 * 1024 * 2],
@@ -93,6 +94,7 @@ class Bonnen extends BarActiveRecord
             'updated_by' => 'Updated By',
             'inkoper_user_id' => 'Inkoper User ID',
             'soort' => 'Soort',
+            'image_temp' => 'PDF of jpg bon'
         ];
     }
 
@@ -223,5 +225,44 @@ class Bonnen extends BarActiveRecord
             }
         );
         return $arrayRestuls;
+    }
+
+    public function saveBonForTransactie($model)
+    {
+        if ($this->soort == null) {
+            $this->soort = Bonnen::SOORT_overige;
+        }
+        $image = UploadedFile::getInstance($this, 'image_temp');
+        if($this->bon_id != null || $this->bon_id != '' ) {
+            if($image) {
+                Yii::$app->session->setFlash('warning', Yii::t('app', 'Er is een bestaande bon gelinkt, het geladen bestand is genegeerd!'));
+            }
+            $model->bon_id = $this->bon_id;
+            $model->save();
+            return;
+        }
+
+        // get the uploaded file instance. for multiple file uploads
+        // the following data will return an array
+        if(!$image) {
+            Yii::$app->session->setFlash('warning', Yii::t('app', 'Geen bon aanwezig '));
+            return;
+        }
+        // store the source file name
+        $this->image = date('Y-m-d H:i:s') . '-' . $image->name;
+        $this->bedrag = $model->bedrag;
+        $this->datum = $model->datum;
+        $this->type = Bonnen::TYPE_pin_betaling;
+        $this->omschrijving = $model->omschrijving;
+        $path = Yii::$app->params['bonnen_path'] . $this->image;
+        if ($this->save()) {
+            $image->saveAs($path);
+            $model->bon_id = $this->bon_id;
+            $model->save();
+            return;
+        }
+        foreach ($this->errors as $key => $error) {
+            Yii::$app->session->setFlash('warning', Yii::t('app', 'Fout met opslaan van de Bon: ' . $key . ':' . $error[0]));
+        }
     }
 }

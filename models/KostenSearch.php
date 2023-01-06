@@ -72,7 +72,7 @@ class KostenSearch extends Kosten
         ]);
 
         $query->andFilterWhere(['like', 'omschrijving', $this->omschrijving]);
-
+        $query->orderBy(['datum'=>SORT_DESC]);
         return $dataProvider;
     }
 }

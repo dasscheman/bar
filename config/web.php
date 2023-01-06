@@ -1,5 +1,4 @@
 <?php
-
 $dotenv = Dotenv\Dotenv::createImmutable(__DIR__, '../.env');
 $dotenv->load();
 
@@ -15,7 +14,9 @@ $config = [
         'log',
         'app\components\Bootstrap',
     ],
+    'language' => 'nl',
     'components' => [
+        'sourceLanguage' => 'nl',
         'request' => [
             // !!! insert a secret key in the following (if it is empty) - this is required by cookie validation
             'cookieValidationKey' => $_ENV['COOKIE_KEY'],
@@ -75,15 +76,23 @@ $config = [
         ],
         'i18n' => [
             'translations' => [
-//                'app' => [
-//                    'class' => 'yii\i18n\PhpMessageSource',
-//                    'basePath' => '@app/messages',
-//                ],
-                'kvgrid' => [
+                '*' => [
                     'class' => 'yii\i18n\PhpMessageSource',
                     'basePath' => '@app/messages',
+                    'sourceLanguage' => 'en-US',
+                    'fileMap' => [
+                        'app' => 'app.php',
+                        'betalingstypes' => 'betalingstypes.php',
+                        'app/error' => 'error.php',
+                    ],
+                    //'on missingTranslation' => ['app\components\TranslationEventHandler', 'handleMissingTranslation']
                 ],
             ],
+        ],
+        'formatter' => [
+            'class' => 'yii\i18n\Formatter',
+            'nullDisplay' => '',
+            'defaultTimeZone' => 'Europe/Amsterdam',
         ],
     ],
     'modules' => [
@@ -115,7 +124,7 @@ if ($_ENV['YII_ENV'] == 'dev') {
     $config['modules']['debug'] = [
         'class' => 'yii\debug\Module',
         // uncomment the following to add your IP if you are not connecting from localhost.
-//        'allowedIPs' => ['127.0.0.1', '::1', '192.168.10.5'],
+//        'allowedIPs' => ['127.0.0.1', '::1', '192.168.10.5', '192.168.10.1'],
         'allowedIPs' => ['*'],
     ];
 
@@ -123,7 +132,7 @@ if ($_ENV['YII_ENV'] == 'dev') {
     $config['modules']['gii'] = [
         'class' => 'yii\gii\Module',
         // uncomment the following to add your IP if you are not connecting from localhost.
-//        'allowedIPs' => ['127.0.0.1', '::1', '192.168.10.5'],
+//        'allowedIPs' => ['127.0.0.1', '::1', '192.168.10.5', '192.168.10.1'],
         'allowedIPs' => ['*'],
     ];
 }

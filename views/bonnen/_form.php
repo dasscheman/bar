@@ -11,9 +11,10 @@
 
 use yii\widgets\ActiveForm;
 use yii\helpers\Html;
-use kartik\widgets\DatePicker;
-use kartik\select2\Select2;
 use kartik\money\MaskMoney;
+use kartik\select2\Select2;
+use kartik\widgets\DatePicker;
+use kartik\widgets\FileInput;
 
 ?>
 
@@ -43,7 +44,12 @@ use kartik\money\MaskMoney;
             'id' => 'soort'
         ],
     ]);
-    echo $form->field($model, 'image_temp')->fileInput();
+    echo $form->field($model, 'image_temp', ['enableClientValidation' => true])->widget(FileInput::classname(), [
+        'pluginOptions' => [
+            'showCaption' => false,
+            'showUpload' => false
+        ]
+    ]);
     echo Html::encode('Huidige bon: ' . $model->image);
 
     echo $form->field($model, 'datum')->widget(DatePicker::className(), [

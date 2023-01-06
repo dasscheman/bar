@@ -16,7 +16,7 @@ use app\models\User;
     <div class="col-md-12">
         <div class="panel panel-default">
             <div class="panel-heading">
-                <?= Html::encode('Niewe turven voor ' . $model->id) ?>
+                <?= Html::encode('Nieuwe turven voor ' . $model->username) ?>
             </div>
             <div class="panel-body">
                 <?php

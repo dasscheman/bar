@@ -5,6 +5,7 @@
  */
 
 use yii\helpers\Html;
+use \app\models\BetalingType;
 
 /**
  * @var $this yii\web\View
@@ -12,43 +13,10 @@ use yii\helpers\Html;
  */
 
 $this->beginContent('../views/_beheer2.php');
-    switch (Yii::$app->request->get('type')) {
-        case 'pin':
-            $this->title = 'Betaling met pinpas';
-            break;
-        case 'bankbij_gebruiker':
-            $this->title = 'Bankoverschrijving van gebruiker';
-            break;
-        case 'izettle_invoer':
-            $this->title = 'Invoer van Izettle pin betaling';
-            break;
-        case 'statiegeld':
-            $this->title = 'Statiegeld ontvangen';
-            break;
-        case 'declaratie_invoer':
-            $this->title = 'Declaratie invoeren';
-            break;
-        case 'declaratie_uitbetaling':
-            $this->title = 'Declaratie uitbetalen';
-            break;
-        case 'izettle_uitbetaling':
-            $this->title = 'Izettle uitbetalen';
-            break;
-        case 'mollie_uitbetaling':
-            $this->title = 'Mollie uitbetalen';
-            break;
-        case 'izettle_kosten':
-            $this->title = 'Izettle kosten';
-            break;
-        case 'ing_kosten':
-            $this->title = 'ING kosten';
-            break;
-        case 'mollie_kosten':
-            $this->title = 'Mollie kosten';
-            break;
-        default:
-            $this->title = 'Transactie toevoegen';
+    $title = 'Nieuwe transactie toevoegen';
+    if(Yii::$app->request->get('type_id') !== null) {
+        $title = BetalingType::findOne(Yii::$app->request->get('type_id'))->omschrijving . ' Toevoegen';
     }
-echo  $this->render('_form', ['modelTransacties' => $modelTransacties, 'modelBonnen' => $modelBonnen]);
-
+    $this->title = $title;
+    echo  $this->render('_form', ['modelTransacties' => $modelTransacties, 'modelBonnen' => $modelBonnen]);
 $this->endContent();

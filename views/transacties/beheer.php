@@ -12,8 +12,16 @@
  */
 
 $this->beginContent('../views/_beheer2.php');
-        echo $this->render('index', [
-            'searchModel' => $searchModel,
-            'dataProvider' => $dataProvider,
-        ]);
+        if(isset($model)) {
+            echo $this->render('view', [
+                'model' => $model,
+            ]);
+        }
+
+        if(isset($searchModel) && isset($dataProvider)) {
+            echo $this->render('index', [
+                'searchModel' => $searchModel,
+                'dataProvider' => $dataProvider,
+            ]);
+        }
 $this->endContent();

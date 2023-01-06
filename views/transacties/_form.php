@@ -14,10 +14,11 @@ use kartik\select2\Select2;
 use yii\widgets\ActiveForm;
 use yii\helpers\Html;
 use app\models\User;
+use app\models\Bonnen;
 use yii\helpers\ArrayHelper;
 use kartik\widgets\DatePicker;
 use app\models\BetalingType;
-use app\models\Transacties;
+use kartik\widgets\FileInput;
 
 ?>
 
@@ -27,62 +28,12 @@ use app\models\Transacties;
     </div>
 
     <?php
-
-    switch (Yii::$app->request->get('type')) {
-        case 'pin':
-            echo 'Hier moeten betalingen die zijn gedaan met de pinpas ingevoerd worden. Een bon is verplicht.';
-            break;
-        case 'bankbij_gebruiker':
-            echo 'Het gaat om overschrijvingen die een gebruiker van zijn eigen rekening heeft gemaakt.
-            Het het gaat niet om de uitbetalingen die gemaakt zijn door Mollie of Izettle.';
-            break;
-        case 'izettle_invoer':
-            echo 'Dit gaat om de pin betaling die een gebruiker heeft gedaan op het pin apparaat.';
-            break;
-        case 'statiegeld':
-            echo 'Als iemand statieflessen terug heeft gebracht, dan kan hij dat geld houden.
-            Het bedrag van het statiegeld moet hier ingevoerd worden, dan wordt het verekend met de eerst voglende rekening.';
-            break;
-        case 'declaratie_invoer':
-            echo 'Als iemand inkopen heeft gedaan en zelf voorgeschoten heeft, dan kan dat hier ingevoerd worden.
-            Het is verplicht om een bon in te voeren.
-            De declaratie wordt verrekend met de rekening van de gebruiker. Als de gebruiker het geld terug wil dan kan dat.
-            Het bedrag kan gewoon overgemaakt worden en kan dan ingevoerd worden als "Declaratie uitbetalen".
-            Een declaratie die uitbetaald wordt, wordt ook automatisch weer met de rekening van de gebruiker verrekend.';
-            break;
-        case 'declaratie_uitbetaling':
-            echo 'Als iemand een declaratie heeft gedaan, en het hele of gedeeltelijke bedrag terug wil hebben,
-            dan kan de bank overschrijving hiet toegevoegd worden. De "Declaratie invoer" moet gelinkt worden.
-            Want die heeft de orginele bon van de declaratie. Als er meerdere declaratie zijn ingevoerd,
-            kunnen er ook meerdere gelinkt worden.';
-            break;
-        case 'izettle_uitbetaling':
-            echo 'Izettle doet maandelijks een uitbetaling. Het totale bedrag kan hier ingevoerd worden.
-            Verder moeten de Izettle invoeren die hiermee uitbetaald worden, gelinkt worden.
-            Omdat er meerdere transacties in 1 keer uitbetaald kunnen worden, hoeft er geen naam toegevoegd te worden.
-            Verder moet een uitdraai van Izettle met een overzicht toegevoegd worden.';
-            break;
-        case 'mollie_uitbetaling':
-            echo 'Mollie doet maandelijks een uitbetaling. Het totale bedrag kan hier ingevoerd worden.
-            Verder moeten de Mollie invoeren die hiermee uitbetaald worden, gelinkt worden.
-            Omdat er meerdere transacties in 1 keer uitbetaald kunnen worden, hoeft er geen naam toegevoegd te worden.
-            Verder moet een uitdraai van Mollie met een overzicht toegevoegd worden.';
-            break;
-        case 'izettle_kosten':
-            echo 'De kosten die Izettle rekent voor hun diensten
-            De transactie van de uitbetaling moet gelinkt worden, want die heeft een uitdraai met ook de kosten';
-            break;
-        case 'ing_kosten':
-            echo 'De kosten die de ING rekent voor hun diensten
-            Een afschrift invoeren is verplicht.';
-            break;
-        case 'mollie_kosten':
-            echo 'De kosten die Mollie rekent voor hun diensten
-            De transactie van de uitbetaling moet gelinkt worden, want die heeft een uitdraai met ook de kosten';
-            break;
-        default:
-            echo 'Transactie toevoegen';
+    $messageString = 'uitleg_' . Yii::$app->request->get('type_id');
+    if($modelTransacties->type_id != null) {
+        $messageString = 'uitleg_' . $modelTransacties->type_id ;
     }
+    echo Yii::t('betalingstypes', $messageString);
+
     ?> </br> </br> <?php
     $form = ActiveForm::begin([
         'enableClientValidation' => true,
@@ -91,8 +42,9 @@ use app\models\Transacties;
         'options'=> ['enctype'=>'multipart/form-data'],
     ]);
 
-    if (in_array(Yii::$app->request->get('type'), ['bankbij_gebruiker', 'izettle_invoer', 'statiegeld', 'declaratie_invoer', 'declaratie_uitbetaling'])) {
-        echo $form->field($modelTransacties, 'transacties_user_id')->widget(Select2::className(), [
+    if (in_array(Yii::$app->request->get('type_id'), [BetalingType::getBankBijId(), BetalingType::getIzettleInvoerId(), BetalingType::getStatiegeldId(),
+            BetalingType::getDeclaratieInvoerId(), BetalingType::getDeclaratieUitbetaalsId()])) {
+        echo $form->field($modelTransacties, 'transacties_user_id')->widget(Select2::class, [
             'data' => ArrayHelper::map(User::find()->all(), 'id', 'username'),
             'options'   => [
                 'placeholder' => Yii::t('app', 'Selecteer gebruiker'),
@@ -100,18 +52,56 @@ use app\models\Transacties;
             ],
         ]);
     }
-    if(Yii::$app->request->get('type') == null ||
-        in_array(Yii::$app->request->get('type'), ['pin', 'mollie_uitbetaling'])) {
+
+    if(Yii::$app->request->get('type_id') == BetalingType::getBankBijId()) {
         echo $form->field($modelTransacties, 'omschrijving')->textInput();
     }
-    if (Yii::$app->request->get('type') == null ||
-        in_array(Yii::$app->request->get('type'), ['pin', 'declaratie_invoer', 'izettle_uitbetaling', 'mollie_uitbetaling', 'ing_kosten'])) {
-        echo $form->field($modelBonnen, 'image_temp', ['enableClientValidation' => false])->fileInput();
-        echo Html::encode('Huidige bon: ' . $modelBonnen->image);
+
+
+    if(Yii::$app->request->get('type_id') == null ||
+        in_array(Yii::$app->request->get('type_id'), [BetalingType::getPinId()])) {
+        echo $form->field($modelTransacties, 'transacties_user_id')->widget(Select2::class, [
+            'data' => ArrayHelper::map(User::find()->all(), 'id', 'username'),
+            'options'   => [
+                'placeholder' => Yii::t('app', 'Selecteer gebruiker'),
+                'id' => 'transacties_user_id',
+            ],
+        ]);
+        echo $form->field($modelTransacties, 'omschrijving')->textInput();
     }
-    if (Yii::$app->request->get('type') == null ||
-        in_array(Yii::$app->request->get('type'), ['pin', 'declaratie_invoer', 'ing_kosten'])) {
-        echo $form->field($modelBonnen, 'soort')->widget(Select2::className(), [
+    if (Yii::$app->request->get('type_id') == null ||
+        in_array(Yii::$app->request->get('type_id'), [BetalingType::getPinId(), BetalingType::getDeclaratieInvoerId(), BetalingType::getIzettleUitbetalingId(),
+                BetalingType::getMollieUitbetalingId(), BetalingType::getIngKostenId()])) {
+        // Usage with ActiveForm and model
+        echo $form->field($modelBonnen, 'image_temp', ['enableClientValidation' => true])->widget(FileInput::class, [
+            'pluginOptions' => [
+                'showCaption' => false,
+                'showUpload' => false
+            ]
+        ]);
+    }
+
+    echo $form->field($modelBonnen, 'bon_id')->widget(Select2::className(), [
+        'data' => ArrayHelper::map(
+            Bonnen::find()->orderBy(['bon_id' => SORT_DESC])->all(),
+            'bon_id',
+            function($model, $defaultValue) {
+
+                return $model->bon_id . ': ' . $model['omschrijving']. ' (' . $model->bedrag .' - ' . $model->datum . ')';
+            }
+        ),
+        'options'   => [
+            'placeholder' => Yii::t('app', 'Selecteer een bon'),
+            'id' => 'transacties_id',
+        ],
+        'pluginOptions' => [
+            'allowClear' => true
+        ],
+    ]);
+
+    if (Yii::$app->request->get('type_id') == null ||
+        in_array(Yii::$app->request->get('type_id'), [BetalingType::getPinId(), BetalingType::getDeclaratieInvoerId()])) {
+        echo $form->field($modelBonnen, 'soort')->widget(Select2::class, [
             'data' => $modelBonnen->getSoortOptions(),
             'options' => [
                 'placeholder' => Yii::t('app', 'Selecteer soort betaling'),
@@ -120,13 +110,20 @@ use app\models\Transacties;
         ]);
     }
 
-    if (Yii::$app->request->get('type') == null ||
-        in_array(Yii::$app->request->get('type'), ['declaratie_uitbetaling', 'izettle_uitbetaling', 'mollie_uitbetaling', 'izettle_kosten', 'mollie_kosten'])) {
-        echo $form->field($modelTransacties, 'all_related_transactions')->widget(Select2::classname(), [
+    if ( Yii::$app->request->get('type_id') == null ||
+        in_array(Yii::$app->request->get('type_id'), [ BetalingType::getDeclaratieUitbetaalsId(), BetalingType::getIzettleUitbetalingId(),
+            BetalingType::getMollieUitbetalingId(), BetalingType::getIzettleKosotenId(), BetalingType::getMollieKostenId()])) {
+        $transactionsArray = $modelTransacties->getTransactionsArray();
+
+        if(Yii::$app->request->get('type_id') == BetalingType::getMollieUitbetalingId()) {
+            $transactionsArray = $modelTransacties->getTransactionsArray([BetalingType::getIdealTerugbetalingId(), BetalingType::getIdealId()],
+                [\app\models\Transacties::MOLLIE_STATUS_paid]);
+        }
+        echo $form->field($modelTransacties, 'all_related_transactions')->widget(Select2::class, [
             'name' => 'all_related_transactions',
             'value' => $modelTransacties->all_related_transactions,
             'id' => $modelTransacties->transacties_id,
-            'data' => $modelTransacties->getTransactionsArray(),
+            'data' => $transactionsArray,
             'options' => [
                 'placeholder' => 'Filter as you type ...',
                 'id' => $modelTransacties->transacties_id,
@@ -139,18 +136,24 @@ use app\models\Transacties;
         ]);
     }
 
-    echo $form->field($modelTransacties, 'bedrag')->widget(MaskMoney::classname());
-    if (Yii::$app->request->get('type') == null) {
-        echo $form->field($modelTransacties, 'type_id')->widget(Select2::className(), [
+    echo $form->field($modelTransacties, 'bedrag')->widget(MaskMoney::class);
+    if (Yii::$app->request->get('type_id') == BetalingType::getMollieUitbetalingId()) {
+        echo $form->field($modelTransacties, 'bedrag_kosten')->widget(MaskMoney::class);
+    }
+
+    if (Yii::$app->request->get('type_id') == null) {
+        echo $form->field($modelTransacties, 'type_id')->widget(Select2::class, [
             'data' => ArrayHelper::map(BetalingType::find()->all(), 'type_id', 'omschrijving'),
             'options'   => [
                 'placeholder' => Yii::t('app', 'Selecteer betaling type'),
                 'id' => 'type_id',
             ],
         ]);
+    } else {
+        echo $form->field($modelTransacties, 'type_id')->hiddenInput(['value'=> Yii::$app->request->get('type_id')])->label(false);
     }
 
-    echo $form->field($modelTransacties, 'datum')->widget(DatePicker::className(), [
+    echo $form->field($modelTransacties, 'datum')->widget(DatePicker::class, [
         'model' => $modelTransacties,
         'attribute' => 'datum',
         'type' => DatePicker::TYPE_COMPONENT_PREPEND,

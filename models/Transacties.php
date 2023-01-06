@@ -48,7 +48,9 @@ class Transacties extends BarActiveRecord
     const MOLLIE_STATUS_refunded = 6;
     const MOLLIE_STATUS_pending = 7;
     const MOLLIE_STATUS_paidout = 8;
+
     public $all_related_transactions;
+    public $bedrag_kosten;
 
     /**
      * @inheritdoc
@@ -69,7 +71,8 @@ class Transacties extends BarActiveRecord
                 if( BetalingType::getIzettleUitbetalingId() == $model->type_id ||
                     BetalingType::getPinId() == $model->type_id ||
                     BetalingType::getMollieUitbetalingId() == $model->type_id ||
-                    BetalingType::getIngKostenId() == $model->type_id) {
+                    BetalingType::getIngKostenId() == $model->type_id ||
+                    BetalingType::getMollieKostenId() == $model->type_id) {
                     return false;
                 }
                 return true;
@@ -95,10 +98,11 @@ class Transacties extends BarActiveRecord
         return [
             'transacties_id' => 'ID',
             'transacties_user_id' => 'Voor',
-            'all_related_transactions' => 'Gelinkte trans.',
+            'all_related_transactions' => 'Gelinkte Ideal transacties',
             'factuur_id' => Yii::t('app', 'Factuur ID'),
             'omschrijving' => 'Omschrijving',
-            'bedrag' => 'Bedrag',
+            'bedrag' => 'Bedrag uitgekeerd',
+            'bedrag_kosten' => 'In rekening gebracht kosten',
             'type_id' => 'Type ID',
             'bon_id' => 'Bon ID',
             'status' => 'Status',
@@ -163,7 +167,7 @@ class Transacties extends BarActiveRecord
      */
     public function getType()
     {
-        return $this->hasOne(BetalingType::className(), ['type_id' => 'type_id']);
+         return $this->hasOne(BetalingType::class, ['type_id' => 'type_id']);
     }
 
     /**
@@ -171,7 +175,7 @@ class Transacties extends BarActiveRecord
      */
     public function getCreatedBy()
     {
-        return $this->hasOne(User::className(), ['id' => 'created_by']);
+        return $this->hasOne(User::class, ['id' => 'created_by']);
     }
 
     /**
@@ -179,7 +183,7 @@ class Transacties extends BarActiveRecord
      */
     public function getUpdatedBy()
     {
-        return $this->hasOne(User::className(), ['id' => 'updated_by']);
+        return $this->hasOne(User::class, ['id' => 'updated_by']);
     }
 
     /**
@@ -187,7 +191,7 @@ class Transacties extends BarActiveRecord
      */
     public function getTransactiesUser()
     {
-        return $this->hasOne(User::className(), ['id' => 'transacties_user_id']);
+        return $this->hasOne(User::class, ['id' => 'transacties_user_id']);
     }
 
     /**
@@ -260,14 +264,35 @@ class Transacties extends BarActiveRecord
 
     public function getTransactionOmschrijving()
     {
+        $db = self::getDb();
+        $omschrijving = $db->cache(function ($db) {
+            return $this->type->omschrijving;
+        });
+
         $omschrijving = $this->omschrijving . ' - '
-            . $this->getType()->one()->omschrijving;
-        if ($this->getTransactiesUser()->one() !== null) {
+            . $omschrijving .
+            ' - Tran ID ' . $this->transacties_id .
+            ' - ' . round($this->bedrag, 2) .
+            ' - ' . Yii::$app->setupdatetime->displayFormat($this->datum, 'php:d-M-Y');
+
+        $transactiesUser = $db->cache(function ($db) {
+            return $this->transactiesUser;
+        });
+
+        if ($transactiesUser !== null) {
+            $profile = $db->cache(function ($db) {
+                return $this->transactiesUser->profile;
+            });
             $omschrijving .= ' ('
-                . $this->getTransactiesUser()->one()->getProfile()->one()->voornaam . ' '
-                . $this->getTransactiesUser()->one()->getProfile()->one()->achternaam . ')';
+                . $profile->voornaam . ' '
+                . $profile->achternaam . ')';
         }
         return $omschrijving;
+    }
+
+    public function getUserName()
+    {
+        return $this->transactiesUser->username;
     }
 
     /**
@@ -287,10 +312,8 @@ class Transacties extends BarActiveRecord
             ->addParams([':transacties_id' => $this->transacties_id]);
 
         $results = Transacties::find()
-            ->select('transacties_id, bon_id')
             ->where(['in', 'transacties.transacties_id', $queryParentTransactions])
-            ->orwhere(['in', 'transacties.transacties_id', $queryChildTransactions])
-            ->all();
+            ->orwhere(['in', 'transacties.transacties_id', $queryChildTransactions]);
 
         return $results;
     }
@@ -301,13 +324,13 @@ class Transacties extends BarActiveRecord
     */
     public function setAllRelatedTransactions()
     {
-        $result = $this->getAllRelatedTransactionsModels();
+        $result = $this->getAllRelatedTransactionsModels()->all();
         $this->all_related_transactions = ArrayHelper::getColumn($result, 'transacties_id');
     }
 
     public function relatedBonnen() {
         $bonnenIds = [];
-        $models = $this->getAllRelatedTransactionsModels();
+        $models = $this->getAllRelatedTransactionsModels()->all();
         foreach ($models as $key => $value) {
               $bonnenIds[] = $value->bon_id;
         }
@@ -318,15 +341,23 @@ class Transacties extends BarActiveRecord
     * Retrieves a list of users
     * @return array an of available relatedtransactions.'.
     */
-    public function getTransactionsArray()
+    public function getTransactionsArray($types = null, $status = null)
     {
-        $result = Transacties::find()
-            ->all();
-        $arrayRestuls = ArrayHelper::map($result, 'transacties_id', 'transactionOmschrijving');
+        $results = Transacties::find();
+
+        if($types) {
+            $results->andWhere(['in', 'type_id', $types]);
+        }
+
+        if($status) {
+            $results->andWhere(['in', 'status', $status]);
+        }
+
+        $arrayRestuls = ArrayHelper::map($results->orderBy('datum')->all(), 'transacties_id', 'transactionOmschrijving', 'userName');
         return $arrayRestuls;
     }
 
-    public function addRelatedTransactions($transaction_id, $all_related_transactions= [])
+    static public function addRelatedTransactions($transaction_id, $all_related_transactions= [])
     {
         $transactionsOld = RelatedTransacties::find()
                 ->where('parent_transacties_id =:transacties_id')
@@ -403,8 +434,8 @@ class Transacties extends BarActiveRecord
             }
         }
 
-        switch ($this->getType()->one()->omschrijving) {
-            case 'Ideal':
+        switch ($this->type_id) {
+            case BetalingType::getIdealId():
                 if (!isset($this->mollie_status)) {
                     return 'danger';
                 }
@@ -416,34 +447,32 @@ class Transacties extends BarActiveRecord
     }
 
     public function isBonRequired(){
-        switch ($this->getType()->one()->omschrijving) {
-            case 'Pin betaling':
-            case 'Declaratie':
-            case 'Bankoverschrijving Af':
-            case 'Uitbetaling Mollie':
-                return true;
-        }
-
-        return false;
+        return in_array($this->type_id, [
+            BetalingType::getPinId(),
+            BetalingType::getDeclaratieInvoerId(),
+            BetalingType::getBankAfId(),
+            BetalingType::getMollieUitbetalingId(),
+            BetalingType::getIngKostenId()
+        ]);
     }
 
     public function isInkoopRequired() {
-        $type = $this->getType()->one()->omschrijving;
-        if ($type == 'Pin betaling' &&
+        $type_id = $this->type_id;
+        if ($type_id == BetalingType::getPinId() &&
           $this->getBon()->exists() &&
           !$this->bon->getKostens()->exists()) {
             // bij pin betalingen moeten of kosten of inkopen gelinkt zijn
             return true;
         }
 
-        if($type == 'Declaratie' &&
+        if($type_id == BetalingType::getDeclaratieInvoerId() &&
           $this->getBon()->exists() &&
           !$this->bon->getKostens()->exists()) {
             // bij pin betalingen moeten of kosten of inkopen gelinkt zijn
             return true;
         }
 
-        if ($type == 'Bankoverschrijving Af' &&
+        if ($type_id == BetalingType::getBankAfId() &&
           $this->getBon()->exists() &&
           !$this->bon->getKostens()->exists()) {
             // bij pin betalingen moeten of kosten of inkopen gelinkt zijn
@@ -454,40 +483,45 @@ class Transacties extends BarActiveRecord
     }
 
     public function isKostenRequired() {
-        $type = $this->getType()->one()->omschrijving;
-        if ($type == 'Pin betaling' &&
+        $type_id = $this->type_id;
+        if ($type_id == BetalingType::getPinId() &&
           $this->getBon()->exists() &&
           ! $this->bon->getInkoops()->exists()) {
             // bij pin betalingen moeten of kosten of inkopen gelinkt zijn
             return true;
         }
 
-        if ($type == 'Declaratie' &&
+        if ($type_id == BetalingType::getDeclaratieInvoerId() &&
           $this->getBon()->exists() &&
           !$this->bon->getInkoops()->exists()) {
             // bij pin betalingen moeten of kosten of inkopen gelinkt zijn
             return true;
         }
 
-        if ($type == 'Bankoverschrijving Af' &&
+        if ($type_id == BetalingType::getBankAfId() &&
           $this->getBon()->exists() &&
           !$this->bon->getInkoops()->exists()) {
             // bij pin betalingen moeten of kosten of inkopen gelinkt zijn
             return true;
         }
 
-        if ($type == 'Uitbetaling Mollie') {
+        if ($type_id == BetalingType::getMollieUitbetalingId()) {
+            return true;
+        }
+
+        if ($type_id == BetalingType::getIngKostenId()) {
             return true;
         }
         return false;
     }
 
     public function isTransactionRequired(){
-        switch ($this->getType()->one()->omschrijving) {
-            case 'Ideal':
-            case 'Uitbetaling Mollie';
-            case 'Izettle Pin betaling':
-            case 'Uitbetaling Izettle':
+        switch ($this->type_id) {
+            case BetalingType::getIdealId():
+            case BetalingType::getMollieUitbetalingId():
+            case BetalingType::getIzettleInvoerId():
+            case BetalingType::getIzettleUitbetalingId():
+            case BetalingType::getDeclaratieUitbetaalsId():
                   return true;
         }
         return false;

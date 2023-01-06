@@ -6,8 +6,6 @@
  */
 function d($var,$caller=null)
 {
-//    var_dump($caller); exit;
-
     if(!isset($caller)){
         $temp = debug_backtrace(1);
         $caller = array_shift($temp);

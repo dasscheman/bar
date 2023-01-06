@@ -68,7 +68,7 @@ use yii\helpers\Url;
         </table>
         <br>
         <br>
-		Als je vragen hebt kun je mailen naar <?php echo $_ENV['ADMIN_EMAILs'] ?>
+		Als je vragen hebt kun je mailen naar <?php echo $_ENV['ADMIN_EMAIL'] ?>
         <br>
         <br>
 		Met vriendelijke groet,<br>

@@ -44,7 +44,15 @@ use yii\bootstrap\Nav;
                 ]) ?>
             </div>
         </div>
+        <?php if( file_exists(Yii::$app->getViewPath() .'/' . Yii::$app->controller->id . '/_help.php') ) { ?>
+            <div class="panel panel-default">
+                <div class="panel-body">
+                    <?php echo $this->render(Yii::$app->controller->id . '/_help'); ?>
+                </div>
+            </div>
+        <?php } ?>
     </div>
+
     <div class="col-md-9">
         <div class="panel panel-default">
             <div class="panel-body">

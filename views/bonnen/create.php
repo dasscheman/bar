@@ -11,21 +11,12 @@ use yii\helpers\Html;
  * @var $model app\models\Factuur
  */
 
-?>
-<div class="row">
-    <div class="col-md-12">
-        <div class="panel panel-default">
-            <div class="panel-heading">
-                <?= Html::encode('Bon toevoegen') ?>
-            </div>
-            <div class="panel-body">
-                <?php 
-                echo $this->render('/_alert');
-                echo $this->render('/_menu'); ?>
-                <table class="table">
-                    <?php echo  $this->render('_form', ['model' => $model]); ?>
-                </table>
-            </div>
-        </div>
-    </div>
-</div>
+$this->beginContent('../views/_beheer2.php');
+    $title = 'Nieuwe transactie toevoegen';
+    if(Yii::$app->request->get('type_id') !== null) {
+        $title = BetalingType::findOne(Yii::$app->request->get('type_id'))->omschrijving . ' Toevoegen';
+    }
+    $this->title = $title;
+    echo  $this->render('_form', ['model' => $model]);
+$this->endContent();
+
