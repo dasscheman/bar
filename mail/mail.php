@@ -12,13 +12,14 @@ Hallo <?php echo  $user->profile->voornaam; ?>,<br><br>
 hierbij ontvangt je de factuur voor de Bison bar. In de bijlage zie je een gedetaileerd overzicht.
 <br>
 <br>
-<b>Update juli 2021</b>
+<b>Update januari 2023</b>
 <br>
-Afgelopen tijd heeft de administratie en de inkooop van de bar een beetje stil gelegen.
-Een aantal hebben zelf drank voor de bar ingekocht, dank voor dat initiatief. Als je dat gedaan hebt kun je je bonnetje bij mij inleveren.
+Ik heb wat achterstallige administratie bijgewerkt. Zoals betalingen naar de ING rekening (liever betalen met iDEAL),
+een turflijst van een het zomerkamp, een turflijst van een stamavond (ivm storing bar app). Hierdoor kan het zijn dat
+dat je turven van maanden geleden op je factuur terug ziet.
 
-Komende maanden zal ik weer wat aandacht geven aan de bar en de administratie. Ik zal er voor zorgen dat alles voor het nieuwe seizoen weer up-to-date is.
-
+Zoals het er nu naar uitziet zal er een kleine verhoging komen van de prijzen. Niets heel schokkend,
+zeker gezien het feit dat de prijs voor tapbier en fris al meer dan 10 jaar niet veranderd is.
 
 <br />
 
