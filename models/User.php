@@ -67,6 +67,14 @@ use dektrium\user\models\User as BaseUser;
 class User extends BaseUser
 {
     public $balans;
+    public $datum_balans;
+
+    public function __construct()
+    {
+        parent::__construct();
+        $this->datum_balans =  Yii::$app->setupdatetime->storeFormat(time(), 'date');
+    }
+
     /**
     * @inheritdoc
     */
@@ -117,6 +125,7 @@ class User extends BaseUser
             'automatische_betaling' => 'Automatische Betaling',
             'mollie_customer_id' => 'Mollie Customer ID',
             'mollie_bedrag' => 'Mollie Bedrag',
+            'datum_balans' => 'Datum waarop de balans opgehaald wordt'
         ];
     }
 
@@ -414,6 +423,7 @@ class User extends BaseUser
             ->where('transacties.status =:status_gecontroleerd OR transacties.status =:status_herberekend')
             ->andWhere(['in', 'transacties.type_id', $ids])
             ->andWhere('ISNULL(deleted_at)')
+            ->andWhere(['<=', 'transacties.datum', $this->datum_balans])
             ->params([
                 ':status_gecontroleerd' =>Transacties::STATUS_gecontroleerd,
                 ':status_herberekend' =>Transacties::STATUS_herberekend
@@ -476,6 +486,7 @@ class User extends BaseUser
             ->where('transacties.status =:status_gecontroleerd OR transacties.status =:status_herberekend')
             ->andWhere(['in', 'transacties.type_id', $ids])
             ->andWhere('ISNULL(deleted_at)')
+            ->andWhere(['<=', 'transacties.datum', $this->datum_balans])
             ->params([
                 ':status_gecontroleerd' =>Transacties::STATUS_gecontroleerd,
                 ':status_herberekend' =>Transacties::STATUS_herberekend
@@ -499,6 +510,7 @@ class User extends BaseUser
             ->andWhere(['!=', 'transacties.status',  Transacties::STATUS_herberekend])
             ->andWhere(['in', 'transacties.type_id', $ids])
             ->andWhere('ISNULL(deleted_at)')
+            ->andWhere(['<=', 'transacties.datum', $this->datum_balans])
             ->sum('bedrag');
     }
 
@@ -553,6 +565,7 @@ class User extends BaseUser
         return $this->hasMany(Turven::className(), ['consumer_user_id' => 'id'])
             ->where('turven.status =:status_gecontroleerd OR turven.status =:status_herberekend')
             ->andWhere('ISNULL(deleted_at)')
+            ->andWhere(['<=', 'turven.created_at', $this->datum_balans])
             ->params([
                 ':status_gecontroleerd' =>Turven::STATUS_gecontroleerd,
                 ':status_herberekend' =>Turven::STATUS_herberekend
@@ -567,13 +580,7 @@ class User extends BaseUser
     {
         $db = self::getDb();
         return $db->cache(function ($db) {
-            return $this->hasMany(Turven::className(), ['consumer_user_id' => 'id'])
-                ->where('turven.status =:status_gecontroleerd OR turven.status =:status_herberekend')
-                ->andWhere('ISNULL(deleted_at)')
-                ->params([
-                    ':status_gecontroleerd' =>Turven::STATUS_gecontroleerd,
-                    ':status_herberekend' =>Turven::STATUS_herberekend
-                ])
+            return $this->getNewTurvenUsers()
                 ->sum('totaal_prijs');
         });
     }

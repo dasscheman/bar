@@ -6,7 +6,8 @@
 
 use yii\helpers\Html;
 use yii\widgets\DetailView;
-
+use yii\widgets\ListView;
+use yii\data\ActiveDataProvider;
 /* @var $this yii\web\View */
 /* @var $model app\models\Assortiment */
 
@@ -163,33 +164,53 @@ use yii\widgets\DetailView;
                             return 'nvt';
                         },
                     ],
-                    'all_related_transactions' => [
-                        'attribute' => 'all_related_transactions',
-                        'format'=>'raw',
-                        'visible' => $model->isTransactionRequired(),
-                        'value' => function ($model) {
-                            $ids = '';
-                            $count = 0;
-                            $model->setAllRelatedTransactions();
-                            if($model->all_related_transactions != null) {
-                                foreach ($model->all_related_transactions as $related_transaction) {
-                                    $count++;
-                                    $ids .= Html::a($related_transaction, ['transacties/view', 'id' => $related_transaction]);
-                                    if ($count < count($model->all_related_transactions)) {
-                                        $ids .= ', ';
-                                    }
-                                }
-                                return $ids;
-                            }
-
-                            if($model->all_related_transactions == null && $model->isTransactionRequired()) {
-                                return '<div class="warning"> Er is geen link met een transactie en dat is verplicht </div>';
-                            }
-                            return 'nvt';
-                        },
-                    ]
+//                    'all_related_transactions' => [
+//                        'attribute' => 'all_related_transactions',
+//                        'format'=>'raw',
+//                        'visible' => $model->isTransactionRequired(),
+//                        'value' => function ($model) {
+//                            $ids = '';
+//                            $count = 0;
+//                            $model->setAllRelatedTransactions();
+//                            echo ListView::widget([
+//                                'summary' => false,
+//                                'dataProvider' =>  new ActiveDataProvider([
+//                                    'query' =>  $model->getAllRelatedTransactionsModels(),
+//                                    'pagination' => [
+//                                        'pageSize' => 10,
+//                                    ],
+//                                ]),
+//                                'itemView' => '_list',
+//                                'emptyText' => "",
+//                            ]);
+//
+//                            if($model->getAllRelatedTransactionsModels()->count() == 0 ) {
+//                                return '<div class="warning"> Er is geen link met een transactie en dat is verplicht </div>';
+//                            }
+//                        },
+//                    ]
                 ],
             ]);
+
+
+            if($model->isTransactionRequired()) {
+                echo '<h4>Gelinkte transacties</h4>';
+                echo ListView::widget([
+                    'summary' => false,
+                    'dataProvider' =>  new ActiveDataProvider([
+                        'query' =>  $model->getAllRelatedTransactionsModels(),
+                        'pagination' => [
+                            'pageSize' => 10,
+                        ],
+                    ]),
+                    'itemView' => '_list',
+                    'emptyText' => "",
+                ]);
+
+                if($model->getAllRelatedTransactionsModels()->count() == 0 ) {
+                    echo '<div class="alert alert-warning">Er is geen link met een transactie en dat is verplicht</div>';
+               }
+            }
 
             if (!empty($model->bon_id)) {
                 echo Html::a(

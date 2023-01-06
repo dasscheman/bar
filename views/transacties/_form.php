@@ -52,8 +52,21 @@ use kartik\widgets\FileInput;
             ],
         ]);
     }
+
+    if(Yii::$app->request->get('type_id') == BetalingType::getBankBijId()) {
+        echo $form->field($modelTransacties, 'omschrijving')->textInput();
+    }
+
+
     if(Yii::$app->request->get('type_id') == null ||
         in_array(Yii::$app->request->get('type_id'), [BetalingType::getPinId()])) {
+        echo $form->field($modelTransacties, 'transacties_user_id')->widget(Select2::class, [
+            'data' => ArrayHelper::map(User::find()->all(), 'id', 'username'),
+            'options'   => [
+                'placeholder' => Yii::t('app', 'Selecteer gebruiker'),
+                'id' => 'transacties_user_id',
+            ],
+        ]);
         echo $form->field($modelTransacties, 'omschrijving')->textInput();
     }
     if (Yii::$app->request->get('type_id') == null ||
@@ -97,7 +110,7 @@ use kartik\widgets\FileInput;
         ]);
     }
 
-    if (Yii::$app->request->get('type') == null ||
+    if ( Yii::$app->request->get('type_id') == null ||
         in_array(Yii::$app->request->get('type_id'), [ BetalingType::getDeclaratieUitbetaalsId(), BetalingType::getIzettleUitbetalingId(),
             BetalingType::getMollieUitbetalingId(), BetalingType::getIzettleKosotenId(), BetalingType::getMollieKostenId()])) {
         $transactionsArray = $modelTransacties->getTransactionsArray();

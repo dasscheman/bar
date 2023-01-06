@@ -197,7 +197,7 @@ class TransactiesController extends Controller
         }
 
         $modelBon = new Bonnen();
-        if ($modelBon->load(Yii::$app->request->post()) ) {
+        if ($modelBon->load(Yii::$app->request->post())) {
             $modelBon->saveBonForTransactie($model);
         }
         if (isset($modelKosten)) {
@@ -238,6 +238,21 @@ class TransactiesController extends Controller
                 'modelBonnen' => $modelBonnen
             ]);
         }
+        if(!$modelTransacties->save()){
+            foreach ($modelTransacties->errors as $key => $error) {
+                Yii::$app->session->setFlash('warning', Yii::t('app', 'Fout met opslaan: ' . $key . ':' . $error[0]));
+            }
+            $this->layout = 'main-fluid';
+            return $this->render('update', [
+                'modelTransacties' => $modelTransacties,
+                'modelBonnen' => $modelBonnen
+            ]);
+        }
+
+        if (isset(Yii::$app->request->post('Transacties')['all_related_transactions'])) {
+            Transacties::addRelatedTransactions($modelTransacties->transacties_id, Yii::$app->request->post('Transacties')['all_related_transactions']);
+        }
+
         if ($modelBonnen->load(Yii::$app->request->post()) ) {
             $modelBonnen->saveBonForTransactie($modelTransacties);
         }

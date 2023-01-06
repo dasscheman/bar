@@ -312,10 +312,8 @@ class Transacties extends BarActiveRecord
             ->addParams([':transacties_id' => $this->transacties_id]);
 
         $results = Transacties::find()
-            ->select('transacties_id, bon_id')
             ->where(['in', 'transacties.transacties_id', $queryParentTransactions])
-            ->orwhere(['in', 'transacties.transacties_id', $queryChildTransactions])
-            ->all();
+            ->orwhere(['in', 'transacties.transacties_id', $queryChildTransactions]);
 
         return $results;
     }
@@ -326,13 +324,13 @@ class Transacties extends BarActiveRecord
     */
     public function setAllRelatedTransactions()
     {
-        $result = $this->getAllRelatedTransactionsModels();
+        $result = $this->getAllRelatedTransactionsModels()->all();
         $this->all_related_transactions = ArrayHelper::getColumn($result, 'transacties_id');
     }
 
     public function relatedBonnen() {
         $bonnenIds = [];
-        $models = $this->getAllRelatedTransactionsModels();
+        $models = $this->getAllRelatedTransactionsModels()->all();
         foreach ($models as $key => $value) {
               $bonnenIds[] = $value->bon_id;
         }
@@ -436,8 +434,8 @@ class Transacties extends BarActiveRecord
             }
         }
 
-        switch ($this->getType()->one()->omschrijving) {
-            case 'Ideal':
+        switch ($this->type_id) {
+            case BetalingType::getIdealId():
                 if (!isset($this->mollie_status)) {
                     return 'danger';
                 }
@@ -518,11 +516,12 @@ class Transacties extends BarActiveRecord
     }
 
     public function isTransactionRequired(){
-        switch ($this->getType()->one()->omschrijving) {
-            case 'Ideal':
-            case 'Uitbetaling Mollie';
-            case 'Izettle Pin betaling':
-            case 'Uitbetaling Izettle':
+        switch ($this->type_id) {
+            case BetalingType::getIdealId():
+            case BetalingType::getMollieUitbetalingId():
+            case BetalingType::getIzettleInvoerId():
+            case BetalingType::getIzettleUitbetalingId():
+            case BetalingType::getDeclaratieUitbetaalsId():
                   return true;
         }
         return false;
