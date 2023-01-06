@@ -229,7 +229,7 @@ class TurvenController extends Controller
             $count = 0;
             $dbTransaction = Yii::$app->db->beginTransaction();
             try {
-                $prijslijst = Prijslijst();
+                $prijslijst = new Prijslijst();
                 foreach ($models as $model) {
                     if (empty($model->eenheid_id)) {
                         continue;

@@ -33,7 +33,7 @@ use app\models\Transacties;
         //            'groupOptions'=>['class'=>'text-center']
                 ],
             ];
-            $turven = $model->newTurvenUsers;
+            $turven = $model->getNewTurvenUsers()->all();
             if (!empty($turven)) {
                 $attributes[] = [
                     'columns' => [

@@ -72,7 +72,7 @@ class User extends BaseUser
     public function __construct()
     {
         parent::__construct();
-        $this->datum_balans =  Yii::$app->setupdatetime->storeFormat(time(), 'date');
+        $this->datum_balans =  Yii::$app->setupdatetime->storeFormat(time(), 'datetime');
     }
 
     /**
