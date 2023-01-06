@@ -14,9 +14,10 @@ use yii\helpers\Html;
     <?php
     foreach ($models as $user) {
         if (!$user->limitenControleren($user->id)) {
-            echo Html::button(
+            echo Html::a(
                 $user->username,
-                [ 'class' => 'btn btn-lg btn-danger namen disabled']
+                [ 'barinvoer', 'user_id' => $user->id ],
+                [ 'class' => 'btn-lg btn-warning namen' ]
             );
             // Na 1 maart 2018 continue
             continue;

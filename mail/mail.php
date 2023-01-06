@@ -15,8 +15,9 @@ hierbij ontvangt je de factuur voor de Bison bar. In de bijlage zie je een gedet
 <b>Update januari 2023</b>
 <br>
 Ik heb wat achterstallige administratie bijgewerkt. Zoals betalingen naar de ING rekening (liever betalen met iDEAL),
-een turflijst van een het zomerkamp, een turflijst van een stamavond (ivm storing bar app). Hierdoor kan het zijn dat
-dat je turven van maanden geleden op je factuur terug ziet.
+een turflijst van een het zomerkamp. Hierdoor kan het zijn dat dat je turven van maanden geleden op je factuur terug ziet.
+
+Daarnaast heb ik wat inactieve accounts geblokkerd, mocht ik daar wat te enthousiast in zijn geweest, laat het me maar weten.
 
 Zoals het er nu naar uitziet zal er een kleine verhoging komen van de prijzen. Niets heel schokkend,
 zeker gezien het feit dat de prijs voor tapbier en fris al meer dan 10 jaar niet veranderd is.

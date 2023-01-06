@@ -21,43 +21,53 @@ use app\models\User;
             <div class="panel-body">
                 <?php
                 echo $this->render('/_alert');
-                foreach ($prijslijstDataProvider->getModels() as $item) {
-                    if (isset($count[$item->prijslijst_id])) {
-                        $labelName = $item->getEenheid()->one()->name . ' <span class="bold-red">' . $count[$item->prijslijst_id] . '</span>';
-                    } else {
-                        $labelName = $item->getEenheid()->one()->name;
+                if ($model->limitenControleren($model->id)) {
+                    foreach ($prijslijstDataProvider->getModels() as $item) {
+                        if (isset($count[$item->prijslijst_id])) {
+                            $labelName = $item->getEenheid()->one()->name . ' <span class="bold-red">' . $count[$item->prijslijst_id] . '</span>';
+                        } else {
+                            $labelName = $item->getEenheid()->one()->name;
+                        }
+                        echo Html::a(
+                            $labelName,
+                            [
+                                'barinvoer',
+                                'prijslijst_id' => $item->prijslijst_id,
+                                'count' => $count,
+                                'user_id' => $model->id,
+                                'actie' => 'toevoegen',
+                                'tab' => $tab
+                            ],
+                            ['class' => 'btn-lg btn-info namen']
+                        );
                     }
-                    echo Html::a(
-                        $labelName,
-                        [
-                            'barinvoer',
-                            'prijslijst_id' => $item->prijslijst_id,
-                            'count' => $count,
-                            'user_id' => $model->id,
-                            'actie' => 'toevoegen',
-                            'tab' => $tab
-                        ],
-                        [ 'class' => 'btn-lg btn-info namen' ]
-                    );
                 } ?>
             </div>
         </div>
         <?php
-
-        echo Html::a(
+        if (!$model->limitenControleren($model->id)) {
+            echo Html::button(
+                'Opslaan',
+                [ 'class' => 'btn btn-lg btn-succes namen disabled']
+            );
+        } else {
+            echo Html::a(
             'Opslaan',
-            [
-                'barinvoer',
-                'count' => $count,
-                'user_id' => $model->id,
-                'actie' => 'opslaan',
-                'tab' => $tab
-            ],
-            [
-                'class' => 'btn-lg btn-success',
-                !empty($count)?'':'disabled' => 'disabled'
-            ]
-        );
+                [
+                    'barinvoer',
+                    'count' => $count,
+                    'user_id' => $model->id,
+                    'actie' => 'opslaan',
+                    'tab' => $tab
+                ],
+                [
+                    'class' => 'btn-lg btn-success',
+                    !empty($count)?'':'disabled' => 'disabled'
+                ]
+            );
+
+        }
+
         echo Html::a(
             'Annuleren',
             [

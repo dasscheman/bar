@@ -126,7 +126,7 @@ class TurvenController extends Controller
             }
             $user = new User();
             if (!$user->limitenControleren($user_id)) {
-                Yii::$app->session->setFlash('warning', Yii::t('app', 'Wat errug, betalen pannenkoek! Vanaf 1 maart kun je niet meer turven als je meer dan 20 euro in het rood staat.'));
+                Yii::$app->session->setFlash('error', Yii::t('app', 'Je staat te veel negatief, svp je rekening betalen!'));
             }
             return $this->render('bar-invoer', [
                 'prijslijstSearchModel' => $prijslijstSearchModel,
