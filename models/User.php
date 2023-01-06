@@ -405,6 +405,7 @@ class User extends BaseUser
             ->where('transacties.status =:status_gecontroleerd OR transacties.status =:status_herberekend')
             ->andWhere(['in', 'transacties.type_id', $ids])
             ->andWhere('ISNULL(deleted_at)')
+            ->andWhere(['<=', 'transacties.datum', $this->datum_balans])
             ->params([
                 ':status_gecontroleerd' =>Transacties::STATUS_gecontroleerd,
                 ':status_herberekend' =>Transacties::STATUS_herberekend
@@ -463,6 +464,7 @@ class User extends BaseUser
             ->where('transacties.status =:status_gecontroleerd OR transacties.status =:status_herberekend')
             ->andWhere(['in', 'transacties.type_id', $ids])
             ->andWhere('ISNULL(deleted_at)')
+            ->andWhere(['<=', 'transacties.datum', $this->datum_balans])
             ->params([
                 ':status_gecontroleerd' =>Transacties::STATUS_gecontroleerd,
                 ':status_herberekend' =>Transacties::STATUS_herberekend
@@ -530,6 +532,7 @@ class User extends BaseUser
             ->andWhere(['!=', 'transacties.status',  Transacties::STATUS_herberekend])
             ->andWhere(['in', 'transacties.type_id', $ids])
             ->andWhere('ISNULL(deleted_at)')
+            ->andWhere(['<=', 'transacties.datum', $this->datum_balans])
             ->sum('bedrag');
     }
 
@@ -596,6 +599,7 @@ class User extends BaseUser
             ->where(['>=', 'turven.status',  Transacties::STATUS_factuur_gegenereerd])
             ->andWhere(['!=', 'turven.status',  Transacties::STATUS_herberekend])
             ->andWhere('ISNULL(deleted_at)')
+            ->andWhere(['<=', 'turven.created_at', $this->datum_balans])
             ->sum('totaal_prijs');
         });
 
