@@ -173,6 +173,13 @@ class Factuur extends BarActiveRecord
                 $generate = true;
             }
 
+            if (!isset($turven->datum) && $turven->turflijst->end_datum < $fourWeeks) {
+                // Als de oudste turflijst meer dan 4 weken geleden is, dan gaan we een factuur maken.
+                echo "\r\n";
+                echo '--> Nieuwe turven op turflijst';
+                $generate = true;
+            }
+
             $transactiesModel = $user->getTransactiesUserNietGefactureerd();
             $transacties = $transactiesModel->one();
             if (isset($transacties->datum) && $transacties->datum < $fourWeeks) {
