@@ -463,8 +463,55 @@ class Factuur extends BarActiveRecord
 //            Yii::$app->session->setFlash('warning', Yii::t('app', 'Je kunt deze transactie niet verwijderen: ' . $e));
         }
 
-
-
         return true;
     }
+
+    public function verzendReminderLimiet()
+    {
+        $user = User::findOne($this->ontvanger);
+
+        $message = Yii::$app->mailer->compose('mail_reminder_limiet', [
+            'user' => $user
+        ])
+            ->setFrom($_ENV['ADMIN_EMAIL'])
+            ->setTo($user->email)
+            ->setSubject('Reminder Bison bar')
+            ->attach(Yii::$app->basePath . '/web/uploads/facture/' . $this->pdf);
+        if (!empty($user->profile->public_email)) {
+            $message->setCc($user->profile->public_email);
+        }
+        try {
+            $message->send();
+        } catch (\Exception $e) {
+
+            var_dump($e);
+                die();
+            $this->sendErrorReport($e);
+        }
+    }
+
+    public function verzendInactief()
+    {
+        $user = User::findOne($this->ontvanger);
+
+        $message = Yii::$app->mailer->compose('mail_inactief', [
+            'user' => $user
+        ])
+            ->setFrom($_ENV['ADMIN_EMAIL'])
+            ->setTo($user->email)
+            ->setSubject('Inactief account Bison bar')
+            ->attach(Yii::$app->basePath . '/web/uploads/facture/' . $this->pdf);
+        if (!empty($user->profile->public_email)) {
+            $message->setCc($user->profile->public_email);
+        }
+        try {
+            $message->send();
+        } catch (\Exception $e) {
+
+            var_dump($e);
+            die();
+            $this->sendErrorReport($e);
+        }
+    }
+
 }

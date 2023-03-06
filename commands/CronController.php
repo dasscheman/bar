@@ -77,5 +77,29 @@ class CronController extends Controller
 
     public function actionMonth()
     {
+        //Verzend maandelijks een riminder als mensen voorbij hun limiet zijn
+        Yii::$app->cache->flush();
+        $users = User::find()->all();
+
+        foreach($users as $user) {
+            $factuur = $user->getFactuuren()->orderBy(['verzend_datum'=>SORT_DESC])->one();
+            if($factuur->verzend_datum == null) {
+                // Er staat nog een ander mailtje dat eerst verzonden moet worden.
+                continue;
+            }
+
+            if(!$user->limitenControleren()){
+                echo date("l jS \of F Y h:i:s A") . ': '.($user->username).' staat in het rood';
+                $factuur->verzendReminderLimiet();
+                continue;
+            }
+
+            $weeks = Yii::$app->setupdatetime->storeFormat(strtotime("-26 week"), 'datetime');
+            if($factuur->verzend_datum < $weeks) {
+
+                echo date("l jS \of F Y h:i:s A") . ': '.($user->username).' is inactief';
+                $factuur->verzendInactief();
+            }
+        }
     }
 }
