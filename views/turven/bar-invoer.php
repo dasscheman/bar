@@ -21,7 +21,7 @@ use app\models\User;
             <div class="panel-body">
                 <?php
                 echo $this->render('/_alert');
-                if ($model->limitenControleren($model->id)) {
+                if ($model->limitenControleren()) {
                     foreach ($prijslijstDataProvider->getModels() as $item) {
                         if (isset($count[$item->prijslijst_id])) {
                             $labelName = $item->getEenheid()->one()->name . ' <span class="bold-red">' . $count[$item->prijslijst_id] . '</span>';
@@ -45,7 +45,8 @@ use app\models\User;
             </div>
         </div>
         <?php
-        if (!$model->limitenControleren($model->id)) {
+
+        if (!$model->limitenControleren()) {
             echo Html::button(
                 'Opslaan',
                 [ 'class' => 'btn btn-lg btn-succes namen disabled']

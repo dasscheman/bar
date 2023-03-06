@@ -124,8 +124,9 @@ class TurvenController extends Controller
                 }
                 return $this->redirect(['barinvoer', '#' => $tab]);
             }
-            $user = new User();
-            if (!$user->limitenControleren($user_id)) {
+
+            $user = User::findOne($user_id);
+            if (!$user->limitenControleren()) {
                 Yii::$app->session->setFlash('error', Yii::t('app', 'Je staat te veel negatief, svp je rekening betalen!'));
             }
             return $this->render('bar-invoer', [
