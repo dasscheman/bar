@@ -4,7 +4,6 @@ namespace app\commands;
 
 use Yii;
 use yii\console\Controller;
-use app\models\Assortiment;
 use app\models\Factuur;
 use app\models\Turven;
 use app\models\Transacties;
@@ -79,10 +78,19 @@ class CronController extends Controller
     {
         //Verzend maandelijks een riminder als mensen voorbij hun limiet zijn
         Yii::$app->cache->flush();
-        $users = User::find()->all();
+        $users = User::find()
+            ->where('ISNULL(blocked_at)')
+            ->all();
 
         foreach($users as $user) {
             $factuur = $user->getFactuuren()->orderBy(['verzend_datum'=>SORT_DESC])->one();
+
+            if($factuur == null) {
+                $factuur = New Factuur();
+                $factuur->sendErrorReport(
+                    ['Tijdens cleanup heeft deze user (' . $user->id . ')geen factuur, kan waarchijnlijk geblokkeerd worden']);
+                continue;
+            }
             if($factuur->verzend_datum == null) {
                 // Er staat nog een ander mailtje dat eerst verzonden moet worden.
                 continue;
@@ -91,6 +99,7 @@ class CronController extends Controller
             if(!$user->limitenControleren()){
                 echo date("l jS \of F Y h:i:s A") . ': '.($user->username).' staat in het rood';
                 $factuur->verzendReminderLimiet();
+                echo 'verzonden';
                 continue;
             }
 

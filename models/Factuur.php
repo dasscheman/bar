@@ -483,9 +483,6 @@ class Factuur extends BarActiveRecord
         try {
             $message->send();
         } catch (\Exception $e) {
-
-            var_dump($e);
-                die();
             $this->sendErrorReport($e);
         }
     }
@@ -508,8 +505,6 @@ class Factuur extends BarActiveRecord
             $message->send();
         } catch (\Exception $e) {
 
-            var_dump($e);
-            die();
             $this->sendErrorReport($e);
         }
     }
