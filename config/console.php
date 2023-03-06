@@ -28,7 +28,7 @@ $config = [
             // 'useFileTransport' to false and configure a transport
             // for the mailer to send real emails.
             'useFileTransport' => $_ENV['EMAIL_TO_FILE'],
-            'transport' => require(__DIR__ . '/email.php')
+            'transport' => require(__DIR__ . '/../config/email.php'),
         ],
         'setupdatetime' => [
             'class' => 'app\components\SetupDateTime',
