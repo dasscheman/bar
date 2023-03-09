@@ -6,5 +6,5 @@ return [
     'username' => $_ENV['EMAIL_USERNAME'],
     'password' => $_ENV['EMAIL_PASSWORD'],
     'port' => $_ENV['EMAIL_PORT'], // Port 25 is a very common port too
-    'encryption' => 'tls', // It is often used, check your provider or mail
+    'encryption' => $_ENV['EMAIL_ENCRYPTION'], // It is often used, check your provider or mail
 ];

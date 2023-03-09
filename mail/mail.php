@@ -37,7 +37,7 @@ Bovendien is dit extra werk voor mij :(
 <br>
 <b>Rood staan</b>
 <br>
-Je kunt niet meer dan 20 euro rood te staan. Sta je meer dan 20 euro rood,
+Je kunt niet meer dan 20 euro rood te staan. Sta je meer dan <?php $user->profile->limit_hard ?> euro rood,
 dan wordt je account automatisch bevroren, je kunt dan niets meer turven.
 Je kunt je account pas weer gebruiken wanneer je betaald hebt.
 <br><br>
@@ -45,9 +45,13 @@ Je kunt je account pas weer gebruiken wanneer je betaald hebt.
 
 <?php echo Html::a(' Direct betalen met ideal', ['/mollie/betaling', 'pay_key' => $user->pay_key]) ?>
 
+Als de link niet werk, kopieer dan de volgende link en plak hem in je brouwser:
+<?php echo Url::to(['/mollie/betaling', 'pay_key' => $user->pay_key]); ?>
+
+
 <br>
 <br>
-Als je vragen hebt kun je mailen naar <?php echo $_ENV['URL'] ?>
+Als je vragen hebt kun je mailen naar bar@debison.nl
 <br>
 <br>
 Met vriendelijke groet,<br>

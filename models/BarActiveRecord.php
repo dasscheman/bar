@@ -83,7 +83,7 @@ abstract class BarActiveRecord extends ActiveRecord
             $errors = $this->errors;
         }
         $message = Yii::$app->mailer->compose('mail_critical_error', [
-                'errors' => $this->errors,
+                'errors' => $errors,
                 'model' => $this,
             ])
             ->setFrom($_ENV['ADMIN_EMAIL'])

@@ -13,7 +13,7 @@ use yii\helpers\Html;
 <div class="knoppen">
     <?php
     foreach ($models as $user) {
-        if (!$user->limitenControleren($user->id)) {
+        if (!$user->limitenControleren()) {
             echo Html::button(
                 $user->profile->name,
                 ['class' => 'btn btn-lg btn-danger namen disabled']

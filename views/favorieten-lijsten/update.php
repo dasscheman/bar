@@ -23,7 +23,7 @@ use app\models\Assortiment;
             if (!empty($modelsUsers)) {
                 foreach ($modelsUsers as $user) {
                     if (in_array($user->id, $users)) {
-                        if (!$user->limitenControleren($user->id)) {
+                        if (!$user->limitenControleren()) {
                             echo Html::button(
                                 $user->profile->name,
                                 [ 'class' => 'btn btn-lg btn-danger namen disabled']
@@ -77,7 +77,7 @@ use app\models\Assortiment;
         <?php
         foreach ($modelsUsers as $user) {
             if (!in_array($user->id, $users)) {
-                if (!$user->limitenControleren($user->id)) {
+                if (!$user->limitenControleren()) {
                     echo Html::button(
                         $user->profile->name,
                         [ 'class' => 'btn btn-lg btn-danger namen disabled']

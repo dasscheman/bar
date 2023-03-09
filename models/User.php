@@ -190,25 +190,9 @@ class User extends BaseUser
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getFactuurs()
-    {
-        return $this->hasMany(Factuur::className(), ['created_by' => 'id']);
-    }
-
-    /**
-     * @return \yii\db\ActiveQuery
-     */
-    public function getFactuurs0()
+    public function getFactuuren()
     {
         return $this->hasMany(Factuur::className(), ['ontvanger' => 'id']);
-    }
-
-    /**
-     * @return \yii\db\ActiveQuery
-     */
-    public function getFactuurs1()
-    {
-        return $this->hasMany(Factuur::className(), ['updated_by' => 'id']);
     }
 
     /**
@@ -732,25 +716,23 @@ class User extends BaseUser
     /**
      * Controleer limieten
      *
-     * @param int $id user id.
      * @return bolean.
      */
-    public function limitenControleren($id)
+    public function limitenControleren()
     {
-        $user = User::findOne($id);
         // Zet de default limiet
         $limiet = -20;
 
-        if ($user->pendingTransactionExists()) {
+        if ($this->pendingTransactionExists()) {
             // Als er een pending transactie is, dan krijgt de gebruiker het
             // voordeel van de twijfel en wordt het limit niet verder gecontroleerd.
             return true;
         }
 
-        if ($user->profile->limit_hard !== null) {
-            $limiet = $user->profile->limit_hard;
+        if ($this->profile->limit_hard !== null) {
+            $limiet = $this->profile->limit_hard;
         }
-        if ($user->Balans < $limiet) {
+        if ($this->Balans < $limiet) {
             return false;
         }
 

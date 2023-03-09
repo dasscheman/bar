@@ -67,7 +67,7 @@ use app\models\Prijslijst;
         <?php
         foreach ($models as $user) {
             if (!in_array($user->id, $users)) {
-                if (!$user->limitenControleren($user->id)) {
+                if (!$user->limitenControleren()) {
                     echo Html::button(
                         $user->profile->name,
                         [ 'class' => 'btn btn-lg btn-danger namen disabled' ]
