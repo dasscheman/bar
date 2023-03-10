@@ -66,7 +66,7 @@ echo GridView::widget([
                     return Html::a(
                         '<span class="glyphicon glyphicon-print"></span>',
                         [
-                            'factuur/download',
+                            '/factuur/download',
                             'id' => $model->factuur_id,
                         ],
                         [

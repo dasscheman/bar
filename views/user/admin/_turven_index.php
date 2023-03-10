@@ -82,7 +82,7 @@ $toolbar = false;
                         ],
                         'status' => [
                             'attribute' => 'status',
-                            'filter'=> Turven::getStatusOptions(),
+                            'filter'=> $searchModel->getStatusOptions(),
                             'value' => function ($model) {
                                 return $model->getStatusText();
                             },

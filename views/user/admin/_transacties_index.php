@@ -67,7 +67,7 @@ $toolbar = false;
                         ],
                         'status' => [
                             'attribute' => 'status',
-                            'filter'=> Transacties::getStatusOptions(),
+                            'filter'=> $searchModel->getStatusOptions(),
                             'value' => function ($model) {
                                 return $model->getStatusText();
                             },
