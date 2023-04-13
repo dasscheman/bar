@@ -4,6 +4,7 @@
  * Bar App de Bison by daan@biolgenkantoor.nl
  */
 
+use app\models\User;
 use kartik\tabs\TabsX;
 use app\models\FavorietenLijsten;
 use app\models\UserSearch;
@@ -23,7 +24,16 @@ use app\models\UserSearch;
                     'content' => $this->render('_form', [
                         'models' => $userDataProvider->getModels(),
                     ]),
-//                    'active'=>true
+                ],
+                [
+                    'label' => '<i class="glyphicon glyphicon-credit-card"></i> Direct Betalen',
+                    'content' => $this->render('/turven/direct_payment', [
+                        'model' => User::findOne(52),
+                        'prijslijstDataProvider' => $prijslijstDataProvider,
+                        'count' => $count,
+                        'tab' => 'w2-tab1'
+                    ]),
+                    'active' => true
                 ],
                 [
                     'label' => '<i class="glyphicon glyphicon-refresh"></i> Rondje',

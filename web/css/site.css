@@ -165,3 +165,10 @@ a.desc:after {
 .deleted{
     opacity: 0.4;
 }
+
+.center {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    width: 30%;
+}

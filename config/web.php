@@ -55,6 +55,10 @@ $config = [
         ],
         'db' => require(__DIR__ . '/db.php'),
         'urlManager' => [
+
+            'enablePrettyUrl' => true,
+            // Disable index.php
+            'showScriptName' => false,
             'class' => 'yii\web\UrlManager',
             'hostInfo' => $_ENV['URL'],
         ],

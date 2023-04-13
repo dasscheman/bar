@@ -2,6 +2,7 @@
 
 namespace app\controllers;
 
+use app\models\BetalingType;
 use Yii;
 use app\models\Eenheid;
 use app\models\Prijslijst;
@@ -120,7 +121,7 @@ class TurvenController extends Controller
                 $count = [];
                 $tab = '';
                 if (!empty(Yii::$app->request->get('tab'))) {
-                    $tab = 'w2-tab2';
+                    $tab = 'w2-tab0';
                 }
                 return $this->redirect(['barinvoer', '#' => $tab]);
             }
@@ -134,7 +135,7 @@ class TurvenController extends Controller
                 'prijslijstDataProvider' => $prijslijstDataProvider,
                 'count' => $count,
                 'model' => User::findOne($user_id),
-                'tab' => Yii::$app->request->get('tab'),
+                'tab' => '#w2-tab0',
             ]);
         }
         $userSearchModel = new UserSearch();
@@ -145,6 +146,7 @@ class TurvenController extends Controller
             'userDataProvider' => $userDataProvider,
             'prijslijstSearchModel' => $prijslijstSearchModel,
             'prijslijstDataProvider' => $prijslijstDataProvider,
+            'count' => []
         ]);
     }
 
@@ -178,7 +180,7 @@ class TurvenController extends Controller
 
             return $this->redirect([
                 '/turven/barinvoer',
-                '#' => 'w2-tab1'
+                '#' => 'w2-tab2'
             ]);
         }
 
@@ -199,6 +201,49 @@ class TurvenController extends Controller
             'users' => $users
         ]);
     }
+
+    public function actionDirectbetalen()
+    {
+        $count = [];
+
+        $prijslijstSearchModel = new PrijslijstSearch();
+        $prijslijstDataProvider = $prijslijstSearchModel->searchAvailable(Yii::$app->request->queryParams);
+
+        $user_id = 52;
+        if (Yii::$app->request->get('count') !== null) {
+            $count = Yii::$app->request->get('count');
+        }
+
+        if (Yii::$app->request->get('prijslijst_id') !== null) {
+            $prijslijst_id = Yii::$app->request->get('prijslijst_id');
+            if (isset($count[$prijslijst_id])) {
+                $count[$prijslijst_id]++;
+            } else {
+                $count[$prijslijst_id] = 1;
+            }
+        }
+        $turven = new Turven();
+        if (Yii::$app->request->get('actie') === 'opslaan' &&
+            $count !== null) {
+            $transactieKey = $turven->saveDirecteBetaling($count);
+            return $this->redirect(['mollie/qr-directe-betaling', 'transacties_key' => $transactieKey]);
+        }
+
+
+        $userSearchModel = new UserSearch();
+        $userDataProvider = $userSearchModel->search(Yii::$app->request->queryParams);
+        return $this->render('/user/gebruiker-selecteren', [
+            'prijslijstSearchModel' => $prijslijstSearchModel,
+            'prijslijstDataProvider' => $prijslijstDataProvider,
+            'userSearchModel' => $userSearchModel,
+            'userDataProvider' => $userDataProvider,
+            'count' => $count,
+            'model' => User::findOne($user_id),
+            'tab' => '#w2-tab1' //Yii::$app->request->get('tab'),
+        ]);
+    }
+
+
     /**
      * Displays a single Turven model.
      * @param integer $id

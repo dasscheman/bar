@@ -38,6 +38,7 @@ class Turven extends BarActiveRecord
     const TYPE_turflijst = 1;
     const TYPE_losse_verkoop = 2;
     const TYPE_rondje = 3;
+    const TYPE_directe_betaling = 4;
 
     /**
      * @inheritdoc
@@ -54,7 +55,7 @@ class Turven extends BarActiveRecord
     {
         return [
             [['consumer_user_id', 'aantal', 'totaal_prijs', 'type', 'status', 'eenheid_id'], 'required'],
-            [['turflijst_id', 'prijslijst_id', 'eenheid_id', 'factuur_id', 'consumer_user_id', 'aantal', 'type', 'status', 'created_by', 'updated_by'], 'integer'],
+            [['turflijst_id', 'prijslijst_id', 'eenheid_id', 'factuur_id', 'consumer_user_id', 'aantal', 'type', 'status', 'created_by', 'updated_by', 'transacties_id'], 'integer'],
             [['totaal_prijs'], 'number'],
             [['datum', 'created_at', 'updated_at', 'deleted_at', 'eenheid_id'], 'safe'],
             ['prijslijst_id', 'required','when' => function ($model) {
@@ -64,6 +65,7 @@ class Turven extends BarActiveRecord
                 return empty($model->prijslijst_id);
             }],
             [['factuur_id'], 'exist', 'skipOnError' => true, 'targetClass' => Factuur::className(), 'targetAttribute' => ['factuur_id' => 'factuur_id']],
+            [['transacties_id'], 'exist', 'skipOnError' => true, 'targetClass' => Transacties::className(), 'targetAttribute' => ['transacties_id' => 'transacties_id']],
             [['consumer_user_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::className(), 'targetAttribute' => ['consumer_user_id' => 'id']],
             [['created_by'], 'exist', 'skipOnError' => true, 'targetClass' => User::className(), 'targetAttribute' => ['created_by' => 'id']],
             [['turflijst_id'], 'exist', 'skipOnError' => true, 'targetClass' => Turflijst::className(), 'targetAttribute' => ['turflijst_id' => 'turflijst_id']],
@@ -87,6 +89,7 @@ class Turven extends BarActiveRecord
             'type' => 'Type',
             'status' => 'Status',
             'factuur_id' => Yii::t('app', 'Factuur ID'),
+            'transacties_id' => 'Transactie ID',
             'created_at' => 'Created At',
             'created_by' => 'Created By',
             'updated_at' => 'Updated At',
@@ -101,6 +104,14 @@ class Turven extends BarActiveRecord
     public function getFactuur()
     {
         return $this->hasOne(Factuur::className(), ['factuur_id' => 'factuur_id']);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getTransactie()
+    {
+        return $this->hasOne(Factuur::className(), ['transacties_id' => 'transacties_id']);
     }
 
     /**
@@ -171,6 +182,7 @@ class Turven extends BarActiveRecord
             self::TYPE_turflijst => Yii::t('app', 'Turflijst'),
             self::TYPE_losse_verkoop => Yii::t('app', 'Losse verkoop'),
             self::TYPE_rondje => Yii::t('app', 'Rondje'),
+            self::TYPE_directe_betaling => Yii::t('app', 'Directe betaling met QR-code'),
         ];
     }
 
@@ -246,6 +258,75 @@ class Turven extends BarActiveRecord
             return false;
         }
         return true ;
+    }
+
+    public function saveDirecteBetaling($prijslijst_ids)
+    {
+        Yii::$app->cache->flush();
+        $date = Yii::$app->setupdatetime->storeFormat(time(), 'datetime');
+        $dbTransaction = Yii::$app->db->beginTransaction();
+        try {
+            $betalingsType = new BetalingType();
+            $transacties = new Mollie();
+
+            $transacties->setQrCode();
+
+            $transacties->transacties_user_id = $_ENV['BAR_ACCOUNT'];
+            $transacties->mollie_status = $transacties::MOLLIE_STATUS_open;
+            $transacties->type_id = $betalingsType->getDirecteBetaling();
+            $transacties->status = $transacties::STATUS_ingevoerd;
+            $transacties->datum = $date;
+            $totaalprijs = 0;
+
+            foreach ($prijslijst_ids as $prijslijst_id => $count) {
+                $model = new Turven();
+                $model->prijslijst_id = $prijslijst_id;
+                $model->aantal = $count;
+                $model->datum = $date;
+                $model->consumer_user_id = $_ENV['BAR_ACCOUNT'];
+                $model->status = TURVEN::STATUS_ingevoerd;
+                $model->type = TURVEN::TYPE_directe_betaling;
+
+                $prijslijst = Prijslijst::findOne($prijslijst_id);
+                if ($prijslijst == null) {
+                    Yii::$app->session->setFlash('warning', Yii::t('app', 'Er is geen geldige prijslijst voor ' . $prijslijst_id));
+                    return false;
+                }
+
+                $model->eenheid_id = $prijslijst->eenheid_id;
+                $model->totaal_prijs = $count * $prijslijst->prijs;
+                $totaalprijs += $model->totaal_prijs;
+                if (!$model->save()) {
+                    $dbTransaction->rollBack();
+                    foreach ($model->errors as $key => $error) {
+                        Yii::$app->session->setFlash('warning', Yii::t('app', 'Kan turven niet opslaan:' . $error[0]));
+                    }
+                    return false;
+                }
+            }
+            $transacties->bedrag = $totaalprijs;
+            if (!$transacties->save()) {
+                $dbTransaction->rollBack();
+                foreach ($transacties->errors as $key => $error) {
+                    Yii::$app->session->setFlash('warning', Yii::t('app', 'Kan transactie niet opslaan:' . $error[0]));
+                }
+                return false;
+            }
+            $model->transacties_id = $transacties->transacties_id;
+            if (!$model->save()) {
+                $dbTransaction->rollBack();
+                foreach ($model->errors as $key => $error) {
+                    Yii::$app->session->setFlash('warning', Yii::t('app', 'Kan transactie niet opslaan:' . $error[0]));
+                }
+                return false;
+            }
+
+            $dbTransaction->commit();
+        } catch (\Exception $e) {
+            Yii::$app->session->setFlash('warning', Yii::t('app', 'Je kunt deze turven niet toevoegen.') . $e);
+            return false;
+        }
+        return $transacties->transacties_key ;
     }
 
     public function saveRondje($users, $prijslijst_id)

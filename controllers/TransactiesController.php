@@ -44,10 +44,11 @@ class TransactiesController extends Controller
                 ],
                 // We will override the default rule config with the new AccessRule class
 //                'only' => ['index', 'view', 'create', 'create-declaraties', 'update', 'delete'],
+                'only' => ['status'],
                 'rules' => [
                     [
                         'allow' => true,
-                        'actions' => ['index', 'delete', 'create', 'update', 'view', 'bank'],
+                        'actions' => ['index', 'delete', 'create', 'update', 'view', 'bank', 'status'],
                         'roles' =>  ['admin', 'beheerder'],
                     ],
                     [
@@ -377,6 +378,39 @@ class TransactiesController extends Controller
     }
 
     /**
+     * Check status existing Transacties model.
+     * @param integer $key
+     * @return mixed
+     */
+    public function actionStatus($key)
+    {
+        $modelTransacties = $this->findByKey($key);
+
+        \Yii::$app->response->format = Response::FORMAT_JSON;
+
+        return ['status' => $modelTransacties->status, 'mollie_status' => $modelTransacties->mollie_status];
+    }
+
+    public function actionMailBetaalBevestiging($key)
+    {
+        $transactie = $this->findByKey($key);
+        Yii::$app->request->post('email');
+
+        $message = Yii::$app->mailer->compose('mail_betaal_bevestiging', [
+                'transactie' => $transactie,
+            ])
+            ->setFrom($_ENV['ADMIN_EMAIL'])
+            ->setTo(Yii::$app->request->post('email'))
+            ->setSubject('Betaal bevestiging QR-code');
+
+        $send = $message->send();
+        \Yii::$app->response->format = Response::FORMAT_JSON;
+
+        return ['status' => $send];
+    }
+
+
+    /**
      * Finds the Transacties model based on its primary key value.
      * If the model is not found, a 404 HTTP exception will be thrown.
      * @param integer $id
@@ -391,5 +425,16 @@ class TransactiesController extends Controller
         } else {
             throw new NotFoundHttpException('The requested page does not exist.');
         }
+    }
+
+    /**
+     * Finds Transctie by Key
+     *
+     * @param  string      $key
+     * @return static|null
+     */
+    public static function findByKey($key)
+    {
+        return static::findOne(['transatie_key' => $key]);
     }
 }
