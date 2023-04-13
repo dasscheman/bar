@@ -65,7 +65,7 @@ class SetupDateTime {
               $fmt = self::TIME_FORMAT;
         }
         elseif ($type === 'date') {
-              $fmt = self::TIME_FORMAT;
+              $fmt = self::DATE_FORMAT;
         }
         else {
               $fmt = 'php:d-m-Y';

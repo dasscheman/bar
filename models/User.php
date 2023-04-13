@@ -66,13 +66,13 @@ use dektrium\user\models\User as BaseUser;
 
 class User extends BaseUser
 {
-    public $balans;
     public $datum_balans;
+    public $limit_hard;
 
     public function __construct()
     {
         parent::__construct();
-        $this->datum_balans =  Yii::$app->setupdatetime->storeFormat(time(), 'datetime');
+        $this->datum_balans = Yii::$app->setupdatetime->storeFormat(time(), 'datetime');
     }
 
     /**
@@ -297,6 +297,12 @@ class User extends BaseUser
         return $this->hasOne(Profile::className(), ['user_id' => 'id']);
     }
 
+    public function getLimitHard()
+    {
+
+        return $this->getProfile()->one()->limit_hard;
+    }
+
     /**
     * @return \yii\db\ActiveQuery
     */
@@ -443,17 +449,18 @@ class User extends BaseUser
             return BetalingType::find()->where(['bijaf'=>BetalingType::BIJAF_bij])->asArray()->all();
         });
         $ids = ArrayHelper::getColumn($test, 'type_id');
-
-        return $this->hasMany(Transacties::className(), ['transacties_user_id' => 'id'])
-            ->where('transacties.status =:status_gecontroleerd OR transacties.status =:status_herberekend')
-            ->andWhere(['in', 'transacties.type_id', $ids])
-            ->andWhere('ISNULL(deleted_at)')
-            ->andWhere(['<=', 'transacties.datum', $this->datum_balans])
-            ->params([
-                ':status_gecontroleerd' =>Transacties::STATUS_gecontroleerd,
-                ':status_herberekend' =>Transacties::STATUS_herberekend
-            ])
-            ->sum('bedrag');
+        return $db->cache(function ($db) use ($ids) {
+            return $this->hasMany(Transacties::className(), ['transacties_user_id' => 'id'])
+                ->where('transacties.status =:status_gecontroleerd OR transacties.status =:status_herberekend')
+                ->andWhere(['in', 'transacties.type_id', $ids])
+                ->andWhere('ISNULL(deleted_at)')
+                ->andWhere(['<=', 'transacties.datum', $this->datum_balans])
+                ->params([
+                    ':status_gecontroleerd' =>Transacties::STATUS_gecontroleerd,
+                    ':status_herberekend' =>Transacties::STATUS_herberekend
+                ])
+                ->sum('bedrag');
+        });
     }
 
     /**
@@ -595,8 +602,8 @@ class User extends BaseUser
     public function getBalans()
     {
         $vorig_openstaand =  $this->getSumOldBijTransactiesUser() - $this->getSumOldTurvenUsers() - $this->getSumOldAfTransactiesUser();
-        $this->balans = $vorig_openstaand - $this->sumNewTurvenUsers + $this->sumNewBijTransactiesUser - $this->sumNewAfTransactiesUser;
-        return $this->balans;
+        return  $vorig_openstaand - $this->sumNewTurvenUsers + $this->sumNewBijTransactiesUser - $this->sumNewAfTransactiesUser;
+//        return $this->balans;
     }
 
     /**
