@@ -36,18 +36,10 @@ AppAsset::register($this);
         ],
     ]);
 
-    $graph_menu[] = ['label' => 'Overzicht', 'url' => ['/site/totaal']];
-    foreach (Assortiment::find()->all() as $assortiment) {
-        $graph_menu[] = ['label' => $assortiment->name, 'url' =>  ['/site/assortiment', 'assortiment_id' => $assortiment->assortiment_id, 'aantal_maanden' => 3 ]];
-    }
-
     echo Nav::widget([
         'options' => ['class' => 'navbar-nav navbar-right'],
         'items' => [
             Yii::$app->user->can('onlinebetalen') ? ['label' => 'Betalen', 'url' => ['/mollie/betaling']]:'',
-            Yii::$app->user->can('gebruiker') ? ['label' => 'Grafieken',
-                'items' => $graph_menu
-            ]:'',
             Yii::$app->user->can('beheerder') ? ['label' => 'Beheerder',
                 'items' => [
                     [

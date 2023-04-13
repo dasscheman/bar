@@ -84,7 +84,7 @@ use app\models\Transacties;
         <table class="items" width="100%" style="font-size: 9pt; border-collapse: collapse; " cellpadding="8">
             <thead>
                 <tr>
-                    <td width="9%">ref. id</td>
+                    <td width="9%">ref.id</td>
                     <td width="9%">aantal</td>
                     <td width="9%">prijs per stuk</td>
                     <td width="12%">turflijst/ datum</td>
