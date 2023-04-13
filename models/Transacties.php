@@ -2,6 +2,7 @@
 
 namespace app\models;
 
+use Mollie\Api\MollieApiClient;
 use Yii;
 use app\models\BarActiveRecord;
 use app\models\BetalingType;
@@ -25,6 +26,7 @@ use yii\helpers\ArrayHelper;
  * @property int $updated_by
  * @property int $mollie_status
  * @property string $mollie_id
+ * @property string $transactie_key
  * @property string $deleted_at
  *
  * @property RelatedTransacties[] $relatedTransacties
@@ -79,8 +81,8 @@ class Transacties extends BarActiveRecord
             }, 'enableClientValidation' => false],
             [['transacties_user_id', 'bon_id', 'factuur_id', 'type_id', 'status', 'created_by', 'updated_by', 'mollie_status'], 'integer'],
             [['bedrag'], 'number'],
-            [['datum', 'created_at', 'updated_at', 'deleted_at', 'status'], 'safe'],
-            [['omschrijving', 'mollie_id'], 'string', 'max' => 255],
+            [['datum', 'created_at', 'updated_at', 'deleted_at', 'status', 'bedrag', 'transactie_key'], 'safe'],
+            [['omschrijving', 'mollie_id', 'transactie_key'], 'string', 'max' => 255],
             [['factuur_id'], 'exist', 'skipOnError' => true, 'targetClass' => Factuur::className(), 'targetAttribute' => ['factuur_id' => 'factuur_id']],
             [['type_id'], 'exist', 'skipOnError' => true, 'targetClass' => BetalingType::className(), 'targetAttribute' => ['type_id' => 'type_id']],
             [['bon_id'], 'exist', 'skipOnError' => true, 'targetClass' => Bonnen::className(), 'targetAttribute' => ['bon_id' => 'bon_id']],
@@ -152,6 +154,14 @@ class Transacties extends BarActiveRecord
     public function getBon()
     {
         return $this->hasOne(Bonnen::className(), ['bon_id' => 'bon_id']);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getTurvens()
+    {
+        return $this->hasMany(Turven::className(), ['transacties_id' => 'transacties_id']);
     }
 
     /**

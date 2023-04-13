@@ -2,6 +2,7 @@
 
 namespace app\models;
 
+use app\components\GeneralFunctions;
 use Yii;
 use yii\helpers\ArrayHelper;
 use yii\web\NotFoundHttpException;
@@ -37,6 +38,10 @@ class Mollie extends Transacties
         return $scenarios;
     }
 
+    public function afterFind() {
+        $this->bedrag = number_format((float)$this->bedrag, 2, '.', '');
+    }
+
     /**
      * @inheritdoc
      */
@@ -44,7 +49,8 @@ class Mollie extends Transacties
     {
         $rules = parent::rules();
         $rules[] = [['issuer', 'omschrijving', 'bedrag'], 'required', 'on' => 'betaling'];
-        $rules[] = [['automatische_betaling', 'transacties_user_id'], 'safe'];
+        $rules[] = [['omschrijving'], 'required', 'on' => 'pre-betaling'];
+        $rules[] = [['issuer', 'automatische_betaling', 'transacties_user_id', 'bedrag', 'transactie_key'], 'safe'];
 
         return $rules;
     }
@@ -57,6 +63,7 @@ class Mollie extends Transacties
         return [
             'issuer' => 'Bank',
             'transacties_user_id' => 'Betaling voor',
+            'transactie_key' => 'Unique key'
         ];
     }
 
@@ -189,8 +196,8 @@ class Mollie extends Transacties
             "issuer"       => !empty($this->issuer) ? $this->issuer : null
         ];
 
-        $this->parameters['redirectUrl'] = "https://" . $_ENV['URL'] . "/index.php?r=mollie/return-betaling&transacties_id={$this->transacties_id}";
-        $this->parameters['webhookUrl'] = "https://" . $_ENV['URL'] . "/index.php?r=mollie/webhook";
+        $this->parameters['redirectUrl'] = "https://" . $_ENV['URL'] . "/mollie/return-betaling?transacties_id={$this->transacties_id}";
+        $this->parameters['webhookUrl'] = "https://" . $_ENV['URL'] . "/mollie/webhook";
     }
 
     public function createRecurringPayment()
@@ -242,5 +249,33 @@ class Mollie extends Transacties
         } catch (Mollie_API_Exception $e) {
             echo "API call failed: " . htmlspecialchars($e->getMessage());
         }
+    }
+
+    public function setQrCode()
+    {
+        if ($this->transactie_key !== null) {
+
+            return;
+        }
+        $UniqueQrCode = 99;
+
+        while ($UniqueQrCode == 99) {
+            $newqrcode = $this::randomString(22);
+            $data = Transacties::find()
+                ->where('transactie_key = :key')
+                ->params([':key' => $newqrcode])
+                ->exists();
+            // if QR code niet bestaat dan wordt de nieuwe gegenereede code gebruikt
+            if (!$data) {
+                $UniqueQrCode = $newqrcode;
+            }
+        }
+        $this->setAttribute('transactie_key', $UniqueQrCode);
+    }
+
+    public static function randomString($length)
+    {
+        $chars = "abcdefghijkmnopqrstuvwxyzABCDEFGHJKLMNOPQRSTUVWXYZ0123456789";
+        return substr(str_shuffle($chars), 0, $length);
     }
 }

@@ -141,6 +141,16 @@ class BetalingType extends BarActiveRecord
         return "Onbekende staat ({$this->state})";
     }
 
+    public static function getDirecteBetaling()
+    {
+        $betaling = BetalingType::findOne(['omschrijving' => 'Directe betaling']);
+
+        if (isset($betaling->type_id)) {
+            return $betaling->type_id;
+        }
+        return;
+    }
+
     public static function getIdealId()
     {
         $betaling = BetalingType::findOne(['omschrijving' => 'Ideal']);

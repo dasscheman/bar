@@ -54,24 +54,22 @@ echo GridView::widget([
               }
           },
         ],
-        [
-            'header' => 'limit_hard',
+        'limit_hard' => [
+            'attribute' => 'limit_hard',
             'value' => function ($model) {
                 return $model->getProfile()->one()->limit_hard;
             },
         ],
         'sumNewBijTransactiesUser',
-//        'sumNewAfTransactiesUser',
-//        'sumOldBijTransactiesUser',
-//        'sumOldAfTransactiesUser',
         'sumNewTurvenUsers',
-//        'sumOldTurvenUsers',
-        [
-            'header' => 'balans',
+        'balans',
+        'blocked_at' => [
+            'attribute' => 'blocked_at',
             'value' => function ($model) {
-                $vorig_openstaand =  $model->getSumOldBijTransactiesUser() - $model->getSumOldTurvenUsers() - $model->getSumOldAfTransactiesUser();
-                $nieuw_openstaand = $vorig_openstaand - $model->sumNewTurvenUsers + $model->sumNewBijTransactiesUser - $model->sumNewAfTransactiesUser;
-                return $nieuw_openstaand;
+                if($model->blocked_at !== null )
+                {
+                    return empty($model->blocked_at)?'':Yii::$app->setupdatetime->displayFormat($model->blocked_at, 'date', true);
+                };
             },
         ],
         [
