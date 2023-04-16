@@ -29,8 +29,15 @@ use yii\helpers\Url;
                     <h3>
                         Scan de code met je telefoon en start de betaling met je bankapp.
                     </h3>
+
+                    <?php echo $this->render('/transacties/_table_view', ['transactie' => $model]); ?>
+
+
                 </div>
             </div>
+
+
+
         </div>
     </div>
 </div>
@@ -41,7 +48,7 @@ use yii\helpers\Url;
             $.ajax({
                 url: "/transacties/status",
                 data: {
-                    'key': <?php echo $model->transacties_key ?>
+                    'key': '<?php echo $model->transactie_key ?>'
                 },
                 type: "GET",
                 success: function(data) {
@@ -53,9 +60,12 @@ use yii\helpers\Url;
                         $('#alert-info').hide();
                         $("#alert-success").html("<?php echo $model->getStatusOptions()[8] ?>");
                         $('#alert-success').show();
+
+                    }
+                    if(data.mollie_status != 1) {
+                        window.location.href = "/";
                     }
                     console.log(data)
-                    console.log(data.status)
                     console.log("polling");
                 },
                 error: function (request, status, error) {

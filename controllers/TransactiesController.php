@@ -384,7 +384,7 @@ class TransactiesController extends Controller
      */
     public function actionStatus($key)
     {
-        $modelTransacties = $this->findByKey($key);
+        $modelTransacties = Transacties::findByKey($key);
 
         \Yii::$app->response->format = Response::FORMAT_JSON;
 
@@ -393,7 +393,7 @@ class TransactiesController extends Controller
 
     public function actionMailBetaalBevestiging($key)
     {
-        $transactie = $this->findByKey($key);
+        $transactie = Transacties::findByKey($key);
         Yii::$app->request->post('email');
 
         $message = Yii::$app->mailer->compose('mail_betaal_bevestiging', [
@@ -425,16 +425,5 @@ class TransactiesController extends Controller
         } else {
             throw new NotFoundHttpException('The requested page does not exist.');
         }
-    }
-
-    /**
-     * Finds Transctie by Key
-     *
-     * @param  string      $key
-     * @return static|null
-     */
-    public static function findByKey($key)
-    {
-        return static::findOne(['transatie_key' => $key]);
     }
 }

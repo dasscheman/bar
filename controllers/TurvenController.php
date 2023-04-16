@@ -233,7 +233,10 @@ class TurvenController extends Controller
         if (Yii::$app->request->get('actie') === 'opslaan' &&
             $count !== null) {
             $transactieKey = $turven->saveDirecteBetaling($count);
-            return $this->redirect(['mollie/qr-directe-betaling', 'transacties_key' => $transactieKey]);
+            if($transactieKey !== false) {
+                return $this->redirect(['mollie/qr-directe-betaling', 'transactie_key' => $transactieKey]);
+            }
+            Yii::$app->session->setFlash('warning', Yii::t('app', 'Dat gaat niet helemaal lekker'));
         }
 
         $userSearchModel = new UserSearch();

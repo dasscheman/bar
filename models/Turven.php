@@ -268,15 +268,25 @@ class Turven extends BarActiveRecord
         try {
             $betalingsType = new BetalingType();
             $transacties = new Mollie();
-
             $transacties->setQrCode();
-
             $transacties->transacties_user_id = $_ENV['BAR_ACCOUNT'];
             $transacties->mollie_status = $transacties::MOLLIE_STATUS_open;
             $transacties->type_id = $betalingsType->getDirecteBetaling();
+            $transacties->omschrijving = 'Directe betaling Bisonbar';
             $transacties->status = $transacties::STATUS_ingevoerd;
             $transacties->datum = $date;
+            // Zet bedrag tijdelijk op 0
+            $transacties->bedrag = 0;
+            $transacties->transactie_kosten = $_ENV['IDEAL_KOSTEN'];
+
             $totaalprijs = 0;
+            if (!$transacties->save()) {
+                $dbTransaction->rollBack();
+                foreach ($transacties->errors as $key => $error) {
+                    Yii::$app->session->setFlash('warning', Yii::t('app', 'Kan transactie niet opslaan:' . $error[0]));
+                }
+                return false;
+            }
 
             foreach ($prijslijst_ids as $prijslijst_id => $count) {
                 $model = new Turven();
@@ -286,6 +296,7 @@ class Turven extends BarActiveRecord
                 $model->consumer_user_id = $_ENV['BAR_ACCOUNT'];
                 $model->status = TURVEN::STATUS_ingevoerd;
                 $model->type = TURVEN::TYPE_directe_betaling;
+                $model->transacties_id = $transacties->transacties_id;
 
                 $prijslijst = Prijslijst::findOne($prijslijst_id);
                 if ($prijslijst == null) {
@@ -304,29 +315,21 @@ class Turven extends BarActiveRecord
                     return false;
                 }
             }
+
             $transacties->bedrag = $totaalprijs;
             if (!$transacties->save()) {
                 $dbTransaction->rollBack();
                 foreach ($transacties->errors as $key => $error) {
                     Yii::$app->session->setFlash('warning', Yii::t('app', 'Kan transactie niet opslaan:' . $error[0]));
                 }
-                return false;
             }
-            $model->transacties_id = $transacties->transacties_id;
-            if (!$model->save()) {
-                $dbTransaction->rollBack();
-                foreach ($model->errors as $key => $error) {
-                    Yii::$app->session->setFlash('warning', Yii::t('app', 'Kan transactie niet opslaan:' . $error[0]));
-                }
-                return false;
-            }
-
             $dbTransaction->commit();
         } catch (\Exception $e) {
             Yii::$app->session->setFlash('warning', Yii::t('app', 'Je kunt deze turven niet toevoegen.') . $e);
             return false;
         }
-        return $transacties->transacties_key ;
+
+        return $transacties->transactie_key ;
     }
 
     public function saveRondje($users, $prijslijst_id)
