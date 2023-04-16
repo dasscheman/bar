@@ -2,6 +2,7 @@
 
 namespace app\controllers;
 
+use app\models\Turven;
 use Yii;
 use yii\helpers\Url;
 use app\models\Transacties;
@@ -369,6 +370,12 @@ class MollieController extends Controller
              * Update the transactie in the database.
              */
             $this->saveStatussen($model, $payment->status);
+            if($model->status = Transacties::STATUS_gecontroleerd) {
+                foreach($model->turvens as $turf ) {
+                    $turf->status = TURVEN::STATUS_gecontroleerd;
+                    $turf->save();
+                }
+            }
 
         } catch (Mollie_API_Exception $e) {
             $model->sendErrorReport($e->getMessage());

@@ -63,7 +63,7 @@ use app\models\UserSearch;
             }
 
             echo TabsX::widget([
-                'enableStickyTabs' => true,
+                'options' => ['id' => 'turven'],
                 'items'=>$items,
                 'position'=>TabsX::POS_LEFT,
                 'sideways'=>true,

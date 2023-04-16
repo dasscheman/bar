@@ -186,7 +186,7 @@ class Mollie extends Transacties
         $this->parameters = [
             "amount"       => [
                 "currency" => "EUR",
-                "value" => $this->bedrag,
+                "value" => number_format($this->bedrag + $this->transactie_kosten, 2, '.', ' '),
             ],
             "method"       => PaymentMethod::IDEAL,
             "description"  => $this->omschrijving . ' transacties_id: '  . $this->transacties_id,
@@ -230,7 +230,6 @@ class Mollie extends Transacties
     {
         try {
             $payment = $this->mollie->payments->create($this->parameters);
-
             /*
              * In this example we store the order with its payment status in a database.
              */

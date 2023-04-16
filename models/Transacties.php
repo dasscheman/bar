@@ -2,10 +2,10 @@
 
 namespace app\models;
 
+use app\models\BetalingType;
 use Mollie\Api\MollieApiClient;
 use Yii;
 use app\models\BarActiveRecord;
-use app\models\BetalingType;
 use yii\helpers\ArrayHelper;
 
 /**
@@ -454,6 +454,17 @@ class Transacties extends BarActiveRecord
                 }
         }
         return;
+    }
+
+    /**
+     * Returns the class for the gridview
+     */
+    public function getRowClassDirecteBetaling()
+    {
+        if ($this->mollie_status == self::MOLLIE_STATUS_paid) {
+            return 'success';
+        }
+        return 'warning';
     }
 
     public function isBonRequired(){
