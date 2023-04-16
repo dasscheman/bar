@@ -85,7 +85,10 @@ class TurvenController extends Controller
     public function actionBarinvoer()
     {
         $count = [];
-
+        $tabIndex = 1;
+        if(Yii::$app->request->get('tabIndex') !== null) {
+            $tabIndex = Yii::$app->request->get('tabIndex');
+        }
         $prijslijstSearchModel = new PrijslijstSearch();
         $prijslijstDataProvider = $prijslijstSearchModel->searchAvailable(Yii::$app->request->queryParams);
         if (Yii::$app->request->get('user_id') !== null) {
@@ -119,11 +122,7 @@ class TurvenController extends Controller
                 }
                 Yii::$app->session->setFlash('warning', $message);
                 $count = [];
-                $tab = '';
-                if (!empty(Yii::$app->request->get('tab'))) {
-                    $tab = 'w2-tab0';
-                }
-                return $this->redirect(['barinvoer', '#' => $tab]);
+                return $this->redirect(['barinvoer', 'tabIndex' => $tabIndex]);
             }
 
             $user = User::findOne($user_id);
@@ -135,7 +134,7 @@ class TurvenController extends Controller
                 'prijslijstDataProvider' => $prijslijstDataProvider,
                 'count' => $count,
                 'model' => User::findOne($user_id),
-                'tab' => '#w2-tab0',
+                'tabIndex' => $tabIndex,
             ]);
         }
         $userSearchModel = new UserSearch();
@@ -146,12 +145,17 @@ class TurvenController extends Controller
             'userDataProvider' => $userDataProvider,
             'prijslijstSearchModel' => $prijslijstSearchModel,
             'prijslijstDataProvider' => $prijslijstDataProvider,
-            'count' => []
+            'count' => [],
+            'tabIndex' => $tabIndex,
         ]);
     }
 
     public function actionRondje()
     {
+        $tabIndex = 3;
+        if(Yii::$app->request->get('tabIndex') !== null) {
+            $tabIndex = Yii::$app->request->get('tabIndex');
+        }
         $userSearchModel = new UserSearch();
         $userDataProvider = $userSearchModel->search(Yii::$app->request->queryParams);
         $prijslijst_id = Yii::$app->request->get('prijslijst_id');
@@ -180,10 +184,9 @@ class TurvenController extends Controller
 
             return $this->redirect([
                 '/turven/barinvoer',
-                '#' => 'w2-tab2'
+                'tabIndex' => $tabIndex,
             ]);
         }
-
 
         if (Yii::$app->request->get('user_id') !== null) {
             $users[] = Yii::$app->request->get('user_id');
@@ -198,14 +201,18 @@ class TurvenController extends Controller
         return $this->render('rondje', [
             'models' => $userDataProvider->getModels(),
             'prijslijst' => $prijslijst,
-            'users' => $users
+            'users' => $users,
+            'tabIndex' => $tabIndex
         ]);
     }
 
     public function actionDirectbetalen()
     {
         $count = [];
-
+        $tabIndex = 2;
+        if(Yii::$app->request->get('tabIndex') !== null) {
+            $tabIndex = Yii::$app->request->get('tabIndex');
+        }
         $prijslijstSearchModel = new PrijslijstSearch();
         $prijslijstDataProvider = $prijslijstSearchModel->searchAvailable(Yii::$app->request->queryParams);
 
@@ -229,7 +236,6 @@ class TurvenController extends Controller
             return $this->redirect(['mollie/qr-directe-betaling', 'transacties_key' => $transactieKey]);
         }
 
-
         $userSearchModel = new UserSearch();
         $userDataProvider = $userSearchModel->search(Yii::$app->request->queryParams);
         return $this->render('/user/gebruiker-selecteren', [
@@ -239,7 +245,7 @@ class TurvenController extends Controller
             'userDataProvider' => $userDataProvider,
             'count' => $count,
             'model' => User::findOne($user_id),
-            'tab' => '#w2-tab1' //Yii::$app->request->get('tab'),
+            'tabIndex' => $tabIndex
         ]);
     }
 
@@ -247,7 +253,8 @@ class TurvenController extends Controller
     /**
      * Displays a single Turven model.
      * @param integer $id
-     * @return mixed
+     * @return string
+     * @throws NotFoundHttpException
      */
     public function actionView($id)
     {
@@ -435,7 +442,7 @@ class TurvenController extends Controller
      * @return Turven the loaded model
      * @throws NotFoundHttpException if the model cannot be found
      */
-    protected function findModel($id)
+    protected function findModel(int $id): Turven
     {
         if (($model = Turven::findOne($id)) !== null) {
             return $model;

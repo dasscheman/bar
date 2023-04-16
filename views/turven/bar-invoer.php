@@ -36,7 +36,7 @@ use app\models\User;
                                 'count' => $count,
                                 'user_id' => $model->id,
                                 'actie' => 'toevoegen',
-                                'tab' => $tab
+                                'tabIndex' => $tabIndex
                             ],
                             ['class' => 'btn-lg btn-info namen']
                         );
@@ -59,7 +59,7 @@ use app\models\User;
                     'count' => $count,
                     'user_id' => $model->id,
                     'actie' => 'opslaan',
-                    'tab' => $tab
+                    'tabIndex' => $tabIndex
                 ],
                 [
                     'class' => 'btn-lg btn-success',
@@ -73,7 +73,7 @@ use app\models\User;
             'Annuleren',
             [
                 'barinvoer',
-                '#' => $tab
+                'tabIndex' => $tabIndex
             ],
             [
                 'class' => 'btn-lg btn-danger',
@@ -83,3 +83,5 @@ use app\models\User;
             ]
         );
         echo $this->render('/user/overzicht', ['model' => $model]); ?>
+    </div>
+</div>
