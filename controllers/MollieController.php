@@ -301,6 +301,7 @@ class MollieController extends Controller
         if ($model->load(Yii::$app->request->post())) {
             $model->setParameters();
             $model->status = Transacties::STATUS_wacht_op_betaling;
+            $model->save();
             $model->parameters['redirectUrl'] = "https://" . $_ENV['URL'] . "/mollie/return-directe-betaling?transactie_key={$model->transactie_key}";
             $model->parameters['webhookUrl'] = "https://" . $_ENV['URL'] . "/mollie/webhook-directe-betaling";
             $payment = $model->createPayment();
