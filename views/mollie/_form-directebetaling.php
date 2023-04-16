@@ -26,6 +26,8 @@ use app\models\User;
     ]);
     echo $form->field($model, 'omschrijving')->textInput(['readOnly'=> true]);
     echo $form->field($model, 'bedrag')->textInput(['readOnly'=> true]);
+    echo $form->field($model, 'transactie_kosten')->textInput(['readOnly'=> true]);
+    echo $form->field($model, 'transacties_user_id')->hiddenInput(['value'=> $model->transacties_user_id])->label(false);
 
     echo $form->field($model, 'issuer')->widget(Select2::className(), [
         'data' => $model->getIssuersOptions(),
@@ -35,7 +37,6 @@ use app\models\User;
         ],
     ]);
 
-    echo $form->field($model, 'transacties_user_id')->hiddenInput(['value'=> $model->transacties_user_id])->label(false);
     echo Html::submitButton(Yii::t('app', 'Betalen'), ['class' => 'btn btn-success btn-block']);
 
     ActiveForm::end(); ?>

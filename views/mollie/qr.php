@@ -63,7 +63,8 @@ use yii\helpers\Url;
 
                     }
                     if(data.mollie_status != 1) {
-                        window.location.href = "/";
+                        <?php Yii::$app->getSession()->setFlash('success', 'Betaling succesvol afgerond');?>
+                        window.location.href = "/turven/barinvoer?tabIndex=2";
                     }
                     console.log(data)
                     console.log("polling");
