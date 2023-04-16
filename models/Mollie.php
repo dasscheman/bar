@@ -70,7 +70,11 @@ class Mollie extends Transacties
     public function getIssuersOptions()
     {
         $this->mollie = new MollieApiClient;
-        $this->mollie->setApiKey($_ENV['MOLLIE_TEST_KEY']);
+        if ($_ENV['YII_ENV'] === 'prod') {
+            $this->mollie->setApiKey($_ENV['MOLLIE_LIVE_KEY']);
+        } else {
+            $this->mollie->setApiKey($_ENV['MOLLIE_TEST_KEY']);
+        }
         $issuers = $this->mollie->methods->get(\Mollie\Api\Types\PaymentMethod::IDEAL, ["include" => "issuers"]);
         return ArrayHelper::map($issuers->issuers, 'id', 'name');
     }
