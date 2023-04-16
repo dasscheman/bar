@@ -60,7 +60,7 @@ class MollieController extends Controller
 
     public function beforeAction($action)
     {
-        if ($action->id === 'webhook') {
+        if ($action->id === 'webhook' || $action->id === 'webhook-directe-betaling') {
             $this->enableCsrfValidation = false;
         }
         return parent::beforeAction($action);
