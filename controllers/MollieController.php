@@ -73,14 +73,7 @@ class MollieController extends Controller
      */
     public function actionBetaling()
     {
-        if (isset(Yii::$app->user->id)) {
-            $user = User::findOne(Yii::$app->user->id);
-        }
-
-        if (!isset($user)) {
-            $user = User::findByPayKey(Yii::$app->request->get('pay_key'));
-            Yii::$app->user->login($user,0);
-        }
+        $user = User::findByPayKey(Yii::$app->request->get('pay_key'));
 
         if (!isset($user)) {
             throw new NotFoundHttpException('Je bent niet ingelogt of de link uit je email is niet meer geldig.');
@@ -99,7 +92,6 @@ class MollieController extends Controller
             if ($model->save()) {
                 $model->setParameters();
                 if ($model->automatische_betaling && $model->createRecurringPayment()) {
-                    $user = User::findOne($model->transacties_user_id);
                     $message = Yii::$app->mailer->compose('mail_incasso_betaling_aangemaakt', [
                         'user' => $user,
                         'transactie' => $model,
@@ -220,13 +212,7 @@ class MollieController extends Controller
 
     public function actionAutomatischBetalingUpdate()
     {
-        if (isset(Yii::$app->user->id)) {
-            $user = User::findOne(Yii::$app->user->id);
-        }
-
-        if (!isset($user)) {
-            $user = User::findByPayKey(Yii::$app->request->post('pay_key'));
-        }
+        $user = User::findByPayKey(Yii::$app->request->post('pay_key'));
 
         if (!isset($user)) {
             throw new NotFoundHttpException('Je bent niet ingelogt of de link uit je email is niet meer geldig.');
