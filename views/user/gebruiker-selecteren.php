@@ -21,9 +21,11 @@ use app\models\UserSearch;
             $items = [
                 [
                     'label' => '<i class="glyphicon glyphicon-home"></i> Gebruikers',
+
                     'content' => $this->render('_form', [
                         'models' => $userDataProvider->getModels(),
                     ]),
+                    'active' => $tabIndex == 1
                 ],
                 [
                     'label' => '<i class="glyphicon glyphicon-credit-card"></i> Direct Betalen',
@@ -31,9 +33,8 @@ use app\models\UserSearch;
                         'model' => User::findOne(52),
                         'prijslijstDataProvider' => $prijslijstDataProvider,
                         'count' => $count,
-                        'tab' => 'w2-tab1'
                     ]),
-                    'active' => true
+                    'active' => $tabIndex == 2
                 ],
                 [
                     'label' => '<i class="glyphicon glyphicon-refresh"></i> Rondje',
@@ -41,6 +42,7 @@ use app\models\UserSearch;
                         'modelsPrijslijst' => $prijslijstDataProvider->getModels(),
                         'modelsUsers' => $userDataProvider->getModels(),
                     ]),
+                    'active' => $tabIndex == 3
                 ],
             ];
 
@@ -54,17 +56,18 @@ use app\models\UserSearch;
                     'label' => '<i class="glyphicon glyphicon-star-empty"></i> ' . $lijst->omschrijving,
                     'content' => $this->render('_form_favoriet', [
                         'models' => $userDataProvider->getModels(),
-                        'lijst_id' => $lijst->favorieten_lijsten_id
+                        'lijst_id' => $lijst->favorieten_lijsten_id,
                     ]),
+                    'active' => $tabIndex == 4
                 ];
             }
 
             echo TabsX::widget([
-                'enableStickyTabs' => true,
+                'options' => ['id' => 'turven'],
                 'items'=>$items,
                 'position'=>TabsX::POS_LEFT,
                 'sideways'=>true,
-                'encodeLabels'=>false
+                'encodeLabels'=>false,
             ]);?>
         </div>
     </div>

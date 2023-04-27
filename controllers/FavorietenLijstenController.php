@@ -140,7 +140,7 @@ class FavorietenLijstenController extends Controller
                 $modelFavorieten->selected_user_id = $user;
                 $modelFavorieten->save();
             }
-            return $this->redirect(['/turven/barinvoer', '#' => 'w1-tab2']);
+            return $this->redirect(['/turven/barinvoer', ['tabIndex' => '2']]);
         } else {
             $selected_users = Favorieten::find()
                 ->where(['lijst_id' => $id])
@@ -149,7 +149,7 @@ class FavorietenLijstenController extends Controller
                 ->all();
 
             $model->users_temp = ArrayHelper::getColumn($selected_users, 'selected_user_id');
-           
+
             return $this->render('update', [
                 'model' => $model,
             ]);
@@ -165,7 +165,7 @@ class FavorietenLijstenController extends Controller
     public function actionFavorietenAanpassen($id)
     {
         $model = $this->findModel($id);
-        
+
         if (Yii::$app->request->get('actie') === 'opslaan') {
             $modelFavorietenOud = Favorieten::findAll(['lijst_id' => $model->favorieten_lijsten_id]);
             if (!empty($modelFavorietenOud)) {
@@ -183,7 +183,7 @@ class FavorietenLijstenController extends Controller
                     $modelFavorieten->save();
                 }
             }
-            return $this->redirect(['/turven/barinvoer', '#' => 'w1-tab2']);
+            return $this->redirect(['/turven/barinvoer', ['tabIndex' => '2']]);
         } else {
             if (Yii::$app->request->get('users') === null) {
                 $selected_users = Favorieten::find()

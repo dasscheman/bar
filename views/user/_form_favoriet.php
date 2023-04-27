@@ -23,7 +23,7 @@ use yii\helpers\Html;
         }
         echo Html::a(
             $user->profile->name,
-            [ 'barinvoer', 'user_id' => $user->id, 'tab' => 'w1-tab2'],
+            [ 'barinvoer', 'user_id' => $user->id, 'tabIndex' => 4],
             [ 'class' => 'btn-lg btn-success namen' ]
         );
     }

@@ -2,10 +2,10 @@
 
 namespace app\models;
 
+use app\models\BetalingType;
 use Mollie\Api\MollieApiClient;
 use Yii;
 use app\models\BarActiveRecord;
-use app\models\BetalingType;
 use yii\helpers\ArrayHelper;
 
 /**
@@ -81,7 +81,7 @@ class Transacties extends BarActiveRecord
             }, 'enableClientValidation' => false],
             [['transacties_user_id', 'bon_id', 'factuur_id', 'type_id', 'status', 'created_by', 'updated_by', 'mollie_status'], 'integer'],
             [['bedrag'], 'number'],
-            [['datum', 'created_at', 'updated_at', 'deleted_at', 'status', 'bedrag', 'transactie_key'], 'safe'],
+            [['datum', 'created_at', 'updated_at', 'deleted_at', 'status', 'bedrag', 'transactie_key', 'transactie_kosten'], 'safe'],
             [['omschrijving', 'mollie_id', 'transactie_key'], 'string', 'max' => 255],
             [['factuur_id'], 'exist', 'skipOnError' => true, 'targetClass' => Factuur::className(), 'targetAttribute' => ['factuur_id' => 'factuur_id']],
             [['type_id'], 'exist', 'skipOnError' => true, 'targetClass' => BetalingType::className(), 'targetAttribute' => ['type_id' => 'type_id']],
@@ -456,6 +456,17 @@ class Transacties extends BarActiveRecord
         return;
     }
 
+    /**
+     * Returns the class for the gridview
+     */
+    public function getRowClassDirecteBetaling()
+    {
+        if ($this->mollie_status == self::MOLLIE_STATUS_paid) {
+            return 'success';
+        }
+        return 'warning';
+    }
+
     public function isBonRequired(){
         return in_array($this->type_id, [
             BetalingType::getPinId(),
@@ -535,5 +546,16 @@ class Transacties extends BarActiveRecord
                   return true;
         }
         return false;
+    }
+
+    /**
+     * Finds Transctie by Key
+     *
+     * @param  string      $key
+     * @return static|null
+     */
+    public static function findByKey($key)
+    {
+        return self::findOne(['transactie_key' => $key]);
     }
 }

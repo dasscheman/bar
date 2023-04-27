@@ -28,7 +28,9 @@ use app\models\Prijslijst;
                             'rondje',
                             'remove' => $user->id,
                             'users' => $users,
-                            'prijslijst_id' => $prijslijst->prijslijst_id],
+                            'prijslijst_id' => $prijslijst->prijslijst_id,
+                            'tabIndex' => $tabIndex
+                        ],
                         [ 'class' => 'btn-lg btn-info namen' ]
                     );
                 }
@@ -41,6 +43,7 @@ use app\models\Prijslijst;
                     'prijslijst_id' => $prijslijst->prijslijst_id,
                     'users' => $users,
                     'actie' => 'opslaan',
+                    'tabIndex' => $tabIndex
                 ],
                 [
                     'class' => 'btn-lg btn-success namen',
@@ -52,7 +55,7 @@ use app\models\Prijslijst;
                 'Annuleren',
                 [
                     'barinvoer',
-                    '#' => 'w1-tab1'
+                    'tabIndex' => $tabIndex
                 ],
                 [
                     'class' => 'btn-lg btn-danger namen',
@@ -81,7 +84,9 @@ use app\models\Prijslijst;
                         'rondje',
                         'user_id' => $user->id,
                         'users' => $users,
-                        'prijslijst_id' => $prijslijst->prijslijst_id],
+                        'prijslijst_id' => $prijslijst->prijslijst_id,
+                        'tabIndex' => $tabIndex
+                    ],
                     [ 'class' => 'btn-lg btn-success namen' ]
                 );
             }

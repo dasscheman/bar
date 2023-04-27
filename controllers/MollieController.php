@@ -2,6 +2,7 @@
 
 namespace app\controllers;
 
+use app\models\Turven;
 use Yii;
 use yii\helpers\Url;
 use app\models\Transacties;
@@ -45,7 +46,7 @@ class MollieController extends Controller
                     [
                         'allow' => true,
                         'actions' => ['qr-directe-betaling'],
-                        'roles' =>  ['admin', 'beheer'],
+                        'roles' =>  ['admin', 'beheerder'],
                     ],
                     [
                         'allow' => true,
@@ -59,7 +60,7 @@ class MollieController extends Controller
 
     public function beforeAction($action)
     {
-        if ($action->id === 'webhook') {
+        if ($action->id === 'webhook' || $action->id === 'webhook-directe-betaling') {
             $this->enableCsrfValidation = false;
         }
         return parent::beforeAction($action);
@@ -72,14 +73,7 @@ class MollieController extends Controller
      */
     public function actionBetaling()
     {
-        if (isset(Yii::$app->user->id)) {
-            $user = User::findOne(Yii::$app->user->id);
-        }
-
-        if (!isset($user)) {
-            $user = User::findByPayKey(Yii::$app->request->get('pay_key'));
-            Yii::$app->user->login($user,0);
-        }
+        $user = User::findByPayKey(Yii::$app->request->get('pay_key'));
 
         if (!isset($user)) {
             throw new NotFoundHttpException('Je bent niet ingelogt of de link uit je email is niet meer geldig.');
@@ -98,7 +92,6 @@ class MollieController extends Controller
             if ($model->save()) {
                 $model->setParameters();
                 if ($model->automatische_betaling && $model->createRecurringPayment()) {
-                    $user = User::findOne($model->transacties_user_id);
                     $message = Yii::$app->mailer->compose('mail_incasso_betaling_aangemaakt', [
                         'user' => $user,
                         'transactie' => $model,
@@ -219,13 +212,7 @@ class MollieController extends Controller
 
     public function actionAutomatischBetalingUpdate()
     {
-        if (isset(Yii::$app->user->id)) {
-            $user = User::findOne(Yii::$app->user->id);
-        }
-
-        if (!isset($user)) {
-            $user = User::findByPayKey(Yii::$app->request->post('pay_key'));
-        }
+        $user = User::findByPayKey(Yii::$app->request->post('pay_key'));
 
         if (!isset($user)) {
             throw new NotFoundHttpException('Je bent niet ingelogt of de link uit je email is niet meer geldig.');
@@ -299,8 +286,8 @@ class MollieController extends Controller
         return $this->render('/user/overzicht', ['model' => $user]);
     }
 
-    public function actionQrDirecteBetaling($key) {
-        $model = Mollie::findByKey($key);
+    public function actionQrDirecteBetaling($transactie_key) {
+        $model = Mollie::findByKey($transactie_key);
         $link = Url::to(['mollie/directe-betaling', 'transactie_key' => $model->transactie_key], true);
         $qrCode = new QrCode($link);
 
@@ -310,15 +297,12 @@ class MollieController extends Controller
 
     public function actionDirecteBetaling($transactie_key) {
         $model = Mollie::findByKey($transactie_key);
-        $model->scenario = 'pre-betaling';
 
         if ($model->load(Yii::$app->request->post())) {
-
-            $model->scenario = 'betaling';
             $model->setParameters();
             $model->status = Transacties::STATUS_wacht_op_betaling;
-
-            $model->parameters['redirectUrl'] = "https://" . $_ENV['URL'] . "/mollie/return-directe-betaling?transacties_key={$model->transacties_key}";
+            $model->save();
+            $model->parameters['redirectUrl'] = "https://" . $_ENV['URL'] . "/mollie/return-directe-betaling?transactie_key={$model->transactie_key}";
             $model->parameters['webhookUrl'] = "https://" . $_ENV['URL'] . "/mollie/webhook-directe-betaling";
             $payment = $model->createPayment();
 
@@ -327,10 +311,7 @@ class MollieController extends Controller
             }
         }
         $this->layout = 'main-fluid';
-        $model->transacties_user_id = $_ENV['BAR_ACCOUNT'];
         $model->status = Transacties::STATUS_betaling_gestart;
-        $model->omschrijving = 'Directe betaling Bisonbar';
-
         if (!$model->save()) {
             foreach ($model->errors as $key => $error) {
                 Yii::$app->session->setFlash('warning', Yii::t('app', 'Kan transactie niet opslaan:' . $error[0]));
@@ -347,7 +328,7 @@ class MollieController extends Controller
         // 3 seond sleep om zeker te weten dat de webhook eerst is aangeroepen
         // en de status gezet is.
         sleep(3);
-        $transactie = Transacties::findByKey(Yii::$app->request->get('transacties_key'));
+        $transactie = Transacties::findByKey(Yii::$app->request->get('transactie_key'));
         if (isset($transactie->mollie_status)) {
             $this->setFlashMessage($transactie->mollie_status);
         } else {
@@ -376,6 +357,12 @@ class MollieController extends Controller
              * Update the transactie in the database.
              */
             $this->saveStatussen($model, $payment->status);
+            if($model->status = Transacties::STATUS_gecontroleerd) {
+                foreach($model->turvens as $turf ) {
+                    $turf->status = TURVEN::STATUS_gecontroleerd;
+                    $turf->save();
+                }
+            }
 
         } catch (Mollie_API_Exception $e) {
             $model->sendErrorReport($e->getMessage());
