@@ -70,7 +70,11 @@ class Mollie extends Transacties
     public function getIssuersOptions()
     {
         $this->mollie = new MollieApiClient;
-        $this->mollie->setApiKey($_ENV['MOLLIE_TEST_KEY']);
+        if ($_ENV['YII_ENV'] === 'prod') {
+            $this->mollie->setApiKey($_ENV['MOLLIE_LIVE_KEY']);
+        } else {
+            $this->mollie->setApiKey($_ENV['MOLLIE_TEST_KEY']);
+        }
         $issuers = $this->mollie->methods->get(\Mollie\Api\Types\PaymentMethod::IDEAL, ["include" => "issuers"]);
         return ArrayHelper::map($issuers->issuers, 'id', 'name');
     }
@@ -186,7 +190,7 @@ class Mollie extends Transacties
         $this->parameters = [
             "amount"       => [
                 "currency" => "EUR",
-                "value" => $this->bedrag,
+                "value" => number_format($this->bedrag + $this->transactie_kosten, 2, '.', ' '),
             ],
             "method"       => PaymentMethod::IDEAL,
             "description"  => $this->omschrijving . ' transacties_id: '  . $this->transacties_id,
@@ -230,7 +234,6 @@ class Mollie extends Transacties
     {
         try {
             $payment = $this->mollie->payments->create($this->parameters);
-
             /*
              * In this example we store the order with its payment status in a database.
              */

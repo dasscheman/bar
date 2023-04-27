@@ -42,19 +42,14 @@ use app\models\User;
               'tags' => true,
         ]
     ]); ?>
-  
+
     <div class="form-group">
         <?php
         echo Html::submitButton('Update', ['class' => 'btn-lg btn-primary namen']);
-//        echo Html::a(
-//            'Opslaan',
-//            [ 'update', 'id' => $model->favorieten_lijsten_id],
-//            [ 'class' => 'btn-lg btn-primary namen' ]
-//        );
         echo Html::a(
             'Annuleren',
-            [ '/turven/barinvoer', '#' => 'w1-tab2'],
-            [ 
+            [ '/turven/barinvoer', ['tabIndex' => 4]],
+            [
                 'class' => 'btn-lg btn-danger namen',
                 'data' => [
                     'confirm' => 'Je wijzegingen zijn niet opgeslagen',

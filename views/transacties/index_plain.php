@@ -4,10 +4,7 @@
  */
 
 use kartik\grid\GridView;
-use yii\helpers\Html;
 use yii\widgets\Pjax;
-use app\models\BetalingType;
-use yii\helpers\ArrayHelper;
 
 /**
  * @var \yii\web\View $this
@@ -24,7 +21,7 @@ $pageSummary = false;
 $heading = false;
 $exportConfig = false;
 $responsiveWrap = false;
-$toolbar = false;
+$toolbar = true;
 
 ?>
 
@@ -35,39 +32,25 @@ $toolbar = false;
     echo GridView::widget([
         'id' => 'kv-grid-transacties',
         'dataProvider' => $dataProvider,
-        'filterModel'  => $searchModel,
         'rowOptions'=>function ($model) {
-            return ['class' => $model->getRowClass()];
+            return ['class' => $model->getRowClassDirecteBetaling()];
         },
         'layout'       => "{items}\n{pager}",
         'columns' => [
             [
-                'header' => Yii::t('app', 'View details'),
+                'header' => Yii::t('app', 'Turven'),
                 'class' => 'kartik\grid\ExpandRowColumn',
                 'width' => '50px',
                 'value' => function ($model, $key, $index, $column) {
                     return GridView::ROW_COLLAPSED;
                 },
                 'detail' => function ($model, $key, $index, $column) {
-                    return Yii::$app->controller->renderPartial(
-                        '/transacties/view', ['model' => $model]);
+                    return $this->render('/turven/_table_view', ['model' => $model]);
                 },
                 'headerOptions' => ['class' => 'kartik-sheet-style'],
                 'expandOneOnly' => true,
                 'expandTitle' => Yii::t('app', 'Open detail view'),
                 'collapseTitle' => Yii::t('app', 'Close detail view'),
-            ],
-            'transacties_id' => [
-                'attribute' => 'transacties_id',
-                'headerOptions' => ['style' => 'width:4%']
-            ],
-            'displayname' => [
-                'attribute' => 'displayname',
-                'value' => function ($model) {
-                    if ($model->getTransactiesUser()->one() !== null) {
-                        return $model->getTransactiesUser()->one()->username;
-                    }
-                },
             ],
             'datum' => [
                 'attribute' => 'datum',
@@ -75,23 +58,22 @@ $toolbar = false;
                     return Yii::$app->setupdatetime->displayFormat($model->datum, 'php:d-M-Y');
                 },
             ],
-            'omschrijving',
             'bedrag' => [
                 'attribute' => 'bedrag',
-                'headerOptions' => ['style' => 'width:6 %']
-            ],
-            'type_id' => [
-                'attribute' => 'type_id',
-                'filter'=> ArrayHelper::map(BetalingType::find()->asArray()->all(), 'type_id', 'omschrijving'),
+                'label' => 'Bedrag',
                 'value' => function ($model) {
-                    return $model->getType()->one()->omschrijving;
-                },
+                    return number_format($model->bedrag, 2, ',', ' ') . ' €';
+                }
+            ],
+            'transactie_kosten' => [
+                'attribute' => 'transactie_kosten',
+                'label' => 'iDEAL kosten',
+                'value' => function ($model) {
+                    return number_format($model->transactie_kosten, 2, ',', ' ') . ' €';
+                }
             ],
             'status' => [
                 'attribute' => 'status',
-                'filter'=> function ($model) {
-                    return $model->getStatusOptions();
-                },
                 'value' => function ($model) {
                     return $model->getStatusText();
                 },
@@ -101,35 +83,7 @@ $toolbar = false;
                 'value' => function ($model) {
                     return $model->getMollieStatusText();
                 },
-            ],
-            [
-                'attribute'=>'bon_id',
-                'format' => 'raw',
-                'value'=>function ($model) {
-                    return empty($model->bon_id)?'':Html::a('Bon ' . $model->bon_id, ['bonnen/view', 'id' => $model->bon_id]);
-                },
-            ],
-            [
-                'attribute'=>'factuur_id',
-                'format' => 'raw',
-                'value'=>function ($model) {
-                    return empty($model->factuur_id)?'':Html::a('Factuur ' . $model->factuur_id, ['factuur/view', 'id' => $model->factuur_id]);
-                },
-             ],
-            [
-                'class' => 'yii\grid\ActionColumn',
-                'header'=>'Actions',
-                'template' => '{update} {delete}',
-                'headerOptions' => ['style' => 'width:8%'],
-                'visibleButtons' => [
-                    'delete' => function ($model, $key, $index) {
-                        if ($model->deleted_at === null) {
-                            return true;
-                        }
-                        return false;
-                    },
-                ],
-            ],
+            ]
         ],
 
         'toolbar'=> $toolbar,
