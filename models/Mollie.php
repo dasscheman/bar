@@ -133,7 +133,7 @@ class Mollie extends Transacties
                     "transacties_id" => $mollie->transacties_id,
                 ];
 
-            $mollie->parameters['webhookUrl'] = "https://" . $_ENV['URL'] . "/index.php?r=mollie/webhook";
+            $mollie->parameters['webhookUrl'] = "https://" . $_ENV['URL'] . "/mollie/webhook";
 
             $payment = $mollie->createPayment();
 
