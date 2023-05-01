@@ -35,9 +35,12 @@ $config = [
         ],
         'db' => $db,
         'urlManager' => [
+            'enablePrettyUrl' => true,
+            // Disable index.php
+            'showScriptName' => false,
             'class' => 'yii\web\UrlManager',
-            'scriptUrl' => $_ENV['URL'],
-        ]
+            'hostInfo' => $_ENV['URL'],
+        ],
     ],
     'modules' => [
         'user' => [
