@@ -191,10 +191,6 @@ class MollieController extends Controller
 
     public function actionReturnBetaling()
     {
-        if (Yii::$app->user->isGuest) {
-            throw new NotFoundHttpException('Je bent niet ingelogt of de link uit je email is niet meer geldig.');
-        }
-
         // 3 seond sleep om zeker te weten dat de webhook eerst is aangeroepen
         // en de status gezet is.
         sleep(3);

@@ -391,9 +391,9 @@ class TransactiesController extends Controller
         return ['status' => $modelTransacties->status, 'mollie_status' => $modelTransacties->mollie_status];
     }
 
-    public function actionMailBetaalBevestiging($key)
+    public function actionMailBetaalBevestiging($id)
     {
-        $transactie = Transacties::findByKey($key);
+        $transactie = Transacties::findOne($id);
         Yii::$app->request->post('email');
 
         $message = Yii::$app->mailer->compose('mail_betaal_bevestiging', [
