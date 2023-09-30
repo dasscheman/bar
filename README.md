@@ -1,5 +1,6 @@
 Yii 2 gebaseerd barkassa systeem.
 ============================
+[![Laravel Forge Site Deployment Status](https://img.shields.io/endpoint?url=https%3A%2F%2Fforge.laravel.com%2Fsite-badges%2F1ca7df9b-20f6-480a-b20b-c054a854b947%3Fdate%3D1%26commit%3D1&style=plastic)](https://forge.laravel.com/servers/432841/sites/1279996)
 
 Deze aplicatie is gemaakt voor het beheren van de bar voor kleine verenigingen.
 
