@@ -35,6 +35,7 @@ $config = [
         ],
         'db' => $db,
         'urlManager' => [
+            'baseUrl'         => '@web',
             'enablePrettyUrl' => true,
             // Disable index.php
             'showScriptName' => false,
