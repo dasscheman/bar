@@ -46,7 +46,7 @@ class MollieController extends Controller
                     [
                         'allow' => true,
                         'actions' => ['qr-directe-betaling'],
-                        'roles' =>  ['admin', 'beheerder'],
+                        'roles' =>  ['admin', 'beheerder', 'gebruiker'],
                     ],
                     [
                         'allow' => true,
