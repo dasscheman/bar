@@ -48,8 +48,13 @@ class TransactiesController extends Controller
                 'rules' => [
                     [
                         'allow' => true,
-                        'actions' => ['index', 'delete', 'create', 'update', 'view', 'bank', 'status'],
+                        'actions' => ['index', 'delete', 'create', 'update', 'view', 'bank'],
                         'roles' =>  ['admin', 'beheerder'],
+                    ],
+                    [
+                        'allow' => true,
+                        'actions' => [ 'status'],
+                        'roles' =>  ['admin', 'beheerder', 'gebruiker'],
                     ],
                     [
                         'allow' => false,  // deny all users
